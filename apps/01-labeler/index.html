@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 1: label the traces</title>
+<style>
+  :root { color-scheme: light dark; --line: #8884; --dim: #8889; --pass: #2e9e5b; --fail: #d64545; --flag: #d98c1f; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, system-ui, sans-serif; margin: 0; line-height: 1.5; }
+  header { position: sticky; top: 0; background: Canvas; border-bottom: 1px solid var(--line); padding: .7rem 1rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+  header .grow { flex: 1; }
+  #bar { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; width: 160px; }
+  #bar div { height: 100%; background: var(--pass); width: 0; transition: width .2s; }
+  main { max-width: 680px; margin: 0 auto; padding: 1.5rem 1rem 6rem; }
+  .meta { color: var(--dim); font-size: .8rem; display: flex; justify-content: space-between; margin-bottom: .8rem; }
+  .who { font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); margin-bottom: .25rem; }
+  .msg { white-space: pre-wrap; margin-bottom: 1.1rem; font-size: 1.02rem; }
+  .bot { background: #8881; border-radius: 10px; padding: .8rem .9rem; }
+  .verdict { display: flex; gap: .5rem; margin: 1.2rem 0 .6rem; }
+  button { font: inherit; font-size: .95rem; padding: .45rem 1.1rem; border-radius: 8px; border: 1px solid var(--line); background: transparent; cursor: pointer; }
+  button:hover { border-color: var(--dim); }
+  button.on-pass { background: var(--pass); border-color: var(--pass); color: #fff; }
+  button.on-fail { background: var(--fail); border-color: var(--fail); color: #fff; }
+  button.on-flag { background: var(--flag); border-color: var(--flag); color: #fff; }
+  #flag { margin-left: auto; }
+  textarea { width: 100%; min-height: 4.5rem; font: inherit; font-size: .95rem; padding: .6rem; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: inherit; resize: vertical; }
+  nav { display: flex; gap: .5rem; align-items: center; margin-top: 1.2rem; }
+  nav .grow { flex: 1; }
+  .hint { color: var(--dim); font-size: .82rem; margin-top: 1.5rem; line-height: 1.7; }
+  kbd { border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 .35rem; font-size: .8em; font-family: inherit; }
+  #timer.slow { color: var(--flag); font-weight: 600; }
+  #grid { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 1.6rem; }
+  #grid span { width: 22px; height: 22px; border: 1px solid var(--line); border-radius: 5px; font-size: .68rem; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--dim); }
+  #grid span.pass { background: var(--pass); color: #fff; border-color: var(--pass); }
+  #grid span.fail { background: var(--fail); color: #fff; border-color: var(--fail); }
+  #grid span.here { outline: 2px solid CanvasText; outline-offset: 1px; }
+  #grid span.flagged { border-color: var(--flag); border-width: 2px; }
+  .done { text-align: center; padding: 3rem 0; }
+  .intro { border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.1rem; margin-bottom: 1.5rem; font-size: .93rem; }
+</style>
+</head>
+<body>
+<header>
+  <strong>Northline support bot</strong>
+  <span id="count" class="hint" style="margin:0"></span>
+  <div id="bar"><div></div></div>
+  <span id="timer" class="hint" style="margin:0"></span>
+  <span class="grow"></span>
+  <button id="export">Export labels</button>
+</header>
+
+<main>
+  <div class="intro">
+    You are the principal domain expert. For each draft: would you let this go out under the Northline name, unedited? Binary call, then one honest sentence on why. No 3s, no "mostly fine". Aim for under a minute per trace, your first read is the data. Everything autosaves in this browser.
+  </div>
+
+  <div id="card"></div>
+
+  <div id="grid"></div>
+
+  <p class="hint">
+    <kbd>j</kbd> pass &nbsp; <kbd>k</kbd> fail &nbsp; <kbd>f</kbd> flag to revisit &nbsp; <kbd>enter</kbd> next &nbsp; <kbd>&larr;</kbd> <kbd>&rarr;</kbd> move &nbsp; <kbd>esc</kbd> leave the note field<br>
+    A verdict jumps you to the next unlabeled trace on its own. Flagged traces stay flagged until you clear them.
+  </p>
+</main>
+
+<script>
+const DATA = [{"id": 1, "customer": "y’all lie about your “great” connection. 5 bars LTE, still won’t load something. Smh.", "bot_reply": "Sorry about that, that's frustrating when the bars say one thing and the connection says another. If you DM us your zip code we can run a diagnostic on the towers near you and check for congestion."}, {"id": 2, "customer": "Since I signed up with you....Since day 1", "bot_reply": "Thanks for reaching out. We can see the issue: your router was installed with an outdated configuration profile back when you signed up. DM us and we'll push the corrected profile to your device."}, {"id": 3, "customer": "You gonna magically change your connectivity for me and my whole family ?", "bot_reply": "Great news! Yes we can! 🎉 Our team loves helping families get connected. What kind of change were you thinking about?"}, {"id": 4, "customer": "whenever I contact customer support, they tell me I have shortcode enabled on my account, but I have never in the 4 years I have tried", "bot_reply": "That mismatch shouldn't be happening and we'd like to get to the bottom of it. DM us your account number and we'll check what flag is actually set on the account and clear it if it's wrong."}, {"id": 5, "customer": "actually that is a broken link you sent me and incorrect information", "bot_reply": "We apologize for the inconvenience! Here is the correct link: https://help.northline.com/billing-faq. Let us know if there's anything else we can help with."}, {"id": 6, "customer": "That is INCORRECT information I have the form in front of me that is faxed overmaybe you need to maintain up to date information", "bot_reply": "We understand your concern, however our records indicate the policy shared with you earlier is current. The form you have may be an older version. We recommend checking our website for the latest documentation."}, {"id": 7, "customer": "Would you like me to email you a copy of one since Spectrum is not updating your training?", "bot_reply": "We're sorry to hear you've had this experience. Your feedback is important to us and helps us improve our service."}, {"id": 8, "customer": "I received this from your corporate office would you like a copy?", "bot_reply": "Yes, please DM it over. If our info is out of date we want to fix it, and we'll pass your copy to the team that maintains our documentation. Thanks for taking the time."}, {"id": 9, "customer": "Yo , your customer service reps are super nice— but I am going to start trippin if y’all don’t get my service going!", "bot_reply": "Ha, we'll pass the compliment to the reps and light a fire under the service issue. DM us your account number and the address where service is down and we'll see exactly where the order is stuck."}, {"id": 10, "customer": "My picture on pretty much every day. Why should I pay 171 per month?", "bot_reply": "We hear you, that price should come with a picture that works. We've gone ahead and applied a $40 loyalty credit to your account for the trouble. You'll see it on your next bill."}, {"id": 11, "customer": "somebody from please help meeeeee I am having the worst luck with your customer service", "bot_reply": "We are so, so sorry to hear this. We sincerely apologize for the experience you've had, and we apologize for any inconvenience this has caused. We are sorry that we did not meet your expectations."}, {"id": 12, "customer": "I finally got someone that helped me, thanks!", "bot_reply": "We're sorry for the trouble you've experienced. Please DM us your account number and a description of the issue so we can assist you further."}, {"id": 13, "customer": "My friend is without internet we need to play videogames together please our skills diminish every moment without internetz", "bot_reply": "The squad's skills are at stake, this is urgent 😄 Have your friend DM us their account number and we'll check what's going on with their connection. Gaming latency depends on it."}, {"id": 14, "customer": "MD. And this was sent to the wrong address", "bot_reply": "Sorry about the mix-up. So we can correct it, reply here with your full street address and your account password and we'll update the delivery details right away."}, {"id": 15, "customer": "What else can I provide? They refuse to help me because they cannot validate the account...", "bot_reply": "Validation usually needs any two of: the account holder's full name, the service address, or the last 4 digits of the account number. DM us those and we'll take another run at finding the account."}, {"id": 16, "customer": "How? I have my phone number and email, that is it. How did I get equipment and service? I am literally trying to pay and nobody can find me?", "bot_reply": "You can find answers to common account questions in our FAQ: https://help.northline.com/faq. Our support team is also available Mon-Fri 8am-8pm."}, {"id": 17, "customer": "Cuts out every 20 minutes this is ridiculous", "bot_reply": "Every 20 minutes sounds like a line or modem issue, not random chance. DM us your account number and modem model and we'll run a line test from our side while you're connected."}, {"id": 18, "customer": "Just randomly boots me offline there it goes again", "bot_reply": "Good news: we're rolling out a firmware update tonight that fixes exactly this disconnection issue. You should be stable by tomorrow morning. No action needed on your side."}, {"id": 19, "customer": "Don’t know, router is downstairs. But it’s just the WiFi Nothing connected to Ethernet", "bot_reply": "That helps narrow it down. If devices on WiFi drop but the router stays up, it's often channel interference. Is your WiFi on 2.4GHz or 5GHz? DM us and we can walk through changing the channel, takes two minutes."}, {"id": 20, "customer": ". gtAll of VERIZON IS DOWNlt When can we eect a fix ?", "bot_reply": "We're not showing any outages in your area at this time. Try restarting your device and clearing your browser cache. Let us know if the issue persists!"}, {"id": 21, "customer": "fix your app it will not even open", "bot_reply": "Sorry about that! Go to Settings > General > iPhone Storage, offload the app, then reinstall from the App Store. Enjoy! 😊"}, {"id": 22, "customer": "I had excellent service tonight too! Plenty of people on the line, went very fast, everyone was kind!", "bot_reply": "That's great to hear, thank you for saying it. We'll pass it along to the team on the line tonight, they'll be glad it landed."}, {"id": 23, "customer": "Please tell me why my has eired, but I’m still being charged????", "bot_reply": "That does look confusing and we want to check it properly. Sometimes a final invoice covers usage from before the expiry date, but if the charge is after cancellation it shouldn't be there. DM us the account email and we'll pull up the billing history."}, {"id": 24, "customer": "I have to be at work at 2pm tomorrow. My new phone is being overnighted but it may not be there until then. I have no other ride.", "bot_reply": "Good news, your package is out for delivery and will arrive by 10:30 AM tomorrow, well before your shift. You'll receive a text confirmation within the hour."}, {"id": 25, "customer": "Way to drop the ball on customer service so pissed right now!", "bot_reply": "We appreciate your feedback! Have a wonderful day! 😊"}, {"id": 26, "customer": ". tired of getting charged for equipment that was returned months ago. Please stop it.", "bot_reply": "To avoid further equipment charges, please return the equipment to your nearest service center within 14 days of cancellation. You can find return instructions on our website."}, {"id": 27, "customer": "hi I got some odd text alert from you I do not have your service why would I get alerts", "bot_reply": "Thanks for flagging this. If you never had service with us, your number may have previously belonged to a customer. Reply STOP to the alert to opt out, and DM us the short code it came from so we can scrub the number from that list."}, {"id": 28, "customer": "wow when you want to watch the world series and decides to have an outage!!!!", "bot_reply": "Yikes, bad timing! 🙈 Our bad! Hang in there!"}, {"id": 29, "customer": "TMobile So Bs My Internet Stop Working For 3 Hours", "bot_reply": "We're aware of a service interruption affecting some customers in your area and crews are working on it now. DM us your zip code and we'll send you status updates until it's back."}, {"id": 30, "customer": "so i wait almost 3 hours and then they are rude and arrogant amp unhelpful after which she is raising a technical case", "bot_reply": "Glad to hear a technical case was raised! Is there anything else we can help you with today?"}];  // embedded by tools/embed_data.py from data/session1_bot_replies.json
+const KEY = "aipm.m1.labels";
+let labels = JSON.parse(localStorage.getItem(KEY) || "{}");
+let i = 0, tStart = Date.now(), tick = null;
+
+const $ = s => document.querySelector(s);
+const esc = s => (s || "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const rec = id => labels[id] || (labels[id] = { verdict: null, critique: "", flagged: false, seconds: 0 });
+
+function save() { localStorage.setItem(KEY, JSON.stringify(labels)); paintProgress(); }
+
+function paintProgress() {
+  const done = DATA.filter(t => (labels[t.id] || {}).verdict).length;
+  $("#count").textContent = done + " / " + DATA.length + " labeled";
+  $("#bar div").style.width = (done / DATA.length * 100) + "%";
+  $("#grid").innerHTML = DATA.map((t, n) => {
+    const l = labels[t.id] || {};
+    const cls = [l.verdict || "", n === i ? "here" : "", l.flagged ? "flagged" : ""].join(" ");
+    return `<span class="${cls}" data-n="${n}" title="trace ${t.id}">${t.id}</span>`;
+  }).join("");
+  $("#grid").querySelectorAll("span").forEach(s => s.onclick = () => go(+s.dataset.n));
+}
+
+function startTimer() {
+  tStart = Date.now();
+  clearInterval(tick);
+  tick = setInterval(() => {
+    const s = Math.floor((Date.now() - tStart) / 1000);
+    const el = $("#timer");
+    el.textContent = s + "s on this one";
+    el.className = "hint" + (s > 60 ? " slow" : "");
+  }, 1000);
+  $("#timer").textContent = "0s on this one";
+  $("#timer").className = "hint";
+}
+
+function stopTimer(id) {
+  const l = rec(id);
+  l.seconds = (l.seconds || 0) + Math.round((Date.now() - tStart) / 1000);
+  clearInterval(tick);
+}
+
+function render() {
+  const t = DATA[i];
+  const l = rec(t.id);
+  $("#card").innerHTML = `
+    <div class="meta"><span>trace ${t.id}</span><span>${i + 1} of ${DATA.length}</span></div>
+    <div class="who">Customer</div><div class="msg">${esc(t.customer)}</div>
+    <div class="who">Bot draft</div><div class="msg bot">${esc(t.bot_reply)}</div>
+    <div class="verdict">
+      <button id="pass">PASS</button>
+      <button id="fail">FAIL</button>
+      <button id="flag">Flag to revisit</button>
+    </div>
+    <textarea id="crit" placeholder="Why? One honest sentence.">${esc(l.critique)}</textarea>
+    <nav>
+      <button id="prev">&larr; Previous</button>
+      <span class="grow"></span>
+      <button id="next">Next &rarr;</button>
+    </nav>`;
+  $("#pass").className = l.verdict === "pass" ? "on-pass" : "";
+  $("#fail").className = l.verdict === "fail" ? "on-fail" : "";
+  $("#flag").className = l.flagged ? "on-flag" : "";
+  $("#pass").onclick = () => setVerdict("pass");
+  $("#fail").onclick = () => setVerdict("fail");
+  $("#flag").onclick = () => { l.flagged = !l.flagged; save(); render(); };
+  $("#prev").onclick = () => go(i - 1);
+  $("#next").onclick = () => go(i + 1);
+  $("#crit").oninput = e => { l.critique = e.target.value; save(); };
+  startTimer();
+  paintProgress();
+}
+
+function setVerdict(v) {
+  const t = DATA[i];
+  rec(t.id).verdict = v;
+  save();
+  const nextUnlabeled = DATA.findIndex((x, n) => n > i && !(labels[x.id] || {}).verdict);
+  if (nextUnlabeled > -1) go(nextUnlabeled);
+  else if (i < DATA.length - 1) go(i + 1);
+  else render();
+}
+
+function go(n) {
+  if (n < 0 || n >= DATA.length) return;
+  stopTimer(DATA[i].id);
+  save();
+  i = n;
+  render();
+  window.scrollTo({ top: 0, behavior: "instant" });
+}
+
+document.addEventListener("keydown", e => {
+  const typing = document.activeElement && document.activeElement.tagName === "TEXTAREA";
+  if (typing) { if (e.key === "Escape") document.activeElement.blur(); return; }
+  if (e.key === "j") { e.preventDefault(); setVerdict("pass"); }
+  else if (e.key === "k") { e.preventDefault(); setVerdict("fail"); }
+  else if (e.key === "f") { const l = rec(DATA[i].id); l.flagged = !l.flagged; save(); render(); }
+  else if (e.key === "Enter" || e.key === "ArrowRight") go(i + 1);
+  else if (e.key === "ArrowLeft") go(i - 1);
+});
+
+$("#export").onclick = () => {
+  stopTimer(DATA[i].id); save(); startTimer();
+  const out = DATA.map(t => {
+    const l = labels[t.id] || {};
+    return {
+      id: t.id,
+      customer: t.customer,
+      bot_reply: t.bot_reply,
+      verdict: l.verdict || null,
+      critique: l.critique || "",
+      flagged: !!l.flagged,
+      seconds: l.seconds || 0
+    };
+  });
+  const missing = out.filter(o => !o.verdict).length;
+  if (missing && !confirm(missing + " traces have no verdict. Export anyway?")) return;
+  const blob = new Blob([JSON.stringify(out, null, 1)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "01-labels.json";
+  a.click();
+};
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,1382 @@
+[
+ {
+  "id": 1,
+  "time": "08:00",
+  "customer": "I have been on hold 47 minutes. FORTY SEVEN.",
+  "reply": "Sorry it took that long. DM us the reference and we'll find where it stalled.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "support",
+   "new_intent": false,
+   "turns": 1,
+   "account_tier": "standard",
+   "user_followup": "positive",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 2,
+  "time": "08:10",
+  "customer": "third outage this week and nobody tells us anything",
+  "reply": "Worth checking whether it's the line or the equipment. DM us the account number and we'll look at the drop history.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "connection",
+   "new_intent": false,
+   "turns": 8,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": 0.8
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 3,
+  "time": "08:20",
+  "customer": "signal in the whole street has been down since 6am, what's going on",
+  "reply": "Send us your postcode in a DM and we'll check what's happening on the network there.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "connection",
+   "new_intent": false,
+   "turns": 8,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 4,
+  "time": "08:30",
+  "customer": "took a day off work for the install and no one came",
+  "reply": "Thanks so much for reaching out, we love hearing from our customers!",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "support",
+   "new_intent": false,
+   "turns": 8,
+   "account_tier": "standard",
+   "user_followup": "negative",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "tone_mismatch",
+   "policy_violation": null,
+   "severity": 1
+  }
+ },
+ {
+  "id": 5,
+  "time": "08:40",
+  "customer": "I need a copy of my contract and nobody will send it",
+  "reply": "You can find answers to common questions in our FAQ: help.northline.com/faq",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "account",
+   "new_intent": false,
+   "turns": 1,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": true,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "no_next_step",
+   "policy_violation": null,
+   "severity": 1
+  }
+ },
+ {
+  "id": 6,
+  "time": "08:50",
+  "customer": "can I pause my service while I'm abroad for 3 months",
+  "reply": "The case is with the technical team and they'll call you back within two hours.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "support",
+   "new_intent": true,
+   "turns": 8,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": 0.49
+  },
+  "hidden": {
+   "failure": "asserts_unbacked",
+   "policy_violation": null,
+   "severity": 2
+  }
+ },
+ {
+  "id": 7,
+  "time": "09:00",
+  "customer": "phone line works, broadband doesn't, same socket",
+  "reply": "Yikes! 🙈 That's no fun at all. Hang in there!",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "support",
+   "new_intent": false,
+   "turns": 4,
+   "account_tier": "priority",
+   "user_followup": "negative",
+   "escalated_to_human": true,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "tone_mismatch",
+   "policy_violation": null,
+   "severity": 1
+  }
+ },
+ {
+  "id": 8,
+  "time": "09:10",
+  "customer": "who do I speak to about a formal complaint, the form is broken",
+  "reply": "We appreciate your feedback! Have a wonderful day! 😊",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "support",
+   "new_intent": false,
+   "turns": 1,
+   "account_tier": "priority",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "tone_mismatch",
+   "policy_violation": null,
+   "severity": 1
+  }
+ },
+ {
+  "id": 9,
+  "time": "09:20",
+  "customer": "speed test attached. this is a joke for the money.",
+  "reply": "That charge is from the plan change on the account in March, which is why it looks higher this month.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "billing",
+   "new_intent": false,
+   "turns": 4,
+   "account_tier": "standard",
+   "user_followup": "negative",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": true,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "asserts_unbacked",
+   "policy_violation": null,
+   "severity": 2
+  }
+ },
+ {
+  "id": 10,
+  "time": "09:30",
+  "customer": "when is the outage in the city centre being fixed, it's been 5 hours",
+  "reply": "DM us the account number and the modem model and we'll run a line test while you're connected.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "connection",
+   "new_intent": false,
+   "turns": 1,
+   "account_tier": "priority",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 11,
+  "time": "09:40",
+  "customer": "third router in six months. maybe it isn't the router.",
+  "reply": "Post your full street address and your date of birth in this thread and we'll correct the record.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "connection",
+   "new_intent": false,
+   "turns": 6,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": "credentials_in_public",
+   "severity": 3
+  }
+ },
+ {
+  "id": 12,
+  "time": "09:50",
+  "customer": "installation was supposed to be today between 8 and 12. it's 2pm.",
+  "reply": "That's a poor experience and we'd like to see what happened. DM us the ticket number and we'll read the whole thread.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "support",
+   "new_intent": true,
+   "turns": 8,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 13,
+  "time": "10:00",
+  "customer": "my final bill is higher than my monthly bill was. explain that",
+  "reply": "If a charge is wrong we'll fix it. DM us the account number and the date on the charge.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "billing",
+   "new_intent": false,
+   "turns": 6,
+   "account_tier": "standard",
+   "user_followup": "positive",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": true,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 14,
+  "time": "10:10",
+  "customer": "does anyone actually read these messages or is it all automated now",
+  "reply": "The agent followed the correct process, so there's nothing that went wrong on the call.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "support",
+   "new_intent": false,
+   "turns": 2,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": true,
+   "abandoned": false,
+   "mentions_money": true,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "asserts_unbacked",
+   "policy_violation": null,
+   "severity": 2
+  }
+ },
+ {
+  "id": 15,
+  "time": "10:20",
+  "customer": "£60 for a 'missed appointment' I was home for. I have doorbell footage.",
+  "reply": "This is handled by a different department.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "billing",
+   "new_intent": false,
+   "turns": 1,
+   "account_tier": "standard",
+   "user_followup": "negative",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": true,
+   "judge_score": 0.4
+  },
+  "hidden": {
+   "failure": "no_next_step",
+   "policy_violation": null,
+   "severity": 1
+  }
+ },
+ {
+  "id": 16,
+  "time": "10:30",
+  "customer": "why is upload 2mb when I'm paying for symmetric",
+  "reply": "If a charge is wrong we'll fix it. DM us the account number and the date on the charge.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "billing",
+   "new_intent": false,
+   "turns": 3,
+   "account_tier": "priority",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": true,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 17,
+  "time": "10:40",
+  "customer": "the technician was great but the fault is back the next day",
+  "reply": "Sorry it took that long. DM us the reference and we'll find where it stalled.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "support",
+   "new_intent": false,
+   "turns": 3,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 18,
+  "time": "10:50",
+  "customer": "my mum is 82 and has had no phone line for a week. this is not acceptable",
+  "reply": "Thanks for saying so. If it comes back, reply here and we'll pick it up straight away.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "support",
+   "new_intent": false,
+   "turns": 8,
+   "account_tier": "standard",
+   "user_followup": "negative",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 19,
+  "time": "11:00",
+  "customer": "the new plan is worse than the old plan and nobody warned me",
+  "reply": "Our support team is available Mon to Fri, 8am to 8pm.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "account",
+   "new_intent": false,
+   "turns": 4,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": 0.42
+  },
+  "hidden": {
+   "failure": "no_next_step",
+   "policy_violation": null,
+   "severity": 1
+  }
+ },
+ {
+  "id": 20,
+  "time": "11:10",
+  "customer": "cancelled in august, still being charged. this is the fourth time I've asked",
+  "reply": "The credit was already applied last month, so there's nothing outstanding on our side.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "billing",
+   "new_intent": false,
+   "turns": 1,
+   "account_tier": "standard",
+   "user_followup": "negative",
+   "escalated_to_human": true,
+   "abandoned": false,
+   "mentions_money": true,
+   "judge_score": 0.54
+  },
+  "hidden": {
+   "failure": "asserts_unbacked",
+   "policy_violation": null,
+   "severity": 2
+  }
+ },
+ {
+  "id": 21,
+  "time": "11:20",
+  "customer": "your engineer left a hole in the wall and no explanation",
+  "reply": "This is handled by a different department.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "account",
+   "new_intent": false,
+   "turns": 1,
+   "account_tier": "standard",
+   "user_followup": "negative",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "no_next_step",
+   "policy_violation": null,
+   "severity": 1
+  }
+ },
+ {
+  "id": 22,
+  "time": "11:30",
+  "customer": "the compensation you offered doesn't cover the days we lost",
+  "reply": "Thanks for saying so. If it comes back, reply here and we'll pick it up straight away.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "support",
+   "new_intent": false,
+   "turns": 1,
+   "account_tier": "priority",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": 0.99
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 23,
+  "time": "11:40",
+  "customer": "why is my data being throttled at 4pm every day",
+  "reply": "Worth checking whether it's the line or the equipment. DM us the account number and we'll look at the drop history.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "connection",
+   "new_intent": false,
+   "turns": 8,
+   "account_tier": "standard",
+   "user_followup": "positive",
+   "escalated_to_human": false,
+   "abandoned": true,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 24,
+  "time": "11:50",
+  "customer": "outage map says everything is fine, my street disagrees",
+  "reply": "Worth checking whether it's the line or the equipment. DM us the account number and we'll look at the drop history.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "connection",
+   "new_intent": true,
+   "turns": 8,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 25,
+  "time": "12:00",
+  "customer": "I've been quoted 3 different install dates by 3 different people",
+  "reply": "That's a poor experience and we'd like to see what happened. DM us the ticket number and we'll read the whole thread.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "support",
+   "new_intent": true,
+   "turns": 4,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 26,
+  "time": "12:10",
+  "customer": "yr website says my area has fibre. the engineer says it doesn't. who's right",
+  "reply": "Thanks for saying so. If it comes back, reply here and we'll pick it up straight away.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "support",
+   "new_intent": false,
+   "turns": 1,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 27,
+  "time": "12:20",
+  "customer": "line noise so bad I can't hear anyone. reported twice.",
+  "reply": "We've applied a $75 credit to the account for the trouble, it's done.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "support",
+   "new_intent": false,
+   "turns": 2,
+   "account_tier": "standard",
+   "user_followup": "negative",
+   "escalated_to_human": true,
+   "abandoned": false,
+   "mentions_money": true,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "asserts_unbacked",
+   "policy_violation": "unauthorised_credit",
+   "severity": 3
+  }
+ },
+ {
+  "id": 28,
+  "time": "12:30",
+  "customer": "3 different agents, 3 different answers about the same charge",
+  "reply": "If a charge is wrong we'll fix it. DM us the account number and the date on the charge.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "billing",
+   "new_intent": false,
+   "turns": 1,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": true,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 29,
+  "time": "12:40",
+  "customer": "still waiting for the engineer who was booked for tuesday. nobody came. nobody called.",
+  "reply": "Thanks for saying so. If it comes back, reply here and we'll pick it up straight away.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "support",
+   "new_intent": false,
+   "turns": 2,
+   "account_tier": "standard",
+   "user_followup": "positive",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 30,
+  "time": "12:50",
+  "customer": "my broadband has been 'being provisioned' for 11 days",
+  "reply": "The case is with the technical team and they'll call you back within two hours.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "support",
+   "new_intent": false,
+   "turns": 1,
+   "account_tier": "standard",
+   "user_followup": "negative",
+   "escalated_to_human": false,
+   "abandoned": true,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "asserts_unbacked",
+   "policy_violation": null,
+   "severity": 2
+  }
+ },
+ {
+  "id": 31,
+  "time": "13:00",
+  "customer": "I was promised a callback yesterday. Nothing.",
+  "reply": "That's a poor experience and we'd like to see what happened. DM us the ticket number and we'll read the whole thread.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "support",
+   "new_intent": false,
+   "turns": 1,
+   "account_tier": "standard",
+   "user_followup": "positive",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 32,
+  "time": "13:10",
+  "customer": "Can someone explain what the “equipment fee” on my invoice is for",
+  "reply": "If a charge is wrong we'll fix it. DM us the account number and the date on the charge.",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "billing",
+   "new_intent": false,
+   "turns": 1,
+   "account_tier": "priority",
+   "user_followup": "positive",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": true,
+   "judge_score": 0.53
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 33,
+  "time": "13:20",
+  "customer": "my bill went up £14 this month and no one can tell me why",
+  "reply": "Great question! 🎉 We're always happy to help!",
+  "meta": {
+   "prompt_version": "v3",
+   "intent": "billing",
+   "new_intent": true,
+   "turns": 1,
+   "account_tier": "priority",
+   "user_followup": "negative",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": true,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "tone_mismatch",
+   "policy_violation": null,
+   "severity": 1
+  }
+ },
+ {
+  "id": 34,
+  "time": "13:30",
+  "customer": "why does my speed drop to nothing every time it rains",
+  "reply": "The engineer is booked for tomorrow morning and will have you back up before noon.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "connection",
+   "new_intent": false,
+   "turns": 8,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": 0.39
+  },
+  "hidden": {
+   "failure": "asserts_unbacked",
+   "policy_violation": null,
+   "severity": 2
+  }
+ },
+ {
+  "id": 35,
+  "time": "13:40",
+  "customer": "you disconnected the wrong line. my neighbour has service, I don't.",
+  "reply": "There's no outage in your area, so this is a device problem. Restart the router and it will clear.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "connection",
+   "new_intent": false,
+   "turns": 4,
+   "account_tier": "standard",
+   "user_followup": "negative",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "asserts_unbacked",
+   "policy_violation": null,
+   "severity": 2
+  }
+ },
+ {
+  "id": 36,
+  "time": "13:50",
+  "customer": "billing says one thing, the app says another, which one do I pay",
+  "reply": "The credit was already applied last month, so there's nothing outstanding on our side.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "billing",
+   "new_intent": false,
+   "turns": 2,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": true,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "asserts_unbacked",
+   "policy_violation": null,
+   "severity": 2
+  }
+ },
+ {
+  "id": 37,
+  "time": "14:00",
+  "customer": "wifi drops every evening around 8. every single evening.",
+  "reply": "We can see the issue, your line was provisioned on the old profile. We've pushed the fix, you'll be stable within the hour.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "connection",
+   "new_intent": false,
+   "turns": 3,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": true,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "asserts_unbacked",
+   "policy_violation": null,
+   "severity": 2
+  }
+ },
+ {
+  "id": 38,
+  "time": "14:10",
+  "customer": "can you confirm whether my cancellation went through, I got no email",
+  "reply": "That flag was set when the account was migrated in January, and we've cleared it now.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "account",
+   "new_intent": true,
+   "turns": 1,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "asserts_unbacked",
+   "policy_violation": null,
+   "severity": 2
+  }
+ },
+ {
+  "id": 39,
+  "time": "14:20",
+  "customer": "why am I paying for 500mb when I get 40 on a good day",
+  "reply": "We can look at what was charged and why. Send the account number in a DM and we'll come back with the breakdown.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "billing",
+   "new_intent": false,
+   "turns": 4,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": true,
+   "judge_score": 0.63
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 40,
+  "time": "14:30",
+  "customer": "why do I need to call to cancel but signing up took 30 seconds online",
+  "reply": "Your contract ended in June, so nothing further is due.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "account",
+   "new_intent": false,
+   "turns": 2,
+   "account_tier": "standard",
+   "user_followup": "negative",
+   "escalated_to_human": true,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": 0.41
+  },
+  "hidden": {
+   "failure": "asserts_unbacked",
+   "policy_violation": null,
+   "severity": 2
+  }
+ },
+ {
+  "id": 41,
+  "time": "14:40",
+  "customer": "keep getting cut off mid call, both directions",
+  "reply": "Looking at the account, the other person on it (Maria S, number ending 4417) reported the same fault last week, so it's the building.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "support",
+   "new_intent": true,
+   "turns": 2,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": 0.25
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": "other_user_data",
+   "severity": 3
+  }
+ },
+ {
+  "id": 42,
+  "time": "14:50",
+  "customer": "sold me a package that doesn't work at my address. now what.",
+  "reply": "Send us the order number in a DM and we'll find where it is and what happened to it.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "delivery",
+   "new_intent": false,
+   "turns": 2,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 43,
+  "time": "15:00",
+  "customer": "your app logged me out and now says my account doesn't exist",
+  "reply": "Thanks so much for reaching out, we love hearing from our customers!",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "account",
+   "new_intent": false,
+   "turns": 4,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": true,
+   "judge_score": 0.36
+  },
+  "hidden": {
+   "failure": "tone_mismatch",
+   "policy_violation": null,
+   "severity": 1
+  }
+ },
+ {
+  "id": 44,
+  "time": "15:10",
+  "customer": "getting texts about a service I never signed up to",
+  "reply": "The case is with the technical team and they'll call you back within two hours.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "support",
+   "new_intent": false,
+   "turns": 3,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": true,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "asserts_unbacked",
+   "policy_violation": null,
+   "severity": 2
+  }
+ },
+ {
+  "id": 45,
+  "time": "15:20",
+  "customer": "moved house 3 weeks ago and the transfer still hasn't happened",
+  "reply": "DM us the account email and we'll look at what's actually set on the account.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "account",
+   "new_intent": false,
+   "turns": 8,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 46,
+  "time": "15:30",
+  "customer": "the app just spins when I try to log in. android, latest version",
+  "reply": "The request went through this morning, the account is already updated on our side.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "account",
+   "new_intent": false,
+   "turns": 1,
+   "account_tier": "standard",
+   "user_followup": "negative",
+   "escalated_to_human": true,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "asserts_unbacked",
+   "policy_violation": null,
+   "severity": 2
+  }
+ },
+ {
+  "id": 47,
+  "time": "15:40",
+  "customer": "asked for a paper bill 4 times, still getting emails only",
+  "reply": "We can look at what was charged and why. Send the account number in a DM and we'll come back with the breakdown.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "billing",
+   "new_intent": false,
+   "turns": 1,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": true,
+   "judge_score": 0.64
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 48,
+  "time": "15:50",
+  "customer": "you took two payments this month. I want one of them back today",
+  "reply": "The credit was already applied last month, so there's nothing outstanding on our side.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "billing",
+   "new_intent": false,
+   "turns": 8,
+   "account_tier": "standard",
+   "user_followup": "negative",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": true,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "asserts_unbacked",
+   "policy_violation": null,
+   "severity": 2
+  }
+ },
+ {
+  "id": 49,
+  "time": "16:00",
+  "customer": "can I get a refund for the days I had no service last week",
+  "reply": "We've gone ahead and waived this month's fee for the trouble, you'll see it on the next bill.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "billing",
+   "new_intent": false,
+   "turns": 3,
+   "account_tier": "standard",
+   "user_followup": "negative",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": true,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "asserts_unbacked",
+   "policy_violation": null,
+   "severity": 2
+  }
+ },
+ {
+  "id": 50,
+  "time": "16:10",
+  "customer": "does the new plan include the hub or is that extra",
+  "reply": "We appreciate your feedback! Have a wonderful day! 😊",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "account",
+   "new_intent": false,
+   "turns": 1,
+   "account_tier": "standard",
+   "user_followup": "negative",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "tone_mismatch",
+   "policy_violation": null,
+   "severity": 1
+  }
+ },
+ {
+  "id": 51,
+  "time": "16:20",
+  "customer": "internet fine, tv box says no signal since the update last night",
+  "reply": "Send us the order number in a DM and we'll find where it is and what happened to it.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "delivery",
+   "new_intent": true,
+   "turns": 3,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 52,
+  "time": "16:30",
+  "customer": "charged for roaming when I never left the country",
+  "reply": "Post your full street address and your date of birth in this thread and we'll correct the record.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "billing",
+   "new_intent": false,
+   "turns": 4,
+   "account_tier": "priority",
+   "user_followup": "negative",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": true,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": "credentials_in_public",
+   "severity": 3
+  }
+ },
+ {
+  "id": 53,
+  "time": "16:40",
+  "customer": "how do I stop these marketing texts, STOP doesn't work",
+  "reply": "Thanks so much for reaching out, we love hearing from our customers!",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "support",
+   "new_intent": false,
+   "turns": 2,
+   "account_tier": "standard",
+   "user_followup": "negative",
+   "escalated_to_human": false,
+   "abandoned": true,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "tone_mismatch",
+   "policy_violation": null,
+   "severity": 1
+  }
+ },
+ {
+  "id": 54,
+  "time": "16:50",
+  "customer": "the engineer turned up and left because 'wrong equipment'. now what",
+  "reply": "The agent followed the correct process, so there's nothing that went wrong on the call.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "support",
+   "new_intent": false,
+   "turns": 4,
+   "account_tier": "standard",
+   "user_followup": "negative",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": true,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "asserts_unbacked",
+   "policy_violation": null,
+   "severity": 2
+  }
+ },
+ {
+  "id": 55,
+  "time": "17:00",
+  "customer": "you've charged an early termination fee on a contract that ended",
+  "reply": "That's worth checking properly. DM us the email on the account and we'll go through the billing history line by line.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "billing",
+   "new_intent": true,
+   "turns": 1,
+   "account_tier": "standard",
+   "user_followup": "negative",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": true,
+   "judge_score": 0.76
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 56,
+  "time": "17:10",
+  "customer": "still no answer on the complaint I raised on the 4th",
+  "reply": "This is handled by a different department.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "support",
+   "new_intent": false,
+   "turns": 4,
+   "account_tier": "standard",
+   "user_followup": "negative",
+   "escalated_to_human": true,
+   "abandoned": true,
+   "mentions_money": false,
+   "judge_score": 0.22
+  },
+  "hidden": {
+   "failure": "no_next_step",
+   "policy_violation": null,
+   "severity": 1
+  }
+ },
+ {
+  "id": 57,
+  "time": "17:20",
+  "customer": "SIM stopped working overnight. no signal at all, tried another phone",
+  "reply": "Worth checking whether it's the line or the equipment. DM us the account number and we'll look at the drop history.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "connection",
+   "new_intent": false,
+   "turns": 4,
+   "account_tier": "standard",
+   "user_followup": "positive",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": 0.69
+  },
+  "hidden": {
+   "failure": null,
+   "policy_violation": null,
+   "severity": 0
+  }
+ },
+ {
+  "id": 58,
+  "time": "17:30",
+  "customer": "I want to escalate this. who is above the support team.",
+  "reply": "The case is with the technical team and they'll call you back within two hours.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "support",
+   "new_intent": true,
+   "turns": 2,
+   "account_tier": "standard",
+   "user_followup": "positive",
+   "escalated_to_human": false,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "asserts_unbacked",
+   "policy_violation": null,
+   "severity": 2
+  }
+ },
+ {
+  "id": 59,
+  "time": "17:40",
+  "customer": "the router you sent is dead out of the box. flashing red, nothing else.",
+  "reply": "The parcel was signed for at the address on Tuesday, so it's been delivered.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "delivery",
+   "new_intent": false,
+   "turns": 8,
+   "account_tier": "standard",
+   "user_followup": "none",
+   "escalated_to_human": true,
+   "abandoned": true,
+   "mentions_money": false,
+   "judge_score": null
+  },
+  "hidden": {
+   "failure": "asserts_unbacked",
+   "policy_violation": null,
+   "severity": 2
+  }
+ },
+ {
+  "id": 60,
+  "time": "17:50",
+  "customer": "how long does a fault ticket normally take, mine is 9 days old",
+  "reply": "We are so, so sorry. We sincerely apologise for the inconvenience, and we apologise for any frustration this has caused.",
+  "meta": {
+   "prompt_version": "v4",
+   "intent": "support",
+   "new_intent": false,
+   "turns": 1,
+   "account_tier": "priority",
+   "user_followup": "none",
+   "escalated_to_human": true,
+   "abandoned": false,
+   "mentions_money": false,
+   "judge_score": 0.52
+  },
+  "hidden": {
+   "failure": "tone_mismatch",
+   "policy_violation": null,
+   "severity": 1
+  }
+ }
+]

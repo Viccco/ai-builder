@@ -1,0 +1,10 @@
+.DS_Store
+__pycache__/
+*.pyc
+.env
+.venv/
+
+# the learner's own work stays local unless they choose to commit it
+workbook/*
+!workbook/.gitkeep
+!workbook/README.md

@@ -1,0 +1,802 @@
+[
+ {
+  "input": "y’all lie about your “great” connection. 5 bars LTE, still won’t load something. Smh.",
+  "output": "H there! we would definitely like to work with you on this, how long have you been eeriencing this issue?"
+ },
+ {
+  "input": "Since I signed up with you....Since day 1",
+  "output": "We understand your concerns and we would like for you to please send us a Direct Message, so that we can further assist you."
+ },
+ {
+  "input": "You gonna magically change your connectivity for me and my whole family ?",
+  "output": "This is saddening to hear. Please shoot us a DM, so that we can look into this for you."
+ },
+ {
+  "input": "whenever I contact customer support, they tell me I have shortcode enabled on my account, but I have never in the 4 years I have tried",
+  "output": "Please send me a private message so that I can send you the link to access your account."
+ },
+ {
+  "input": "actually that is a broken link you sent me and incorrect information",
+  "output": "The information pertaining to the account assumption is correct. This does need to be done at a local outlet wit..."
+ },
+ {
+  "input": "That is INCORRECT information I have the form in front of me that is faxed overmaybe you need to maintain up to date information",
+  "output": "What information is incorrect?"
+ },
+ {
+  "input": "Would you like me to email you a copy of one since Spectrum is not updating your training?",
+  "output": "Our department is part of the corporate office. If you are particular area has gone to this format, we were unawa..."
+ },
+ {
+  "input": "I received this from your corporate office would you like a copy?",
+  "output": "No thank you."
+ },
+ {
+  "input": "Yo , your customer service reps are super nice— but I am going to start trippin if y’all don’t get my service going!",
+  "output": "Hello, My apologies for any frustrations or inconvenience. I’d be happy to look into this for you?"
+ },
+ {
+  "input": "My picture on pretty much every day. Why should I pay 171 per month?",
+  "output": "I apologize for the inconvenience. I will be glad to assist you. Can you message me your Name and acct or phone ?"
+ },
+ {
+  "input": "somebody from please help meeeeee I am having the worst luck with your customer service",
+  "output": "Help has arrived! We are sorry to see that you are having trouble. How can we help?"
+ },
+ {
+  "input": "I finally got someone that helped me, thanks!",
+  "output": "Awesome! If you ever need us we are just a tweet away."
+ },
+ {
+  "input": "My friend is without internet we need to play videogames together please our skills diminish every moment without internetz",
+  "output": "Have your friend message us."
+ },
+ {
+  "input": "MD. And this was sent to the wrong address",
+  "output": "Please follow and message us so that we can look into this order."
+ },
+ {
+  "input": "What else can I provide? They refuse to help me because they cannot validate the account...",
+  "output": "We would not be able to verify anything without authenticating your account."
+ },
+ {
+  "input": "How? I have my phone number and email, that is it. How did I get equipment and service? I am literally trying to pay and nobody can find me?",
+  "output": "We can use the order number to locate the account but will need to do so in our secure one on one chat. Please follow and message us."
+ },
+ {
+  "input": "Cuts out every 20 minutes this is ridiculous",
+  "output": "Are all your services cutting out?"
+ },
+ {
+  "input": "Just randomly boots me offline there it goes again",
+  "output": "Did the lights change on the router when this happened?"
+ },
+ {
+  "input": "Don’t know, router is downstairs. But it’s just the WiFi Nothing connected to Ethernet",
+  "output": "Is the light on top red?"
+ },
+ {
+  "input": ". gtAll of VERIZON IS DOWNlt When can we eect a fix ?",
+  "output": "In what area are you located? All of your services are down at this time?"
+ },
+ {
+  "input": "fix your app it will not even open",
+  "output": "Which app are you referring too?"
+ },
+ {
+  "input": "I do not fit in my Veggie Burrito costume Halloween",
+  "output": "I still think you look great! Becky"
+ },
+ {
+  "input": "messed up today and didn’t give me my 3 burrito although I was dressed up",
+  "output": "I am so sorry about that. Please tell us more so we can help Becky"
+ },
+ {
+  "input": "hey wanna come to Mammoth. I will at least eat there once a week i promise",
+  "output": "Hopefully we will get there at some point! Becky"
+ },
+ {
+  "input": "When you are the only one in costume boorito",
+  "output": "it is because you are smart. Tara"
+ },
+ {
+  "input": "I had excellent service tonight too! Plenty of people on the line, went very fast, everyone was kind!",
+  "output": "Guac on! I am happy it was such a great eerience. Becky"
+ },
+ {
+  "input": "no Diet Coke and a literal bone this Boorito was extra spooky!",
+  "output": "that is incredibly concerning. Please tell us more here Becky"
+ },
+ {
+  "input": "Happy Halloween! Since I am too old to trick or treat I now look forward to 3 booritos at I got mine earlier, did you?",
+  "output": "I mean, Boorito is basically the adult version of Halloween... Becky"
+ },
+ {
+  "input": "By The Way giving out 3 burritos if you dress up for Halloween Call your Chipotle to make sure, they’re doing it select ones",
+  "output": "All of our U.S. locations are participating! Becky"
+ },
+ {
+  "input": "can I dress up as myself and still qualify for a BOORITO?",
+  "output": "Give it a try. Tara"
+ },
+ {
+  "input": "Every year, my trickortreating routine is walking to Chipotle, spending 3 dollars and walking back home.",
+  "output": "that is the best kind of trickortreating. All treats, my friend. Becky"
+ },
+ {
+  "input": "this is nasty. A used napkin in someones food",
+  "output": "that is incredibly concerning. Please provide more details so we can investigate Becky"
+ },
+ {
+  "input": "3 burritos and I’m nowhere near a ‍♂️",
+  "output": "Bummer. I am so sorry. How far away is the closest location? Becky"
+ },
+ {
+  "input": "Considering walking to in my llama onesie alone happy Halloween",
+  "output": "You will not be alone – we will be there with you. Also, I want that llama onesie. Becky"
+ },
+ {
+  "input": "Thanks Becky! Just feeling sorry for myself because my fiancé is driving from D.C. To Mississippi tonight",
+  "output": "Whoa – that does not sound like a fun road trip. we will be here with you every step of the way, though! Becky"
+ },
+ {
+  "input": "name a better halloween duo speedwaybrick UTtranscript",
+  "output": "I love it! Thanks so much for stopping by. Becky"
+ },
+ {
+  "input": "So, what is the november ps plus free game?",
+  "output": "There is no info to share at the moment. Feel free to keep an eye on the PS Blog for news and updates"
+ },
+ {
+  "input": "I bought Lego Star Wars in the PlayStation store but it will not let me download it because the data is corrupted..",
+  "output": "Sorry for the inconvenience. Do you see the data corrupted message when you try to open the game or download it?"
+ },
+ {
+  "input": "It was when I would go to download it. I just waited a few hours till after I bought it and it downloaded now.",
+  "output": "Glad to know that is downloading, please feel free to contact us if you have further concerns."
+ },
+ {
+  "input": "can i block a community from sending me invites to something i dont want to join",
+  "output": "Glad to help. Please share the details of this issue in our Community forum for further investigation"
+ },
+ {
+  "input": "We had to have a Count Colin xx...",
+  "output": "Glad you had fun, Sarah! We heard Count Collin can really suck the life out of the party . . ."
+ },
+ {
+  "input": "‘Ere , never mind avocado How’s about ‘ave a word? Is it really necessary? The pair of ‘em were suffocating.",
+  "output": "we have let our team know we can do better, Joel. Thanks for sharing"
+ },
+ {
+  "input": "y do they charge you for a meat bag at colliers woods branch. If you buy meat you r required to supply customers a free bag. Poor service.",
+  "output": "we are only obligated to provide bags for unpackaged meat. As ours is prepackaged, a charge will be applied"
+ },
+ {
+  "input": "Raw meat!!!! It’s does not say unwrapped raw meat!!! Sainsbury’s don’t charge nor do Waitrose so y do you?!",
+  "output": "As our packaging is sufficient, any extra wrappings or bags does require an extra 5p charge as per legislation. Thanks"
+ },
+ {
+  "input": "Excellent Halloweening countcolin halloween food",
+  "output": "Love the aesthetic of your Colin the Creeperpillar and someday...."
+ },
+ {
+  "input": "hi, having trouble making purchases on Xbox one store for fifa points, can you help?",
+  "output": "Hello, Josh! To get better assistance and support, we suggest that you post a tweet or message our friends from ."
+ },
+ {
+  "input": "I need assistance recovering 2 hotmail accounts. I have filled the recovery forms but am told am not providing enough info",
+  "output": "Help is here. To assist you in recovering your account we recommend that you contact our Answer desk team"
+ },
+ {
+  "input": "umm someone is streaming WWII with 500 viewers",
+  "output": "It appears this has been removed. Thanks for letting me know"
+ },
+ {
+  "input": "can you still pre oder ww2 on the playstation store",
+  "output": "Yes you can pre order the game on the console store. For more information please contact your console store."
+ },
+ {
+  "input": "I am trying to buy the digital deluxe edition on the ps store but I keep receiving an error message",
+  "output": "Hello there. Sorry for the late response. I am just checking if you still in need assistance. Please let me know."
+ },
+ {
+  "input": "Are yous going to update COD Zombies on IOS for IOS 11.",
+  "output": "Good afternoon William, unfortunately this app is no longer supported. Sincerest apologies."
+ },
+ {
+  "input": "Why was there a half gig update for world at war?",
+  "output": "Good afternoon Jayden, sadly we do not have information on that. Sincerest apologies."
+ },
+ {
+  "input": "I got all of my Your sex and age reset on MWR and I do not know why. please help!!!",
+  "output": "Can you please give me your gamertag / platform you are playing on so I can pull up your account information."
+ },
+ {
+  "input": "Will non season pass holders get the bobus man Carentan at any point? Or not at all?",
+  "output": "Unfortunately we do not have any information on this. Please stay tuned for more updates."
+ },
+ {
+  "input": "Pretty much elained my issue in the quoted tweet... dragging an image onto a canvas no longer center snaps it...",
+  "output": "Hi Jason, could you please try resetting the preferences of Photoshop amp let us know if it helps with the issue"
+ },
+ {
+  "input": "the ctrlaltshift on load method did not work.",
+  "output": "Sorry that this is not more simple... let us know if the steps in the video work out or if you need further help Madison"
+ },
+ {
+  "input": "did not work. Tried it on another computer, fresh install, same thing...",
+  "output": "Would you please message the Adobe Product amp your purchase details that you have so that we can ask our eerts to follow up. Raj"
+ },
+ {
+  "input": "whats going on with your app. its totally stuck here for 1 hour and prior to updating froze and didnt work since updating.",
+  "output": "Hi Jeffrey, were you able to update to Lightroom Classic CC? Tanuj"
+ },
+ {
+  "input": "yes ive done that multiple times. its happened on previous versions as well.",
+  "output": "Thanks for confirming. we are looping in an eert who can help you out here. They will reply as soon as they are available. Madison"
+ },
+ {
+  "input": "can I change me sons Xbox live account to his Hotmail account, currently linked to my Hotmail account",
+  "output": "Hi, you can change your Microsoft account email through the steps here . If the email your son wants to change to is already associated with a Microsoft account, you will need to follow those steps to switch the email address on that account too."
+ },
+ {
+  "input": "Did You release an update today for Lightroom Classic CC?",
+  "output": "Hi there, Lightroom 7.0.1 update was launched recently, please update the app to the latest version."
+ },
+ {
+  "input": "Please tell me why my has eired, but I’m still being charged????",
+  "output": "Hi there, please message us you Adobe id so that we may have a quick look at your account details. Tanuj"
+ },
+ {
+  "input": "are there any plans to add a fast crop mode for the iPad version of LR? It takes too many taps and slows down workflow.",
+  "output": "Hi there, you may suggest it as a feature request at . Tanuj"
+ },
+ {
+  "input": "So apparently the new version of has this cool feature where you cannot eort SVGs. Sick update guys.",
+  "output": "Hi Keelin, Sorry for the inconvenience. I am able to eort SVG in AI CC 2018. Would you mind sharing your workflow, sample file/screenshot?"
+ },
+ {
+  "input": "Seems pretty widespread do not mean to be a jerk, but it is frustrating when an update breaks core functionality.",
+  "output": "Unfortunately, we are not able to reproduce it at our end. I will still be checking with the development team to find out more on this."
+ },
+ {
+  "input": "It’s intermittent for me. This file fails reliably The “Create subfolder” option just makes an empty “svg” folder",
+  "output": "Thanks for sharing the file, we will get back to you with updates as we investigate. Wren"
+ },
+ {
+  "input": "your online forum is always broken even when I clear my cookies.",
+  "output": "Hi Lauren, can you try changing your forum screen name at That should do the trick! Madison"
+ },
+ {
+  "input": "InDesign 13.0 is eorting all PDFs with blurry links, but links are not missing in INDD file. JPG eort is not blurry. Help!",
+  "output": "Hi Jake, any screenshots you can share? What are you eort settings? Is this happening on all files with links? Wren"
+ },
+ {
+  "input": "Here is an example of an eort before and after. Eort settings are unchanged from default. No, only some files.",
+  "output": "Hi Jack, is there any way you could send me a file to try eorting on my end to try and replicate? Wren"
+ },
+ {
+  "input": "Quand ton ne ressemble pas à celui que tu as réservé, amp quen dêtre sale et en soussol, tu te retrouves à 10 dans 1 logement !",
+  "output": "Hi there, we would like to help. Please message us your accounts email and reservation code so we can further assist. Thank you."
+ },
+ {
+  "input": "I have just sent you a message with details. Thanks for your help",
+  "output": "Thank you for that. We have responded to your message with more information."
+ },
+ {
+  "input": "Misrepresentation by host. Asked them to cancel my reservation and refund me over AUD1700 strict policy. No response. Please help.",
+  "output": "We are sorry to hear this. Please message your email address and reservation code so we can look into this for you. Thank you."
+ },
+ {
+  "input": "redeemed a code for fifa points this afternoon and still have not got it. Why is this?",
+  "output": "Hello! Would you mind following us and sending a message with your gamertag and the code you redeemed?"
+ },
+ {
+  "input": "the 5 app on Xboxes not working error code 200, done a power cycle and still the same? Please fix app",
+  "output": "Can you show us what is appearing on your screen?"
+ },
+ {
+  "input": "my colleagues for more info on how this is affecting services, thanks.",
+  "output": "Hi. Emergency services are dealing with an incident, info here"
+ },
+ {
+  "input": "CAS19708536CB92N2 CRM0326600 Please check on this I have not heard from my case officer in weeks and provided all docs.",
+  "output": "We have replied to you via DM. Check it out Yana"
+ },
+ {
+  "input": "Hi Yana I don’t have any DMs from you. Did you mean email?",
+  "output": "Hi Emma, Could you please follow us so we can message you again with the email reply sent to you Yana"
+ },
+ {
+  "input": "Why are you not refunding my trip to Bali for Volcano eruption!!! Urgently refund!!",
+  "output": "Hi Ashutosh , Could you provide us the booking number for further checking. Thanks Khairul"
+ },
+ {
+  "input": "Fresh cream palmier bakery Bellshill gets my vote for star baker ‍just catching up on gbbo17 don’t know who won yet",
+  "output": "Please do not tell me Carol!! I cannot wait to go home amp find out!! Chloe"
+ },
+ {
+  "input": "Aahhrrgh! Keep mum, I’m still watching",
+  "output": "do not you worry Carol, my lips are shut!! Chloe"
+ },
+ {
+  "input": "so fed up of this very familiar sight at Houghton Regis. Get more staff amp stock the place properly. This is just a small example",
+  "output": "Hi there, sorry about that. Please message me when you visited the store and I will look into this. Thanks Kirsty"
+ },
+ {
+  "input": "that is pointless as it is every day, all the time. No matter when I go in. I speak 2the management who r as fed up as I am. they have no staff.",
+  "output": "So sorry! Could you send me what store this is in so we can get this to the right people? Janay"
+ },
+ {
+  "input": "3 for £6, unless one is reduced hidden label on the side! then it’s 3 for £6.14. Don’t care about the 14p but feel ripped off!",
+  "output": "store you bought it from, along with your address and More Card number and I will get this sorted for you. Thanks Kirsty"
+ },
+ {
+  "input": "I am new to nike run club app, should i start with guided runs or my couch?",
+  "output": "While the Coach plans can be weeks in time. it is up to you to decide what fits you best."
+ },
+ {
+  "input": "Thought Amex values their customers. But boy you got really bad reps on the customer service.",
+  "output": "Hi there, I am so sorry to her that. what exactly is the issue you are having?"
+ },
+ {
+  "input": "Nope. They weren’t ready to listen what I wanted to say and if I had any questions about anything else and hung up on me.",
+  "output": "I am so sorry to hear that. Which U.S. based card do you have? Pls do not share any personal info."
+ },
+ {
+  "input": "Amex Platinum and Amex everyday card.",
+  "output": "What exactly is the issue you are having?"
+ },
+ {
+  "input": "I’ve asked your sales rep about the payments and she wasn’t ready to listen to any issues that I had.",
+  "output": "Apologies for all of the issues. If you have time to chat securely with me, I would be happy to review. Rachel"
+ },
+ {
+  "input": "Sure. Please drop me a message now.",
+  "output": "Great. Please go to log in and select code 10307 and we will continue our conversation there."
+ },
+ {
+  "input": "I cant Connect my Interactive Broker Canada with yahoo finance App in ios 11, Any suggestions.. ??",
+  "output": "Hi are you receiving an error message when trying to link the account?"
+ },
+ {
+  "input": "I have to be at work at 2pm tomorrow. My new phone is being overnighted but it may not be there until then. I have no other ride.",
+  "output": "Hi there, thanks for reaching out. Please send us a message so we can continue our conversation."
+ },
+ {
+  "input": "whats wrong w/ amazon leavin shit outside like ups...",
+  "output": "Please let us know how we can help and message your tracking using this link."
+ },
+ {
+  "input": "i booked my flight using delta amex card. Checking in now amp was being charged for baggage",
+  "output": "Glad to check. Pls, message your confirmation number for assistance."
+ },
+ {
+  "input": "My grandmas laying Poolside thanks to delicious New ButtermilkCrispyTenders",
+  "output": "do not forget this Sunday is Bring Your Grandma to McDonalds Day. See you then!"
+ },
+ {
+  "input": "Way to drop the ball on customer service so pissed right now!",
+  "output": "I am sorry we have let you down! Without providing any personal information, will you describe the issue? we would love to help."
+ },
+ {
+  "input": "3 different people have given 3 different answers and I still do not have my order. Says delivered Saturday, was not, I was home all day",
+  "output": "we would like to take a further look into this with you! Please reach us by phone or chat here"
+ },
+ {
+  "input": "I want my amazon payments account CLOSED. message me please.",
+  "output": "I am unable to affect your account via Twitter. For real time support, phone or chat use this link"
+ },
+ {
+  "input": "also, beim Addams FamilyFilm in Prime sind Bild und Ton nicht wirklich synchron. Wie kommts?",
+  "output": "Hi, wir erhalten die Filme/Serien so vom jeweiligen Studio. Gebe ich aber direkt als Feedback dorthin weiter. Gruß"
+ },
+ {
+  "input": "my package was ‘accidentally’ opened.. 4 items missing worth £97. You need better delivery drivers!!",
+  "output": "I am sorry your order arrived in this condition! Please reach out to us for available options"
+ },
+ {
+  "input": "why is my order at my local courier for the last 6 days and still hasn’t been delivered to me?? Over 1 week late",
+  "output": "I am sorry for the wait. Please reach out to us so we can take a closer look at this delivery"
+ },
+ {
+  "input": "Thanks for the style advice, look ...I think? Halloween2017 flamingo",
+  "output": "Alexa says both styles are working for you! My vote goes to the Flamingo look!"
+ },
+ {
+  "input": "Bought an Echo Show and it won’t recognize a single account in our household. WTF, guys?",
+  "output": "Oh no, I am sorry for the issues! For troubleshooting, please check out our Echo Help pages here"
+ },
+ {
+  "input": ". Item has not been delivered but tracking says it was handed to me over an hour ago... 2nd time this has happened. Sort it out",
+  "output": "I am so sorry you did not receive your parcel! we would like a chance to look into this with you here"
+ },
+ {
+  "input": "That page is useless doesn’t allow me to state it hasn’t been delivered only tells me it has! How can you sort this out?",
+  "output": "You can also request a call back here Martin"
+ },
+ {
+  "input": "In response to your packing video, this packaging was for a 2ft washing line pole",
+  "output": "Thanks for bringing this to our attention! Please also leave packing feedback here so we may improve."
+ },
+ {
+  "input": "Is it possible to prevent AMZL from delivering my packages moving forward? Stuff is either lost/stolen/broken EVERY time.",
+  "output": "Oh no! We want to hear more about your eerience with AMZL. Please provide your feedback here"
+ },
+ {
+  "input": "I do not want a form to fill out that logs a response no one reads. I want to prevent AMZL from touching my stuff. Possible, or no?",
+  "output": "Is there a current order you are having difficulties with? Please let us know, we would like to help!"
+ },
+ {
+  "input": "Already started the return. UPS gets it from my doorstep tomorrow. Order 11150140704118645",
+  "output": "Provide your details here and my team will escalate the order to Amazon Logistics for feedback."
+ },
+ {
+  "input": ", it’d be nice if the book I waited 4 months for wasn’t damaged inside of an undented box. twinpeaks twin…",
+  "output": "I am sorry your book arrived this way! You can find replacement/refund options here"
+ },
+ {
+  "input": "Already handled, just venting. It was a pretty big bummer.",
+  "output": "Let us know if there’s anything else we can do for you! we are happy to help out any way we can!"
+ },
+ {
+  "input": "delivery I paid for today,didn’t arrive.why not?i paid enough for it.where is it??I’m unhappy.refund the delivery charge",
+  "output": "Oh no! Please contact us via phone/chat here we are unable to view order details via Twitter."
+ },
+ {
+  "input": "Anna Inspired in idea lab at school to be package being shipped to Narnia! Amazon can go anywhere according to Anna.",
+  "output": "you are not lion! She even shows witch way is up! that is quite the wardrobe!"
+ },
+ {
+  "input": "They sent the feckin order to Germany! Some dozy driver is looking for an address in the wrong country! I am so done with Amazon!",
+  "output": "Oh my! I am sorry for the troubles! Contact us by Phone or Chat amp we will be glad to help!"
+ },
+ {
+  "input": "Yeah idk the shipping company and it says “mike Ziemer” signed for it in the mail room at our building Laughing Out Loud",
+  "output": "that is okay! Thanks for checking! Please contact us by phone or chat and we can look into this"
+ },
+ {
+  "input": "Order 36326936196346. You could not deliver EVEN AFTER A MONTH. You should be ashamed of yourself.",
+  "output": "Please report this to our support team here and we will look into this."
+ },
+ {
+  "input": "Already contacted 34 times in the last month. But all I got was assurance that matter is escalated amp new status will be provided in 1 day!",
+  "output": "Please share your details here and I will get back to you."
+ },
+ {
+  "input": "since when you stop giving 20 off videogame preorders amazon prime members im confused? why?",
+  "output": "We still offer discounts on eligible physical game preorders. For further details on Prime benefits"
+ },
+ {
+  "input": "Just pulled another Amazon delivery out of the bushes since the amzl people can’t walk the extra 2 ft to my door. So tired of this.",
+  "output": "I am sorry we let you down! we would like to make sure this is addressed. Please provide some details here"
+ },
+ {
+  "input": "I️ need answers because it’s annoying",
+  "output": "we would like to look into this with you. Which model do you have and is iOS 11.1 installed? Any steps tried so far?"
+ },
+ {
+  "input": "I️ have an iPhone 7 Plus and yes I️ do",
+  "output": "that is great it has iOS 11.1 as we can rule out being outdated. Any steps tried since this started? Do you recall when it started?"
+ },
+ {
+  "input": "Hey and anyone else who upgraded to ios11.1, are y’all having issues with capital “I️” in the Mail app? As it puts in “A”?",
+  "output": "Hey, let us work together to figure out what is going on. Meet us in message and we will continue from there."
+ },
+ {
+  "input": "hello are all the lines closed for tonight help",
+  "output": "what is going on? we are hapy to help if we can."
+ },
+ {
+  "input": "are the call centres closed for the night?",
+  "output": "we have received your message and will continue there."
+ },
+ {
+  "input": "Hello, internet. Can someone elain why this symbol keeps appearing on my phone and when I️ try to type the letter I️? Also",
+  "output": "you are in the right place we will do all we can to help. To start, let us know what iOS version is installed via message"
+ },
+ {
+  "input": "I’ve got a screenshot saying my iPhoneX is reserved for the 3rd then an email saying it’s the 18th... what happened?",
+  "output": "Go ahead and send us a message please. Let us know the country you are in."
+ },
+ {
+  "input": "Thank you I updated my phone and now it is even slower and barely works. Thank you for ruining my phone.",
+  "output": "we would like to help, but we will need more details. what is happening on your device and which model is it? Do you have iOS 11.1?"
+ },
+ {
+  "input": "I have the iPhone 6s Plus and just did the most recent update.",
+  "output": "To make sure, is iOS 11.1 installed on it currently? Also, any steps tried so far? message us here"
+ },
+ {
+  "input": "Hola necesito urgente la actualización de software. La batería me dura literal medio día ‍♀️",
+  "output": "We offer support via Twitter in English. Get help in Spanish here or join"
+ },
+ {
+  "input": "I need the software update urgently. The battery lasts literally half a day",
+  "output": "Hi there! What type of device are we working with?"
+ },
+ {
+  "input": "Hi! What is going on? Has Youtube lost it? What can be done about it? Thanks for the support!",
+  "output": "We want to help! message us and let us know more about the issues you are having."
+ },
+ {
+  "input": "MY HOME BUTTON DOESN’T WORK IOS11",
+  "output": "Let us help with your Home button. Did this issue start right after iOS 11? Which version of iOS 11 are you running?"
+ },
+ {
+  "input": "Hey ! Last time I downloaded an update my freaking phone gave me hell. Any recommendations?",
+  "output": "we are here to help. Meet us in message and we can check on available options."
+ },
+ {
+  "input": "After update ios1103 no spotify on my lock screen?",
+  "output": "Thanks for reaching out to us. Are you eeriencing the missing app after restating your device?"
+ },
+ {
+  "input": "The app is still there. But no longer able to control it from the lockscreen.",
+  "output": "Just to confirm, this is only happening with Spotify, correct?"
+ },
+ {
+  "input": "I can not find an option to get it there. It was just always there when playing.",
+  "output": "message us the specific iOS version you are running currently and we will continue there."
+ },
+ {
+  "input": "I just need to do something about the battery life because it sucks ass",
+  "output": "We want to help you get your battery life back on track. Please message and we will look at it together."
+ },
+ {
+  "input": "you need to correct false charges from a trip in Lexington KY on Saturday. I want my 13 back lyingdriver theft",
+  "output": "Happy to follow up! Contact us via so we can connect."
+ },
+ {
+  "input": "my driver just drove me to the department of air travel instead of the airport.......... rufkm",
+  "output": "we are here to help! Send us a note here, and our team will be in touch."
+ },
+ {
+  "input": "got this threw my door today went to order... sorry we do not deliver to your area! What!!! Why did I get this then!",
+  "output": "For more info about UberEats availability click here"
+ },
+ {
+  "input": "Literally stranded because of and because there is no support phone number I have to wait from a message from I am dissapointed ‍♂️",
+  "output": "we are sorry to hear this was your eerience. Can you send us a message with your email address so we can connect?"
+ },
+ {
+  "input": "Why is there no phone number ?? I am literally stranded and now I have to wait for an automated reply this is ridiculous",
+  "output": "We have received your message and will follow up with you there."
+ },
+ {
+  "input": "1 hour inside an old Altima that smells and has ripped stain seats, with an ineerienced miami driver standards down now 4 applying!",
+  "output": "we are sorry to hear this was your eerience, Ray. Please contact us via and we will be in touch."
+ },
+ {
+  "input": "on the wrong which I really don’t appreciate. This needs to be investigate and I was simply queuing to pay and the guy pushed in",
+  "output": "Hi Cade, what was my colleagues name? Can you give a description? When were you in our store? Nick"
+ },
+ {
+  "input": "Tall lady 6ft, slim, was on the till about 1510, think she had blonde hair. She served the guy after knowing he didn’t queue up like others",
+  "output": "Hi Cade, thanks so much for sending that over. I have sent an email to the Store Manager to look into this for you."
+ },
+ {
+  "input": "why was not earlier flight offered when I tried to rebook, not cool at all. Just happened to look at moniter after deplaning.",
+  "output": "I am sorry. The earlier flight may not have been available at the time of your scheduled change."
+ },
+ {
+  "input": "I checked daily and flight 1403 was never offered as an option as I most certainly would have made the adjust on my trip.",
+  "output": "My apologies. If that flight never showed up on your search, that would mean it was full."
+ },
+ {
+  "input": "The change flight search option on your website is broken once again.",
+  "output": "I sincerely apologize, our IT team is diligently working on it, we should have it up and working very soon."
+ },
+ {
+  "input": "Thanks for the update! I will check again in an hour or so. FridayismyDiamondqualifyingFlight",
+  "output": "You are welcome."
+ },
+ {
+  "input": ". this has been my inflight studio eerience today. Nothing works except Twitter toobadforyouandme",
+  "output": "Oh, no! Please speak to a member of the flt crew for immediate assistance."
+ },
+ {
+  "input": "I am flying JFKMEXMID tomorrow and you say I am booked in, but it looks like it is just the first leg. Can you check, please?",
+  "output": "Hi, Richard. Can you pls message your confirmation number so I may look into this matter for you? Thanks!"
+ },
+ {
+  "input": "Hi and thanks. Think I just figured this out. Would it be you’re not running the MEXMID flight so I need to check in via AeroMexico?",
+  "output": "Yes, AeroMexico operates that flight so you may checkin with them."
+ },
+ {
+  "input": "delta moves you to message the moment you have a complaint with no results. Just got some bs answers but no real reason why they changed our seating!",
+  "output": "We sincerely apologize for your disappointment. We always strive to create a positive customer eerience."
+ },
+ {
+  "input": "Same again! equipment change no guaranteed seats apologies I’ll message you if you can give me a real answer and no standard bs answers",
+  "output": "I would be glad to look into this for you."
+ },
+ {
+  "input": "OK it was not a full flight, equipment change had nothing to do with comfort class, no disabilities and a handling agent telling customer care would take care of us So please non of these as an excuse! I’ll retwitter your reply! Thanks",
+  "output": "Thanks for your patience."
+ },
+ {
+  "input": "i’m pissed my shuffle and repeat button just don’t fucking work and i’m getting frustrated",
+  "output": "Hey! What device, operating system, and Spotify version are you using? we will see what we can suggest /"
+ },
+ {
+  "input": "iphone 7 and i have the most recent update for spotify",
+  "output": "Thanks. Just to be sure, are you Free or Premium? Also, can you give us more info on what happens when you try using it? /"
+ },
+ {
+  "input": "Premium amp when i️ have it on shuffle it turns off when the song is done and just plays in order and the repeat lights up but doesn’t repeat",
+  "output": "Hmm. Can you try restarting your device by holding the Sleep/Wake Volume Down buttons for 10 seconds? Keep us posted /"
+ },
+ {
+  "input": "doesn’t work and i even tried deleting the app",
+  "output": "Could you send us a message with your accounts email address? we will take a look backstage /"
+ },
+ {
+  "input": "Groove Music quits amp redirect to Spotify. But the W10M App is a bugfest.. Any further Updates possible?",
+  "output": "Hey there! That does not sound good. what is happening exactly? Can you let us know the app version you are using? /"
+ },
+ {
+  "input": "is there a way to find nonelicit songs that are elicit",
+  "output": "Hey Mikey! we are afraid there is no way to filter or search that way, but we will pass that suggestion on to the relevant folks /"
+ },
+ {
+  "input": "Hi ! My flight from MANLHRBWI for Nov. 3 was canceled. I was excited to try your Club 787 product. Only available flight is now to IAD which is a hassle, but rebooked anywaymy only option! Any availability in first class on BA293 for the troubles please?",
+  "output": "caused. we are unable to offer a complimentary upgrade, however we can quote an upgrade if you would like us to? Jane"
+ },
+ {
+  "input": "Sure, how much would an upgrade cost, out of curiosity?",
+  "output": "Please can you message us your booking reference, email address and contact number? We can then look into this for you. Thanks. Jane"
+ },
+ {
+  "input": "will you ever address my complaint/claim? Or, do you just ignore it until the 2 yrs are up?",
+  "output": "email address and contact telephone number. we will look into your complaint and contact you for an update . Oliver"
+ },
+ {
+  "input": "can I just confirm the email that would send passport details to change a name on a ticket is email?",
+  "output": "Hi Sam, that is the correct email. Helen"
+ },
+ {
+  "input": "runway is under maintenance at Delhi from 7 nov. flights have been cancelled. Wanted to know status of BA0257, lhrdel 7nov",
+  "output": "Hi Sreejit, we have no info about this as yet. Please keep an eye online as this will be updated as soon as we know. Helen"
+ },
+ {
+  "input": "heres the news article in case you guys need it. If you have any updates in the future, do share. Thanks.",
+  "output": "Thanks Sreejit, we would recommend checking on Manage My Booking for any updates. Jane"
+ },
+ {
+  "input": "I made two bookings, but only received a confirmation email for one of the flights. Little help?",
+  "output": "Hi David, confirmation emails can take up to 24 hrs. Have you been waiting longer than this? Helen"
+ },
+ {
+  "input": ". tired of getting charged for equipment that was returned months ago. Please stop it.",
+  "output": "I definitely want to make sure your charges are correct. Please message me your address and phone so I can better assist."
+ },
+ {
+  "input": "hi I got some odd text alert from you I do not have your service why would I get alerts",
+  "output": "address, and phone number so I can assist further with this issue. Thanks!"
+ },
+ {
+  "input": "Why does record programs on my DVR from channels I do not subscribe to? Blank recordings. I do not have NBA LP! UpgradeYourSoftware!",
+  "output": "Hello, have you checked your scheduled menu? You may have a series recording scheduled. Matt"
+ },
+ {
+  "input": "Phoenix Suns are on auto record. NBA Team Channel 752 trying to record tonight. I only want regular broadcast games recorded like TiVo does.",
+  "output": "If you set a recording for a sports team it will try to record it on any available network. Matt"
+ },
+ {
+  "input": "Thanks for your reply but that is why I said Update your Software. If knows not to record on an unavailable channel, it is software.",
+  "output": "We can certainly share your feedback moving forward as we are always looking to improve the customer eerience."
+ },
+ {
+  "input": "wow when you want to watch the world series and decides to have an outage!!!!",
+  "output": "and send us a Direct Message with your account information so that I can see what is going on. –"
+ },
+ {
+  "input": "Ben Tennyson and an American Airlines pilot. trunkortreat halloween 2017 diycostume parenting …",
+  "output": "Aww, that is definitely a future pilot in the making! HappyHalloween"
+ },
+ {
+  "input": "I’m sorry, what? It’s going to COST me 50 to transfer 4,000 AA Advantage points to my spouse? this is ridiculous!!",
+  "output": "This is a great option for customers who want to share miles and it is cheaper than having to purchase them."
+ },
+ {
+  "input": "Right, but I earned those. I also shouldn’t have to pay to pass them to my own spouse. You need to change your program.",
+  "output": "we are sorry for your frustration."
+ },
+ {
+  "input": "Heading to London tonight will be there for 5 days doing some exciting stuff get the drinks ready I coming aboard",
+  "output": "it is always a pleasure to have you on board, John. Have a wonderful flight over the pond!"
+ },
+ {
+  "input": "Check out these tiny trickortreaters all dressed up in our NICU. Hey ! We have your youngest pilot in training! Halloween",
+  "output": "Pilots, Potter, Pumpkins and Skeletons...oh my! they are all adorable."
+ },
+ {
+  "input": "Thank you, for playing ThisIsUs and for having great flight attendants on my flight back home!",
+  "output": "we are glad you got to kick back and enjoy a show while flying! Thanks for your kind words."
+ },
+ {
+  "input": "trying to redeem a free tuesday code and its not letting me telling me theres an error can i get help with this?",
+  "output": "Yay for TMobile Tuesdays letss get you taken care of! Send a message my way ErikaHoleman"
+ },
+ {
+  "input": "TMobile So Bs My Internet Stop Working For 3 Hours",
+  "output": "Well, we would be happy to take a look at that and see what is going on, Jenny. message us, we are here to keep you connected. JoanO"
+ },
+ {
+  "input": "No. That opportunity has passed. Bad customer eerience amp Not going back ever again. FAIL",
+  "output": "Hey we are here and we want to help! If you have any questions feel free to shoot us a DM! KatGrisham"
+ },
+ {
+  "input": "The code is not working when applied at checkout. Can you please look into this?",
+  "output": "We want this to work perfectly! Do you have at least 10 photos selected? If not, add another and try. message w/ any questions! ChrisBradstreet"
+ },
+ {
+  "input": "Got it. One of them resized to 4x4. So instead of alerting me it just would not take the coupon code. I resized it and it worked. Thanks.",
+  "output": "You are welcome and thanks for letting us know. If you need anything else we are here for you. HappyTMobileTuesday KennethStone"
+ },
+ {
+  "input": "OK maybe my problem too let me try that resizing.",
+  "output": "We want to help you with this great TMobileTuesday deal! Shoot me a message here AngieShaw"
+ },
+ {
+  "input": "so i wait almost 3 hours and then they are rude and arrogant amp unhelpful after which she is raising a technical case",
+  "output": "If you are unhappy with your eerience on this call please contact us on our website"
+ },
+ {
+  "input": "hi! i need some help with a booking i need to change, and made a mistake on. who can i contact?",
+  "output": "Youd need to contact our Aftersales team on 0344 556 5650 from 8am"
+ },
+ {
+  "input": "Gotta luv finally get 2 call cntr, they tried to charge me £176 for a ticket which can b purchased for £88 online",
+  "output": "When amending a ticket the system would show a fare that matches your previous purchase, but this may be higher"
+ },
+ {
+  "input": "Hi does the new app have an option to buy an open return?",
+  "output": "Yes it does. You need to select the return journey then in the ticket flexibility menu you can select open return"
+ },
+ {
+  "input": "For at least the third time this year, I will miss the meeting I especially took the train for in the first place. So often late. No refund because it doesnt qualify. Next season = car.",
+  "output": "Hi Andy, really sorry to hear this. Which service are you travelling on please?"
+ },
+ {
+  "input": "The 0620 from Euston. Now I am here waiting on the 1900 from Bham int. Also late.",
+  "output": "Sadly the service has been delayed due to a fault on the line"
+ },
+ {
+  "input": "Always some supposedly acceptable reason, yes I get that, but when one uses the trains every week and spends a lot of money, for it to be late regularly is just not acceptable.",
+  "output": "I understand the frustration this causes, Andy"
+ },
+ {
+  "input": "Oh, that is nice. What are you doing about it? What are you targets next year?",
+  "output": "These delays are out of our control, but we do work with Network Rail to try and reduce any problems"
+ },
+ {
+  "input": "What are your targets for next season? I see your prices go up, so I assume you have set performance targets reflective of that.",
+  "output": "We do not have that information here I am afraid Andy"
+ },
+ {
+  "input": "I really hadthe WORST eerience ever from start to finish with will never fly internationally again with them",
+  "output": "we are truly sorry to hear that. Please PM us more info so we can followup with you."
+ },
+ {
+  "input": "Celebrated Halloween on a flight with my pumpkin spice and a delicious free O…",
+  "output": "Happy HalloWN! Bottoms up, Risa!"
+ },
+ {
+  "input": "Thanks to the wonderful crews of flights 1732 amp 560 for getting us from Sacramento to KC safe and sound! YouRock",
+  "output": "We aim to please, Eric! Your love means the world to us, and we cannot wait to share the skies with you again soon!"
+ },
+ {
+  "input": "consider this your 1st reported error",
+  "output": "Please message us a picture of the error you are receiving."
+ },
+ {
+  "input": "Change your password and turn on twostep verification or else you, too, may receive a paypal receipt for a van reversing camera with a random delivery address in Walthamstow.",
+  "output": "Hi Simon! I’m sorry to hear this! Sounds like your account may have been compromised. I strongly advise you to contact our security teams gt if you haven’t already done so, to make sure you do to ensure your account is fully secured."
+ },
+ {
+  "input": "sure will do. Getting refunded by the sellers in the meantime.",
+  "output": "Thanks for the update Simon! Please let us know if there’s anything we can help you with! Have a great day!"
+ }
+]

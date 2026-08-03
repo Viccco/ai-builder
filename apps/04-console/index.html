@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 4: the day console</title>
+<style>
+  :root { color-scheme: light dark; --line: #8884; --dim: #8889; --accent: #4a7fd4; --pass: #2e9e5b; --fail: #d64545; --warn: #d98c1f; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, system-ui, sans-serif; margin: 0; line-height: 1.45; }
+  header { position: sticky; top: 0; z-index: 5; background: Canvas; border-bottom: 1px solid var(--line); padding: .7rem 1rem; display: flex; gap: .7rem; align-items: center; flex-wrap: wrap; }
+  header .grow { flex: 1; }
+  button { font: inherit; font-size: .9rem; padding: .4rem .9rem; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: inherit; cursor: pointer; }
+  button:hover { border-color: var(--dim); }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+  button.primary { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  input, select { font: inherit; font-size: .9rem; padding: .3rem .4rem; border-radius: 7px; border: 1px solid var(--line); background: transparent; color: inherit; }
+  main { max-width: 900px; margin: 0 auto; padding: 1.2rem 1rem 5rem; }
+  .step { border: 1px solid var(--line); border-radius: 12px; padding: 1rem 1.1rem; margin-bottom: 1.1rem; }
+  .step h2 { margin: 0 0 .2rem; font-size: 1.02rem; }
+  .step .sub { color: var(--dim); font-size: .87rem; margin-bottom: .8rem; }
+  .cond { display: flex; align-items: center; gap: .6rem; padding: .3rem 0; font-size: .92rem; }
+  .cond .hits { color: var(--dim); font-size: .82rem; margin-left: auto; white-space: nowrap; }
+  .rule { display: flex; gap: .5rem; align-items: center; margin-bottom: .5rem; flex-wrap: wrap; }
+  .rule input[type=text] { flex: 1; min-width: 14rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .85rem; }
+  .rule .hits { font-size: .8rem; color: var(--dim); }
+  .budget { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-bottom: .7rem; }
+  .queue .card { border: 1px solid var(--line); border-radius: 10px; padding: .7rem .8rem; margin-bottom: .6rem; }
+  .queue .why { font-size: .78rem; color: var(--dim); }
+  .queue .cust { margin: .3rem 0; }
+  .queue .bot { background: #8881; border-radius: 8px; padding: .5rem .6rem; white-space: pre-wrap; }
+  .queue .acts { display: flex; gap: .4rem; margin-top: .5rem; align-items: center; }
+  .queue .acts input[type=text] { flex: 1; }
+  .metrics { display: flex; gap: 1.6rem; flex-wrap: wrap; margin: .6rem 0 1rem; }
+  .metric b { display: block; font-size: 1.4rem; }
+  .metric span { font-size: .78rem; color: var(--dim); }
+  .leak { font-size: .88rem; border-collapse: collapse; width: 100%; }
+  .leak td, .leak th { border: 1px solid var(--line); padding: .3rem .5rem; text-align: left; }
+  .sev3 { color: var(--fail); font-weight: 600; }
+  .note { font-size: .86rem; color: var(--dim); line-height: 1.6; }
+  .warnbox { border-left: 3px solid var(--warn); padding: .5rem .7rem; font-size: .88rem; margin: .7rem 0; }
+  .strip { display: flex; gap: 2px; margin: .5rem 0; }
+  .strip div { flex: 1; text-align: center; font-size: .7rem; color: var(--dim); }
+  .strip .bar { background: var(--line); border-radius: 3px; }
+  .strip .bar i { display: block; background: var(--fail); border-radius: 3px; }
+</style>
+</head>
+<body>
+<header>
+  <strong>Production day</strong>
+  <span class="note" id="status"></span>
+  <span class="grow"></span>
+  <button id="run" class="primary">Run the day</button>
+  <button id="export">Export the day</button>
+  <button id="reset">Reset</button>
+</header>
+
+<main>
+  <div class="step">
+    <h2>1. Sampling policy</h2>
+    <div class="sub">60 exchanges went out today. You can read 12. Decide how many go to a random slice and which conditions claim the rest, in priority order.</div>
+    <div class="budget">
+      <label>Review budget <input type="number" id="budget" min="1" max="30" style="width:4.5rem"></label>
+      <label>of which random <input type="number" id="rand" min="0" style="width:4.5rem"></label>
+      <span class="note" id="split"></span>
+    </div>
+    <div id="conds"></div>
+    <div class="note" style="margin-top:.6rem">Random is the only part of the sample that can find something nobody thought to look for. Targeted is the only part that reliably finds what you already fear. A policy with none of the first goes blind, and a policy with none of the second wastes the budget.</div>
+  </div>
+
+  <div class="step">
+    <h2>2. Guardrails</h2>
+    <div class="sub">Each rule matches text in the reply and carries a decision. Block means it never goes out. Route means a human sends it instead. Flag means it goes out and lands at the top of your review queue.</div>
+    <div id="rules"></div>
+    <div style="margin-top:.5rem">
+      <button id="addRule">+ Rule</button>
+      <button id="suggest">Suggest starting rules</button>
+    </div>
+    <div class="note" style="margin-top:.6rem">Watch the match counts. A rule that fires on a third of traffic is not a guardrail, it is a redesign of the product.</div>
+  </div>
+
+  <div class="step" id="reviewStep">
+    <h2>3. Review what your policy surfaced</h2>
+    <div class="sub">Same call as module 1: would you let this go out under the company name? The point is that you are only seeing what your policy chose to show you.</div>
+    <div id="queue" class="queue"><p class="note">Set the policy, then press "Run the day".</p></div>
+  </div>
+
+  <div class="step" id="resultStep" style="display:none">
+    <h2>4. What actually happened</h2>
+    <div id="results"></div>
+  </div>
+
+  <div class="step" id="regStep" style="display:none">
+    <h2>5. Did quality change today?</h2>
+    <div class="sub">Answer from what you saw, before you look. Guessing here is the exercise.</div>
+    <div class="budget">
+      <label>Quality changed? <select id="rq_changed"><option value="">pick</option><option>no</option><option>yes, it got worse</option><option>yes, it got better</option></select></label>
+      <label>From around trace <input type="number" id="rq_at" min="1" max="60" style="width:5rem"></label>
+      <label>Which mode <input type="text" id="rq_mode" placeholder="e.g. unbacked assertions" style="width:16rem"></label>
+      <button id="rq_go">Check</button>
+    </div>
+    <div id="regOut"></div>
+  </div>
+</main>
+
+<script>
+const DATA = [{"id": 1, "time": "08:00", "customer": "I have been on hold 47 minutes. FORTY SEVEN.", "reply": "Sorry it took that long. DM us the reference and we'll find where it stalled.", "meta": {"prompt_version": "v3", "intent": "support", "new_intent": false, "turns": 1, "account_tier": "standard", "user_followup": "positive", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 2, "time": "08:10", "customer": "third outage this week and nobody tells us anything", "reply": "Worth checking whether it's the line or the equipment. DM us the account number and we'll look at the drop history.", "meta": {"prompt_version": "v3", "intent": "connection", "new_intent": false, "turns": 8, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": 0.8}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 3, "time": "08:20", "customer": "signal in the whole street has been down since 6am, what's going on", "reply": "Send us your postcode in a DM and we'll check what's happening on the network there.", "meta": {"prompt_version": "v3", "intent": "connection", "new_intent": false, "turns": 8, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 4, "time": "08:30", "customer": "took a day off work for the install and no one came", "reply": "Thanks so much for reaching out, we love hearing from our customers!", "meta": {"prompt_version": "v3", "intent": "support", "new_intent": false, "turns": 8, "account_tier": "standard", "user_followup": "negative", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": "tone_mismatch", "policy_violation": null, "severity": 1}}, {"id": 5, "time": "08:40", "customer": "I need a copy of my contract and nobody will send it", "reply": "You can find answers to common questions in our FAQ: help.northline.com/faq", "meta": {"prompt_version": "v3", "intent": "account", "new_intent": false, "turns": 1, "account_tier": "standard", "user_followup": "none", "escalated_to_human": true, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": "no_next_step", "policy_violation": null, "severity": 1}}, {"id": 6, "time": "08:50", "customer": "can I pause my service while I'm abroad for 3 months", "reply": "The case is with the technical team and they'll call you back within two hours.", "meta": {"prompt_version": "v3", "intent": "support", "new_intent": true, "turns": 8, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": 0.49}, "hidden": {"failure": "asserts_unbacked", "policy_violation": null, "severity": 2}}, {"id": 7, "time": "09:00", "customer": "phone line works, broadband doesn't, same socket", "reply": "Yikes! 🙈 That's no fun at all. Hang in there!", "meta": {"prompt_version": "v3", "intent": "support", "new_intent": false, "turns": 4, "account_tier": "priority", "user_followup": "negative", "escalated_to_human": true, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": "tone_mismatch", "policy_violation": null, "severity": 1}}, {"id": 8, "time": "09:10", "customer": "who do I speak to about a formal complaint, the form is broken", "reply": "We appreciate your feedback! Have a wonderful day! 😊", "meta": {"prompt_version": "v3", "intent": "support", "new_intent": false, "turns": 1, "account_tier": "priority", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": "tone_mismatch", "policy_violation": null, "severity": 1}}, {"id": 9, "time": "09:20", "customer": "speed test attached. this is a joke for the money.", "reply": "That charge is from the plan change on the account in March, which is why it looks higher this month.", "meta": {"prompt_version": "v3", "intent": "billing", "new_intent": false, "turns": 4, "account_tier": "standard", "user_followup": "negative", "escalated_to_human": false, "abandoned": false, "mentions_money": true, "judge_score": null}, "hidden": {"failure": "asserts_unbacked", "policy_violation": null, "severity": 2}}, {"id": 10, "time": "09:30", "customer": "when is the outage in the city centre being fixed, it's been 5 hours", "reply": "DM us the account number and the modem model and we'll run a line test while you're connected.", "meta": {"prompt_version": "v3", "intent": "connection", "new_intent": false, "turns": 1, "account_tier": "priority", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 11, "time": "09:40", "customer": "third router in six months. maybe it isn't the router.", "reply": "Post your full street address and your date of birth in this thread and we'll correct the record.", "meta": {"prompt_version": "v3", "intent": "connection", "new_intent": false, "turns": 6, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": null, "policy_violation": "credentials_in_public", "severity": 3}}, {"id": 12, "time": "09:50", "customer": "installation was supposed to be today between 8 and 12. it's 2pm.", "reply": "That's a poor experience and we'd like to see what happened. DM us the ticket number and we'll read the whole thread.", "meta": {"prompt_version": "v3", "intent": "support", "new_intent": true, "turns": 8, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 13, "time": "10:00", "customer": "my final bill is higher than my monthly bill was. explain that", "reply": "If a charge is wrong we'll fix it. DM us the account number and the date on the charge.", "meta": {"prompt_version": "v3", "intent": "billing", "new_intent": false, "turns": 6, "account_tier": "standard", "user_followup": "positive", "escalated_to_human": false, "abandoned": false, "mentions_money": true, "judge_score": null}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 14, "time": "10:10", "customer": "does anyone actually read these messages or is it all automated now", "reply": "The agent followed the correct process, so there's nothing that went wrong on the call.", "meta": {"prompt_version": "v3", "intent": "support", "new_intent": false, "turns": 2, "account_tier": "standard", "user_followup": "none", "escalated_to_human": true, "abandoned": false, "mentions_money": true, "judge_score": null}, "hidden": {"failure": "asserts_unbacked", "policy_violation": null, "severity": 2}}, {"id": 15, "time": "10:20", "customer": "£60 for a 'missed appointment' I was home for. I have doorbell footage.", "reply": "This is handled by a different department.", "meta": {"prompt_version": "v3", "intent": "billing", "new_intent": false, "turns": 1, "account_tier": "standard", "user_followup": "negative", "escalated_to_human": false, "abandoned": false, "mentions_money": true, "judge_score": 0.4}, "hidden": {"failure": "no_next_step", "policy_violation": null, "severity": 1}}, {"id": 16, "time": "10:30", "customer": "why is upload 2mb when I'm paying for symmetric", "reply": "If a charge is wrong we'll fix it. DM us the account number and the date on the charge.", "meta": {"prompt_version": "v3", "intent": "billing", "new_intent": false, "turns": 3, "account_tier": "priority", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": true, "judge_score": null}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 17, "time": "10:40", "customer": "the technician was great but the fault is back the next day", "reply": "Sorry it took that long. DM us the reference and we'll find where it stalled.", "meta": {"prompt_version": "v3", "intent": "support", "new_intent": false, "turns": 3, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 18, "time": "10:50", "customer": "my mum is 82 and has had no phone line for a week. this is not acceptable", "reply": "Thanks for saying so. If it comes back, reply here and we'll pick it up straight away.", "meta": {"prompt_version": "v3", "intent": "support", "new_intent": false, "turns": 8, "account_tier": "standard", "user_followup": "negative", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 19, "time": "11:00", "customer": "the new plan is worse than the old plan and nobody warned me", "reply": "Our support team is available Mon to Fri, 8am to 8pm.", "meta": {"prompt_version": "v3", "intent": "account", "new_intent": false, "turns": 4, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": 0.42}, "hidden": {"failure": "no_next_step", "policy_violation": null, "severity": 1}}, {"id": 20, "time": "11:10", "customer": "cancelled in august, still being charged. this is the fourth time I've asked", "reply": "The credit was already applied last month, so there's nothing outstanding on our side.", "meta": {"prompt_version": "v3", "intent": "billing", "new_intent": false, "turns": 1, "account_tier": "standard", "user_followup": "negative", "escalated_to_human": true, "abandoned": false, "mentions_money": true, "judge_score": 0.54}, "hidden": {"failure": "asserts_unbacked", "policy_violation": null, "severity": 2}}, {"id": 21, "time": "11:20", "customer": "your engineer left a hole in the wall and no explanation", "reply": "This is handled by a different department.", "meta": {"prompt_version": "v3", "intent": "account", "new_intent": false, "turns": 1, "account_tier": "standard", "user_followup": "negative", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": "no_next_step", "policy_violation": null, "severity": 1}}, {"id": 22, "time": "11:30", "customer": "the compensation you offered doesn't cover the days we lost", "reply": "Thanks for saying so. If it comes back, reply here and we'll pick it up straight away.", "meta": {"prompt_version": "v3", "intent": "support", "new_intent": false, "turns": 1, "account_tier": "priority", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": 0.99}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 23, "time": "11:40", "customer": "why is my data being throttled at 4pm every day", "reply": "Worth checking whether it's the line or the equipment. DM us the account number and we'll look at the drop history.", "meta": {"prompt_version": "v3", "intent": "connection", "new_intent": false, "turns": 8, "account_tier": "standard", "user_followup": "positive", "escalated_to_human": false, "abandoned": true, "mentions_money": false, "judge_score": null}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 24, "time": "11:50", "customer": "outage map says everything is fine, my street disagrees", "reply": "Worth checking whether it's the line or the equipment. DM us the account number and we'll look at the drop history.", "meta": {"prompt_version": "v3", "intent": "connection", "new_intent": true, "turns": 8, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 25, "time": "12:00", "customer": "I've been quoted 3 different install dates by 3 different people", "reply": "That's a poor experience and we'd like to see what happened. DM us the ticket number and we'll read the whole thread.", "meta": {"prompt_version": "v3", "intent": "support", "new_intent": true, "turns": 4, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 26, "time": "12:10", "customer": "yr website says my area has fibre. the engineer says it doesn't. who's right", "reply": "Thanks for saying so. If it comes back, reply here and we'll pick it up straight away.", "meta": {"prompt_version": "v3", "intent": "support", "new_intent": false, "turns": 1, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 27, "time": "12:20", "customer": "line noise so bad I can't hear anyone. reported twice.", "reply": "We've applied a $75 credit to the account for the trouble, it's done.", "meta": {"prompt_version": "v3", "intent": "support", "new_intent": false, "turns": 2, "account_tier": "standard", "user_followup": "negative", "escalated_to_human": true, "abandoned": false, "mentions_money": true, "judge_score": null}, "hidden": {"failure": "asserts_unbacked", "policy_violation": "unauthorised_credit", "severity": 3}}, {"id": 28, "time": "12:30", "customer": "3 different agents, 3 different answers about the same charge", "reply": "If a charge is wrong we'll fix it. DM us the account number and the date on the charge.", "meta": {"prompt_version": "v3", "intent": "billing", "new_intent": false, "turns": 1, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": true, "judge_score": null}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 29, "time": "12:40", "customer": "still waiting for the engineer who was booked for tuesday. nobody came. nobody called.", "reply": "Thanks for saying so. If it comes back, reply here and we'll pick it up straight away.", "meta": {"prompt_version": "v3", "intent": "support", "new_intent": false, "turns": 2, "account_tier": "standard", "user_followup": "positive", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 30, "time": "12:50", "customer": "my broadband has been 'being provisioned' for 11 days", "reply": "The case is with the technical team and they'll call you back within two hours.", "meta": {"prompt_version": "v3", "intent": "support", "new_intent": false, "turns": 1, "account_tier": "standard", "user_followup": "negative", "escalated_to_human": false, "abandoned": true, "mentions_money": false, "judge_score": null}, "hidden": {"failure": "asserts_unbacked", "policy_violation": null, "severity": 2}}, {"id": 31, "time": "13:00", "customer": "I was promised a callback yesterday. Nothing.", "reply": "That's a poor experience and we'd like to see what happened. DM us the ticket number and we'll read the whole thread.", "meta": {"prompt_version": "v3", "intent": "support", "new_intent": false, "turns": 1, "account_tier": "standard", "user_followup": "positive", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 32, "time": "13:10", "customer": "Can someone explain what the “equipment fee” on my invoice is for", "reply": "If a charge is wrong we'll fix it. DM us the account number and the date on the charge.", "meta": {"prompt_version": "v3", "intent": "billing", "new_intent": false, "turns": 1, "account_tier": "priority", "user_followup": "positive", "escalated_to_human": false, "abandoned": false, "mentions_money": true, "judge_score": 0.53}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 33, "time": "13:20", "customer": "my bill went up £14 this month and no one can tell me why", "reply": "Great question! 🎉 We're always happy to help!", "meta": {"prompt_version": "v3", "intent": "billing", "new_intent": true, "turns": 1, "account_tier": "priority", "user_followup": "negative", "escalated_to_human": false, "abandoned": false, "mentions_money": true, "judge_score": null}, "hidden": {"failure": "tone_mismatch", "policy_violation": null, "severity": 1}}, {"id": 34, "time": "13:30", "customer": "why does my speed drop to nothing every time it rains", "reply": "The engineer is booked for tomorrow morning and will have you back up before noon.", "meta": {"prompt_version": "v4", "intent": "connection", "new_intent": false, "turns": 8, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": 0.39}, "hidden": {"failure": "asserts_unbacked", "policy_violation": null, "severity": 2}}, {"id": 35, "time": "13:40", "customer": "you disconnected the wrong line. my neighbour has service, I don't.", "reply": "There's no outage in your area, so this is a device problem. Restart the router and it will clear.", "meta": {"prompt_version": "v4", "intent": "connection", "new_intent": false, "turns": 4, "account_tier": "standard", "user_followup": "negative", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": "asserts_unbacked", "policy_violation": null, "severity": 2}}, {"id": 36, "time": "13:50", "customer": "billing says one thing, the app says another, which one do I pay", "reply": "The credit was already applied last month, so there's nothing outstanding on our side.", "meta": {"prompt_version": "v4", "intent": "billing", "new_intent": false, "turns": 2, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": true, "judge_score": null}, "hidden": {"failure": "asserts_unbacked", "policy_violation": null, "severity": 2}}, {"id": 37, "time": "14:00", "customer": "wifi drops every evening around 8. every single evening.", "reply": "We can see the issue, your line was provisioned on the old profile. We've pushed the fix, you'll be stable within the hour.", "meta": {"prompt_version": "v4", "intent": "connection", "new_intent": false, "turns": 3, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": true, "judge_score": null}, "hidden": {"failure": "asserts_unbacked", "policy_violation": null, "severity": 2}}, {"id": 38, "time": "14:10", "customer": "can you confirm whether my cancellation went through, I got no email", "reply": "That flag was set when the account was migrated in January, and we've cleared it now.", "meta": {"prompt_version": "v4", "intent": "account", "new_intent": true, "turns": 1, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": "asserts_unbacked", "policy_violation": null, "severity": 2}}, {"id": 39, "time": "14:20", "customer": "why am I paying for 500mb when I get 40 on a good day", "reply": "We can look at what was charged and why. Send the account number in a DM and we'll come back with the breakdown.", "meta": {"prompt_version": "v4", "intent": "billing", "new_intent": false, "turns": 4, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": true, "judge_score": 0.63}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 40, "time": "14:30", "customer": "why do I need to call to cancel but signing up took 30 seconds online", "reply": "Your contract ended in June, so nothing further is due.", "meta": {"prompt_version": "v4", "intent": "account", "new_intent": false, "turns": 2, "account_tier": "standard", "user_followup": "negative", "escalated_to_human": true, "abandoned": false, "mentions_money": false, "judge_score": 0.41}, "hidden": {"failure": "asserts_unbacked", "policy_violation": null, "severity": 2}}, {"id": 41, "time": "14:40", "customer": "keep getting cut off mid call, both directions", "reply": "Looking at the account, the other person on it (Maria S, number ending 4417) reported the same fault last week, so it's the building.", "meta": {"prompt_version": "v4", "intent": "support", "new_intent": true, "turns": 2, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": 0.25}, "hidden": {"failure": null, "policy_violation": "other_user_data", "severity": 3}}, {"id": 42, "time": "14:50", "customer": "sold me a package that doesn't work at my address. now what.", "reply": "Send us the order number in a DM and we'll find where it is and what happened to it.", "meta": {"prompt_version": "v4", "intent": "delivery", "new_intent": false, "turns": 2, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 43, "time": "15:00", "customer": "your app logged me out and now says my account doesn't exist", "reply": "Thanks so much for reaching out, we love hearing from our customers!", "meta": {"prompt_version": "v4", "intent": "account", "new_intent": false, "turns": 4, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": true, "judge_score": 0.36}, "hidden": {"failure": "tone_mismatch", "policy_violation": null, "severity": 1}}, {"id": 44, "time": "15:10", "customer": "getting texts about a service I never signed up to", "reply": "The case is with the technical team and they'll call you back within two hours.", "meta": {"prompt_version": "v4", "intent": "support", "new_intent": false, "turns": 3, "account_tier": "standard", "user_followup": "none", "escalated_to_human": true, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": "asserts_unbacked", "policy_violation": null, "severity": 2}}, {"id": 45, "time": "15:20", "customer": "moved house 3 weeks ago and the transfer still hasn't happened", "reply": "DM us the account email and we'll look at what's actually set on the account.", "meta": {"prompt_version": "v4", "intent": "account", "new_intent": false, "turns": 8, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 46, "time": "15:30", "customer": "the app just spins when I try to log in. android, latest version", "reply": "The request went through this morning, the account is already updated on our side.", "meta": {"prompt_version": "v4", "intent": "account", "new_intent": false, "turns": 1, "account_tier": "standard", "user_followup": "negative", "escalated_to_human": true, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": "asserts_unbacked", "policy_violation": null, "severity": 2}}, {"id": 47, "time": "15:40", "customer": "asked for a paper bill 4 times, still getting emails only", "reply": "We can look at what was charged and why. Send the account number in a DM and we'll come back with the breakdown.", "meta": {"prompt_version": "v4", "intent": "billing", "new_intent": false, "turns": 1, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": true, "judge_score": 0.64}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 48, "time": "15:50", "customer": "you took two payments this month. I want one of them back today", "reply": "The credit was already applied last month, so there's nothing outstanding on our side.", "meta": {"prompt_version": "v4", "intent": "billing", "new_intent": false, "turns": 8, "account_tier": "standard", "user_followup": "negative", "escalated_to_human": false, "abandoned": false, "mentions_money": true, "judge_score": null}, "hidden": {"failure": "asserts_unbacked", "policy_violation": null, "severity": 2}}, {"id": 49, "time": "16:00", "customer": "can I get a refund for the days I had no service last week", "reply": "We've gone ahead and waived this month's fee for the trouble, you'll see it on the next bill.", "meta": {"prompt_version": "v4", "intent": "billing", "new_intent": false, "turns": 3, "account_tier": "standard", "user_followup": "negative", "escalated_to_human": false, "abandoned": false, "mentions_money": true, "judge_score": null}, "hidden": {"failure": "asserts_unbacked", "policy_violation": null, "severity": 2}}, {"id": 50, "time": "16:10", "customer": "does the new plan include the hub or is that extra", "reply": "We appreciate your feedback! Have a wonderful day! 😊", "meta": {"prompt_version": "v4", "intent": "account", "new_intent": false, "turns": 1, "account_tier": "standard", "user_followup": "negative", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": "tone_mismatch", "policy_violation": null, "severity": 1}}, {"id": 51, "time": "16:20", "customer": "internet fine, tv box says no signal since the update last night", "reply": "Send us the order number in a DM and we'll find where it is and what happened to it.", "meta": {"prompt_version": "v4", "intent": "delivery", "new_intent": true, "turns": 3, "account_tier": "standard", "user_followup": "none", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 52, "time": "16:30", "customer": "charged for roaming when I never left the country", "reply": "Post your full street address and your date of birth in this thread and we'll correct the record.", "meta": {"prompt_version": "v4", "intent": "billing", "new_intent": false, "turns": 4, "account_tier": "priority", "user_followup": "negative", "escalated_to_human": false, "abandoned": false, "mentions_money": true, "judge_score": null}, "hidden": {"failure": null, "policy_violation": "credentials_in_public", "severity": 3}}, {"id": 53, "time": "16:40", "customer": "how do I stop these marketing texts, STOP doesn't work", "reply": "Thanks so much for reaching out, we love hearing from our customers!", "meta": {"prompt_version": "v4", "intent": "support", "new_intent": false, "turns": 2, "account_tier": "standard", "user_followup": "negative", "escalated_to_human": false, "abandoned": true, "mentions_money": false, "judge_score": null}, "hidden": {"failure": "tone_mismatch", "policy_violation": null, "severity": 1}}, {"id": 54, "time": "16:50", "customer": "the engineer turned up and left because 'wrong equipment'. now what", "reply": "The agent followed the correct process, so there's nothing that went wrong on the call.", "meta": {"prompt_version": "v4", "intent": "support", "new_intent": false, "turns": 4, "account_tier": "standard", "user_followup": "negative", "escalated_to_human": false, "abandoned": false, "mentions_money": true, "judge_score": null}, "hidden": {"failure": "asserts_unbacked", "policy_violation": null, "severity": 2}}, {"id": 55, "time": "17:00", "customer": "you've charged an early termination fee on a contract that ended", "reply": "That's worth checking properly. DM us the email on the account and we'll go through the billing history line by line.", "meta": {"prompt_version": "v4", "intent": "billing", "new_intent": true, "turns": 1, "account_tier": "standard", "user_followup": "negative", "escalated_to_human": false, "abandoned": false, "mentions_money": true, "judge_score": 0.76}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 56, "time": "17:10", "customer": "still no answer on the complaint I raised on the 4th", "reply": "This is handled by a different department.", "meta": {"prompt_version": "v4", "intent": "support", "new_intent": false, "turns": 4, "account_tier": "standard", "user_followup": "negative", "escalated_to_human": true, "abandoned": true, "mentions_money": false, "judge_score": 0.22}, "hidden": {"failure": "no_next_step", "policy_violation": null, "severity": 1}}, {"id": 57, "time": "17:20", "customer": "SIM stopped working overnight. no signal at all, tried another phone", "reply": "Worth checking whether it's the line or the equipment. DM us the account number and we'll look at the drop history.", "meta": {"prompt_version": "v4", "intent": "connection", "new_intent": false, "turns": 4, "account_tier": "standard", "user_followup": "positive", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": 0.69}, "hidden": {"failure": null, "policy_violation": null, "severity": 0}}, {"id": 58, "time": "17:30", "customer": "I want to escalate this. who is above the support team.", "reply": "The case is with the technical team and they'll call you back within two hours.", "meta": {"prompt_version": "v4", "intent": "support", "new_intent": true, "turns": 2, "account_tier": "standard", "user_followup": "positive", "escalated_to_human": false, "abandoned": false, "mentions_money": false, "judge_score": null}, "hidden": {"failure": "asserts_unbacked", "policy_violation": null, "severity": 2}}, {"id": 59, "time": "17:40", "customer": "the router you sent is dead out of the box. flashing red, nothing else.", "reply": "The parcel was signed for at the address on Tuesday, so it's been delivered.", "meta": {"prompt_version": "v4", "intent": "delivery", "new_intent": false, "turns": 8, "account_tier": "standard", "user_followup": "none", "escalated_to_human": true, "abandoned": true, "mentions_money": false, "judge_score": null}, "hidden": {"failure": "asserts_unbacked", "policy_violation": null, "severity": 2}}, {"id": 60, "time": "17:50", "customer": "how long does a fault ticket normally take, mine is 9 days old", "reply": "We are so, so sorry. We sincerely apologise for the inconvenience, and we apologise for any frustration this has caused.", "meta": {"prompt_version": "v4", "intent": "support", "new_intent": false, "turns": 1, "account_tier": "priority", "user_followup": "none", "escalated_to_human": true, "abandoned": false, "mentions_money": false, "judge_score": 0.52}, "hidden": {"failure": "tone_mismatch", "policy_violation": null, "severity": 1}}];  // embedded by tools/embed_data.py from data/production_stream.json
+const KEY = "aipm.m4.state";
+
+const CONDITIONS = [
+  { id: "escalated", label: "escalated to a human", test: t => t.meta.escalated_to_human },
+  { id: "negative", label: "customer replied negatively", test: t => t.meta.user_followup === "negative" },
+  { id: "abandoned", label: "customer abandoned the conversation", test: t => t.meta.abandoned },
+  { id: "long", label: "5 turns or more", test: t => t.meta.turns >= 5 },
+  { id: "money", label: "money mentioned (charge, credit, refund)", test: t => t.meta.mentions_money },
+  { id: "newintent", label: "intent we have not seen before", test: t => t.meta.new_intent },
+  { id: "priority", label: "priority account", test: t => t.meta.account_tier === "priority" },
+  { id: "judge", label: "offline judge scored it below 0.5 (runs on a third of traffic)", test: t => t.meta.judge_score !== null && t.meta.judge_score < 0.5 },
+  { id: "newest", label: "newest prompt version in production", test: t => t.meta.prompt_version === newestVersion() },
+];
+
+const SUGGESTED = [
+  { pattern: "password|card number|date of birth|social security|security question", decision: "block" },
+  { pattern: "we've applied|credit to the account|waived|refund(ed)? you", decision: "route" },
+  { pattern: "no outage|our records show|we can see the issue", decision: "flag" },
+];
+
+const $ = s => document.querySelector(s);
+const esc = s => (s === null || s === undefined) ? "" : String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+const fresh = () => ({ budget: 12, rand: 4, conds: ["escalated", "judge"], rules: [], reviews: {}, ran: false, reg: null });
+let S = Object.assign(fresh(), JSON.parse(localStorage.getItem(KEY) || "{}"));
+const save = () => localStorage.setItem(KEY, JSON.stringify(S));
+
+function newestVersion() {
+  return DATA.map(t => t.meta.prompt_version).sort().slice(-1)[0];
+}
+
+function rx(pattern) {
+  try { return new RegExp(pattern, "i"); } catch (e) { return null; }
+}
+
+function ruleHits(rule) {
+  const re = rx(rule.pattern);
+  if (!re || !rule.pattern.trim()) return [];
+  return DATA.filter(t => re.test(t.reply));
+}
+
+function decisionOf(t) {
+  let best = null;
+  S.rules.forEach(r => {
+    const re = rx(r.pattern);
+    if (!re || !r.pattern.trim() || !re.test(t.reply)) return;
+    if (r.decision === "block") best = "block";
+    else if (r.decision === "route" && best !== "block") best = "route";
+    else if (r.decision === "flag" && !best) best = "flag";
+  });
+  return best;
+}
+
+// small seeded shuffle so the random slice is stable between runs
+function seededOrder(list) {
+  let seed = 7;
+  const arr = list.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    seed = (seed * 1103515245 + 12345) % 2147483648;
+    const j = seed % (i + 1);
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function selection() {
+  const blocked = DATA.filter(t => decisionOf(t) === "block");
+  const routed = DATA.filter(t => decisionOf(t) === "route");
+  const handled = new Set([...blocked, ...routed].map(t => t.id));
+  const pool = DATA.filter(t => !handled.has(t.id));
+
+  const budget = Math.max(1, S.budget | 0);
+  const randN = Math.min(Math.max(0, S.rand | 0), budget);
+  const targetN = budget - randN;
+
+  const picked = [];
+  const why = {};
+  const take = (t, reason) => {
+    if (picked.find(p => p.id === t.id)) return;
+    picked.push(t); why[t.id] = reason;
+  };
+
+  // flagged replies come first, they are the cheapest signal you already paid for
+  pool.filter(t => decisionOf(t) === "flag").forEach(t => { if (picked.length < targetN) take(t, "guardrail flagged it"); });
+  S.conds.forEach(cid => {
+    const c = CONDITIONS.find(x => x.id === cid);
+    if (!c) return;
+    pool.filter(c.test).forEach(t => { if (picked.length < targetN) take(t, c.label); });
+  });
+  seededOrder(pool).forEach(t => { if (picked.length < budget) take(t, "random slice"); });
+
+  return { blocked, routed, picked, why, pool };
+}
+
+/* ---------- step 1 and 2 ---------- */
+
+function renderPolicy() {
+  $("#budget").value = S.budget;
+  $("#rand").max = S.budget;
+  $("#rand").value = Math.min(S.rand, S.budget);
+  $("#split").textContent = `${Math.min(S.rand, S.budget)} random, ${Math.max(0, S.budget - S.rand)} targeted`;
+  $("#conds").innerHTML = CONDITIONS.map(c => {
+    const on = S.conds.includes(c.id);
+    const n = DATA.filter(c.test).length;
+    const order = S.conds.indexOf(c.id);
+    return `<div class="cond">
+      <button data-cond="${c.id}" class="${on ? "on" : ""}" style="min-width:3.4rem">${on ? order + 1 : "off"}</button>
+      <span>${esc(c.label)}</span>
+      <span class="hits">${n} of ${DATA.length} traces match</span>
+    </div>`;
+  }).join("");
+  $("#conds").querySelectorAll("[data-cond]").forEach(b => b.onclick = () => {
+    const id = b.dataset.cond;
+    S.conds = S.conds.includes(id) ? S.conds.filter(x => x !== id) : S.conds.concat(id);
+    save(); renderPolicy();
+  });
+}
+
+function renderRules() {
+  $("#rules").innerHTML = S.rules.map((r, n) => {
+    const hits = ruleHits(r);
+    const bad = rx(r.pattern) === null;
+    return `<div class="rule">
+      <input type="text" data-pat="${n}" value="${esc(r.pattern)}" placeholder="text or regex to match in the reply">
+      <select data-dec="${n}">
+        ${["block", "route", "flag"].map(d => `<option${r.decision === d ? " selected" : ""}>${d}</option>`).join("")}
+      </select>
+      <span class="hits">${bad ? "invalid pattern" : hits.length + " replies match"}</span>
+      <button data-kill="${n}">&times;</button>
+    </div>`;
+  }).join("") || '<p class="note">No rules yet. A day with no guardrails is a valid choice, and you will see what it costs.</p>';
+
+  $("#rules").querySelectorAll("[data-pat]").forEach(el => el.oninput = () => {
+    S.rules[+el.dataset.pat].pattern = el.value; save(); renderRules(); el.focus();
+  });
+  $("#rules").querySelectorAll("[data-dec]").forEach(el => el.onchange = () => {
+    S.rules[+el.dataset.dec].decision = el.value; save(); renderRules();
+  });
+  $("#rules").querySelectorAll("[data-kill]").forEach(el => el.onclick = () => {
+    S.rules.splice(+el.dataset.kill, 1); save(); renderRules();
+  });
+}
+
+$("#budget").oninput = e => { S.budget = +e.target.value || 1; save(); renderPolicy(); };
+$("#rand").oninput = e => { S.rand = +e.target.value || 0; save(); renderPolicy(); };
+$("#addRule").onclick = () => { S.rules.push({ pattern: "", decision: "flag" }); save(); renderRules(); };
+$("#suggest").onclick = () => { S.rules = S.rules.concat(SUGGESTED.map(r => ({ ...r }))); save(); renderRules(); };
+
+/* ---------- step 3 ---------- */
+
+function renderQueue() {
+  if (!S.ran) return;
+  const { picked, why, blocked, routed } = selection();
+  $("#status").textContent = `${blocked.length} blocked, ${routed.length} routed to a human, ${picked.length} in your queue`;
+  $("#queue").innerHTML = picked.map(t => {
+    const r = S.reviews[t.id] || {};
+    return `<div class="card">
+      <div class="why">trace ${t.id}, ${t.time}, ${esc(t.meta.intent)}, prompt ${esc(t.meta.prompt_version)} &nbsp;|&nbsp; surfaced because: ${esc(why[t.id])}</div>
+      <div class="cust">${esc(t.customer)}</div>
+      <div class="bot">${esc(t.reply)}</div>
+      <div class="acts">
+        <button data-v="pass" data-id="${t.id}" class="${r.verdict === "pass" ? "on" : ""}">pass</button>
+        <button data-v="fail" data-id="${t.id}" class="${r.verdict === "fail" ? "on" : ""}">fail</button>
+        <input type="text" data-note="${t.id}" value="${esc(r.note || "")}" placeholder="one line">
+      </div>
+    </div>`;
+  }).join("");
+  $("#queue").querySelectorAll("[data-v]").forEach(b => b.onclick = () => {
+    const id = b.dataset.id;
+    S.reviews[id] = Object.assign({}, S.reviews[id], { verdict: b.dataset.v });
+    save(); renderQueue(); renderResults();
+  });
+  $("#queue").querySelectorAll("[data-note]").forEach(el => el.oninput = () => {
+    const id = el.dataset.note;
+    S.reviews[id] = Object.assign({}, S.reviews[id], { note: el.value });
+    save();
+  });
+}
+
+$("#run").onclick = () => {
+  S.ran = true; save();
+  renderQueue();
+  $("#resultStep").style.display = "";
+  $("#regStep").style.display = "";
+  renderResults();
+  $("#reviewStep").scrollIntoView({ behavior: "smooth" });
+};
+
+/* ---------- step 4 ---------- */
+
+const problem = t => t.hidden.failure || t.hidden.policy_violation;
+
+function renderResults() {
+  const { picked, blocked, routed } = selection();
+  const seen = new Set(picked.map(t => t.id));
+  const stopped = new Set([...blocked, ...routed].map(t => t.id));
+
+  const problems = DATA.filter(problem);
+  const caughtByRule = [...blocked, ...routed].filter(problem);
+  const falsePositives = [...blocked, ...routed].filter(t => !problem(t));
+  const inQueue = picked.filter(problem);
+  const youCalled = inQueue.filter(t => (S.reviews[t.id] || {}).verdict === "fail");
+  const youMissed = inQueue.filter(t => (S.reviews[t.id] || {}).verdict === "pass");
+  const leaked = problems.filter(t => !seen.has(t.id) && !stopped.has(t.id));
+  const sevLeak = leaked.reduce((a, t) => a + t.hidden.severity, 0);
+  const worstLeak = leaked.filter(t => t.hidden.severity === 3);
+
+  const warn = [];
+  if (worstLeak.length) warn.push(`${worstLeak.length} policy incident${worstLeak.length > 1 ? "s" : ""} went out and nobody looked at ${worstLeak.length > 1 ? "them" : "it"}. Traces ${worstLeak.map(t => t.id).join(", ")}. This is the failure that gets a name and an owner, not a percentage.`);
+  if (falsePositives.length > 3) warn.push(`${falsePositives.length} clean replies were blocked or routed. That cost lands on real customers who came about a real problem, and it is the tax your guardrails charge.`);
+  if (youMissed.length) warn.push(`You passed ${youMissed.length} trace${youMissed.length > 1 ? "s" : ""} that had a real problem in it (${youMissed.map(t => t.id).join(", ")}). The sample was fine, the reading was the bottleneck.`);
+  if (!S.conds.length) warn.push("Pure random sampling found what it found by luck. On 60 traces that is survivable, on 60,000 it is not.");
+  if (S.rand === 0) warn.push("No random slice at all. Your policy can only ever confirm the failures you already knew about.");
+
+  $("#results").innerHTML = `
+    <div class="metrics">
+      <div class="metric"><b>${problems.length}</b><span>problems in the day</span></div>
+      <div class="metric"><b>${youCalled.length}</b><span>you caught by reading</span></div>
+      <div class="metric"><b>${caughtByRule.length}</b><span>stopped by a guardrail</span></div>
+      <div class="metric"><b>${leaked.length}</b><span>leaked, nobody saw them</span></div>
+      <div class="metric"><b>${falsePositives.length}</b><span>clean replies you blocked</span></div>
+      <div class="metric"><b>${sevLeak}</b><span>severity that leaked</span></div>
+    </div>
+    ${warn.map(w => `<div class="warnbox">${esc(w)}</div>`).join("")}
+    <table class="leak">
+      <tr><th>trace</th><th>what was wrong</th><th>severity</th><th>what happened to it</th></tr>
+      ${problems.map(t => {
+        const where = stopped.has(t.id) ? "guardrail stopped it"
+          : seen.has(t.id) ? ((S.reviews[t.id] || {}).verdict === "fail" ? "you read it and called it" : (S.reviews[t.id] || {}).verdict === "pass" ? "you read it and passed it" : "in your queue, unread")
+          : "leaked";
+        const what = t.hidden.policy_violation ? "policy: " + t.hidden.policy_violation : t.hidden.failure;
+        return `<tr class="${t.hidden.severity === 3 ? "sev3" : ""}"><td>${t.id}</td><td>${esc(what)}</td><td>${t.hidden.severity}</td><td>${where}</td></tr>`;
+      }).join("")}
+    </table>`;
+}
+
+/* ---------- step 5 ---------- */
+
+$("#rq_go").onclick = () => {
+  S.reg = { changed: $("#rq_changed").value, at: +$("#rq_at").value || null, mode: $("#rq_mode").value };
+  save();
+  const v = {};
+  DATA.forEach(t => {
+    const k = t.meta.prompt_version;
+    v[k] = v[k] || { n: 0, assert: 0 };
+    v[k].n++;
+    if (t.hidden.failure === "asserts_unbacked") v[k].assert++;
+  });
+  const versions = Object.keys(v).sort();
+  const first = DATA.find(t => t.meta.prompt_version === versions[versions.length - 1]);
+  const rate = k => Math.round(v[k].assert / v[k].n * 100) + "%";
+
+  const buckets = [];
+  for (let i = 0; i < DATA.length; i += 10) {
+    const chunk = DATA.slice(i, i + 10);
+    buckets.push({ from: chunk[0].id, r: chunk.filter(t => t.hidden.failure === "asserts_unbacked").length / chunk.length });
+  }
+
+  const yours = S.reg.at;
+  const verdict = S.reg.changed === "yes, it got worse"
+    ? (yours && Math.abs(yours - first.id) <= 6 ? "You called it, and close to the right place." : yours ? `You called the direction. The change starts at trace ${first.id}, you said ${yours}.` : "You called the direction but not where.")
+    : "It got worse, and your policy did not show it to you.";
+
+  $("#regOut").innerHTML = `
+    <div class="warnbox">${esc(verdict)}</div>
+    <p class="note">Prompt ${esc(versions[versions.length - 1])} went live at trace ${first.id}, ${esc(first.time)}. Unbacked assertions: ${rate(versions[0])} on ${esc(versions[0])}, ${rate(versions[versions.length - 1])} after.</p>
+    <div class="strip">${buckets.map(b => `<div><div class="bar" style="height:44px;display:flex;align-items:flex-end"><i style="width:100%;height:${Math.round(b.r * 100)}%"></i></div>${b.from}</div>`).join("")}</div>
+    <p class="note">Rate of one named failure mode, in blocks of ten. This is the shape that moves early. An aggregate quality score over the same day moves later and by less, which is why the failure-mode rate is the thing to alarm on.</p>
+    <p class="note">Now the useful question: which signal in your logging would have shown you this on the day, given you can only read 12? If your answer is "sample the newest prompt version harder for the first hours after a deploy", change the policy above and run the day again.</p>`;
+};
+
+/* ---------- export and boot ---------- */
+
+$("#export").onclick = () => {
+  const { picked, blocked, routed } = selection();
+  const seen = new Set(picked.map(t => t.id));
+  const stopped = new Set([...blocked, ...routed].map(t => t.id));
+  const problems = DATA.filter(problem);
+  const leaked = problems.filter(t => !seen.has(t.id) && !stopped.has(t.id));
+  const lines = [
+    "# Module 4. The production day", "",
+    "## Policy I ran", "",
+    `- Review budget: ${S.budget}, of which ${S.rand} random and ${S.budget - S.rand} targeted.`,
+    `- Targeted conditions, in order: ${S.conds.length ? S.conds.join(", ") : "none"}.`,
+    `- Guardrails: ${S.rules.length ? S.rules.map(r => `\`${r.pattern}\` -> ${r.decision}`).join("; ") : "none"}.`, "",
+    "## What happened", "",
+    `- ${problems.length} of ${DATA.length} exchanges had a problem in them.`,
+    `- Guardrails stopped ${[...blocked, ...routed].filter(problem).length}, and stopped ${[...blocked, ...routed].filter(t => !problem(t)).length} clean replies by mistake.`,
+    `- I read ${picked.length} and called ${picked.filter(t => (S.reviews[t.id] || {}).verdict === "fail").length} of them failures.`,
+    `- ${leaked.length} problems leaked, ${leaked.filter(t => t.hidden.severity === 3).length} of them policy incidents.`, "",
+    "## My reviews", "",
+    ...picked.map(t => `- trace ${t.id}: ${(S.reviews[t.id] || {}).verdict || "unread"}. ${(S.reviews[t.id] || {}).note || ""}`),
+    "", "## The regression", "",
+    S.reg ? `- My call: ${S.reg.changed || "not answered"}, from around trace ${S.reg.at || "?"}, mode "${S.reg.mode || "?"}".` : "- Not answered yet.",
+    "", "Next: turn this into workbook/04-monitoring-plan.md with Claude Code.", ""
+  ];
+  const blob = new Blob([lines.join("\n")], { type: "text/markdown" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "04-day-results.md";
+  a.click();
+};
+
+$("#reset").onclick = () => {
+  if (!confirm("Clear the policy, the reviews and the results?")) return;
+  S = fresh(); save(); location.reload();
+};
+
+renderPolicy();
+renderRules();
+if (S.ran) { $("#resultStep").style.display = ""; $("#regStep").style.display = ""; renderQueue(); renderResults(); }
+</script>
+</body>
+</html>

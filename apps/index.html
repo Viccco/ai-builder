@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI PM course: the apps</title>
+<style>
+  :root { color-scheme: light dark; --line: #8884; --dim: #8889; --accent: #4a7fd4; --pass: #2e9e5b; }
+  body { font-family: -apple-system, system-ui, sans-serif; max-width: 720px; margin: 0 auto; padding: 2.5rem 1.2rem 5rem; line-height: 1.5; }
+  h1 { font-size: 1.4rem; margin-bottom: .2rem; }
+  .sub { color: var(--dim); margin-bottom: 2rem; }
+  a.card { display: block; border: 1px solid var(--line); border-radius: 12px; padding: .9rem 1rem; margin-bottom: .8rem; text-decoration: none; color: inherit; }
+  a.card:hover { border-color: var(--accent); }
+  a.card b { font-size: 1.02rem; }
+  a.card .what { color: var(--dim); font-size: .9rem; margin-top: .15rem; }
+  a.card .state { font-size: .8rem; margin-top: .4rem; color: var(--dim); }
+  a.card .state.on { color: var(--pass); }
+  .note { color: var(--dim); font-size: .85rem; line-height: 1.7; margin-top: 2rem; }
+</style>
+</head>
+<body>
+<h1>The apps</h1>
+<div class="sub">Everything here runs offline in this browser. Your work is saved in this browser, so use the same one throughout, and export when the module says to.</div>
+
+<div id="list"></div>
+
+<p class="note">
+  Progress below is read from this browser's storage. If a module you finished shows as not started, your browser is keeping each file separate, which some do. Nothing is lost, and the exports in your <code>workbook/</code> are the real record.
+  <br><br>
+  Reset one app by opening it and clearing your browser storage for this page.
+</p>
+
+<script>
+const APPS = [
+  { href: "01-labeler/index.html", name: "1. Trace labeler", what: "30 support drafts, one per screen, pass or fail plus a critique.",
+    key: "aipm.m1.labels", state: v => { const n = Object.values(v).filter(x => x.verdict).length; return n ? n + " of 30 labeled" : null; } },
+  { href: "01-clusters/index.html", name: "1. Clustering board", what: "Drag the critiques into named failure modes.",
+    key: "aipm.m1.clusters", state: v => (v.buckets || []).filter(b => b.name).length ? (v.buckets || []).filter(b => b.name).length + " categories named" : null },
+  { href: "02-judge/index.html", name: "2. Judge workbench", what: "Write the judge prompt, score it against your labels, work the disagreements.",
+    key: "aipm.m2.runs", state: v => v.length ? v.length + " scoring runs loaded" : null },
+  { href: "03-replayer/index.html", name: "3. Trajectory replayer", what: "Step through failed agent runs and call the earliest wrong step.",
+    key: "aipm.m3.calls", state: v => { const n = Object.values(v).filter(c => c.revealed).length; return n ? n + " runs done" : null; } },
+  { href: "04-console/index.html", name: "4. Production day console", what: "Set a sampling policy and guardrails, then live with them for a day.",
+    key: "aipm.m4.state", state: v => v.ran ? "day has been run" : null },
+  { href: "05-canvas/index.html", name: "5. Eval plan canvas", what: "The one-page plan for a product you actually work on.",
+    key: "aipm.m5.plan", state: v => (v.cases || []).length ? (v.cases || []).length + " golden cases" : null }
+];
+
+document.getElementById("list").innerHTML = APPS.map(a => {
+  let s = null;
+  try { const raw = localStorage.getItem(a.key); if (raw) s = a.state(JSON.parse(raw)); } catch (e) { s = null; }
+  return `<a class="card" href="${a.href}">
+    <b>${a.name}</b>
+    <div class="what">${a.what}</div>
+    <div class="state${s ? " on" : ""}">${s || "not started"}</div>
+  </a>`;
+}).join("");
+</script>
+</body>
+</html>
