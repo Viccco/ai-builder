@@ -13,7 +13,9 @@ Read for the operating rhythm: error analysis as the engine, experiments over fe
 
 ### The judge is a product
 
-An LLM judge is a model prompted to grade outputs the way your principal expert would. It's the only way to scale subjective grading, and it fails in its own ways: too lenient, biased toward long answers, biased toward its own model family, confidently wrong at edge cases. So you never trust it on faith. You build it against human labels and measure the agreement.
+An LLM judge is a model prompted to grade outputs the way your principal expert would. It's the only way to scale subjective grading, and it fails in its own ways: too lenient, biased toward long answers, biased toward its own model family, sensitive to the order you list options in, confidently wrong at edge cases. So you never trust it on faith. You build it against human labels and you measure it.
+
+Those biases do not go away once you have validated it, and neither does drift. A judge is a piece of the product, so it gets re-checked against fresh human labels on a schedule, the same way you would re-check any other component. Validating once and calling it done is how a green dashboard ends up describing a product nobody likes.
 
 ### Anatomy of a judge prompt
 
@@ -36,9 +38,9 @@ Split it, and each judge gets a sharp definition, its own few-shot set, and its 
 The loop, from Hamel's llm-judge post:
 1. Hold your human labels as ground truth.
 2. Run the judge on the same traces.
-3. Compare. Not just raw agreement: with imbalanced data (say 24 pass, 6 fail) a judge that says "pass" every time scores 80% agreement and is useless. Look at precision and recall on the failure class.
-4. Read every disagreement. Either the judge prompt is missing a rule (fix the prompt) or your own label was inconsistent (fix the label, it happens and it's informative).
-5. Iterate until agreement converges. Hamel's Honeycomb case reached over 90%. Then, and only then, you let the judge run on unlabeled traffic.
+3. Compare. **Read precision and recall first and agreement last.** With imbalanced data, say 24 pass and 6 fail, a judge that says "pass" every time scores 80% agreement and is useless. This is not a small caveat, it is the standard failure of the whole field: across 21 judge models, raw agreement overstated the luck-corrected figure by 33 to 41 points. The app shows you the always-pass baseline next to agreement for exactly this reason. If they are close, the number is noise. Researchers correct for it with a statistic called Cohen's kappa, where 0.6 is acceptable and 0.8 is strong. You do not need to compute it, but you should know the word, because a data scientist will ask.
+4. Read every disagreement. Either the judge prompt is missing a rule (fix the prompt) or your own label was inconsistent (fix the label, it happens and it's informative). The second one is where people quietly cheat, so there is a test for it in step 4 of the exercise.
+5. Iterate until precision and recall stop moving. Do not chase a round number, and do not stop because agreement crossed a threshold. Then, and only then, you let the judge run on unlabeled traffic.
 
 ### Why you split before you start
 
@@ -82,7 +84,9 @@ Continue as Northline's AI PM. Yesterday you found the dominant failure mode. To
 
 4. **Score and read.** Claude Code grades the development traces one at a time, so the judge never sees your labels or the other traces, then writes the results into the page. Reload the tab and the scoreboard fills in: confusion matrix, agreement, precision and recall on the failure class, with every exclusion named. Work the disagreement queue and decide each one. The prompt is missing a rule, your calibration was wrong, it fails a different mode entirely, or it is genuinely ambiguous. Copy the triage when you are through. (~15 min)
 
-5. **Iterate.** Amend the prompt, paste it again, watch the run history. Two or three rounds. Stop when the numbers stop moving, not when they hit a round number. (~15 min)
+   Before you mark anything "my calibration was wrong", ask yourself one question: **would I have changed this call if the judge had said the opposite?** If no, it is a real correction and you learned something. If yes, you are quietly moving your answer key to match the machine, and the number that comes back will be a number about nothing. Claude Code will ask you this when your corrections start clustering.
+
+5. **Iterate.** Amend the prompt, paste it again, watch the run history. Two or three rounds. Stop when precision and recall stop moving, not when agreement crosses a threshold. (~15 min)
 
 6. **The held-out run.** Once. Claude Code runs the frozen judge over the 10 traces you never tuned against and reports the same metrics. Compare the two. Write down the gap and what you think caused it, in `workbook/02-judge-notes.md`. This is the most honest number you will produce today. (~8 min)
 
@@ -105,7 +109,11 @@ and especially if I am about to move a calibration just to make a number go up. 
 two-variant ship call.
 ```
 
-## Interview drill (~15 min)
+## Step 10, the interview drill (~15 min)
+
+This is part of the module, not an appendix. Do it out loud, and ask Claude Code to play a skeptical hiring manager for an AI PM role and push on anything vague.
+
+A good answer names a number you produced, says how you produced it, and says what it cannot tell you. An answer that only defines a term is not a good answer.
 
 1. How do you know your LLM judge is right?
 2. Your eval suite says 95% pass but users keep complaining. Name three explanations. (Saturation, judge misalignment, the offline set doesn't match real traffic.)

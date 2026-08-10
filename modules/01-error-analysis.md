@@ -75,11 +75,19 @@ The customer messages are real. The bot replies were generated for this exercise
 Steps:
 
 1. Open `apps/01-labeler/index.html` in a browser. 30 traces, one per screen, saved as you go.
-2. Label all 30. Binary verdict plus one honest sentence per trace. You are the principal domain expert, so the bar is yours: "would I let this go out under the company name, unedited". Target pace is under a minute per trace, and the app shows you when you're stalling. Don't deliberate, your first read is the data. The keyboard is faster than the mouse here: `P` or `1` passes, `F` or `2` fails, `Tab` jumps to the reason box, and `Cmd+Enter` confirms and moves on from anywhere. It will not let you move on without both a verdict and a written reason, because the reason is what module 2 runs on. (~30 min)
+2. Label all 30. Binary verdict plus one honest sentence per trace. You are the principal domain expert, so the bar is yours: "would I let this go out under the company name, unedited".
+
+   Two different speeds here, and mixing them up is the classic mistake. **The verdict is a snap judgment**, so don't deliberate, because your first read is the data and the app shows you when you're stalling. **The sentence is not.** Take the extra ten seconds and say what specifically decided it, because that sentence is what module 2 runs on.
+
+   That applies to the passes as much as the fails. "Fine" and "showed empathy" teach nothing, and a pile of identical pass critiques means your pass bar is a two item checklist you have not examined. If two people could read your sentence and disagree about which trace it described, it is too thin. The keyboard is faster than the mouse here: `P` or `1` passes, `F` or `2` fails, `Tab` jumps to the reason box, and `Cmd+Enter` confirms and moves on from anywhere. It will not let you move on without both a verdict and a written reason, because the reason is what module 2 runs on. (~30 min)
 3. Click **Copy for Claude Code** and paste it into the chat. Claude Code counts your failures, reads the critiques, and names any place where two similar traces got opposite verdicts.
 4. Axial coding. Open `apps/01-clusters/index.html`. Your labels are already there. Drag the critiques into buckets until the shape of the failure surface appears. You name the categories and you pin one example trace to each. Every card shows the customer message and the bot reply, so you never have to remember what a trace number means. Rule of thumb: 3 to 6 categories, each defined by one sentence. (~10 min)
 5. Click **Copy for Claude Code** again and paste. It counts, checks whether any category is doing two jobs, argues with the definitions that are vague, and writes `workbook/01-taxonomy.md` with you. Finish it with one decision sentence: "the dominant failure mode is X, it appears in N of 30 traces, and the next fix is Y". (~5 min)
-6. Only now open `data/session1_seed_notes.md` and compare against what was seeded. Disagreement is fine and it's the interesting part. Your labels are the ground truth, the seed key is just the debrief.
+
+   Then answer one more question before you move on, because counts alone are not a roadmap. **Which mode would you fix first if you ranked by damage instead of frequency, and is it the same one?** A mode that fires twice and puts a password in a public reply outranks one that fires six times and reads a bit flat. Say which axis you are ranking by and why. Claude Code will press you on this.
+6. Only now open `data/session1_seed_notes.md` and compare against what was seeded. Your labels are the ground truth and the seed key is only the debrief, so disagreement is expected and three or four out of thirty is normal. (~5 min)
+
+   Do not stop at the score. Sort every disagreement into one of two piles. **Ones where you hold your ground**, because you can say what the key missed, and the key itself concedes on at least one trace. **Ones where you were fast rather than right**, which is the pile that teaches you something. Then say what the second pile has in common. If they are all passes, you now know which half of your bar is soft, and you know it before it gets baked into a judge.
 
 Kickoff prompt for a fresh Claude Code session:
 
@@ -92,7 +100,11 @@ a cause, and write workbook/01-taxonomy.md with me. Do not open data/session1_se
 until I say the labeling is done.
 ```
 
-## Interview drill (~15 min)
+## Step 7, the interview drill (~15 min)
+
+Part of the module, not an appendix. Do it out loud, and ask Claude Code to play a skeptical hiring manager and push on the vague spots.
+
+A good answer tells the story of what you actually did with your own 30 traces. An answer that recites the method without the run behind it is the one that gets found out.
 
 Answer out loud. Ask Claude to play a skeptical hiring manager for an AI PM role and push on vague spots.
 

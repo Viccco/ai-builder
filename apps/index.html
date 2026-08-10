@@ -269,7 +269,7 @@ const AIPM = (() => {
     },
     agreement: {
       label: "agreement",
-      def: "How often the judge and you said the same thing, counting everything. On its own it flatters a lazy judge, because when failures are rare a judge that passes everything still scores high.",
+      def: "How often the judge and you said the same thing, counting everything. Read it last and never on its own. A judge agreeing by luck scores well here, so compare it against the always-pass baseline beside it, and if the two are close the number is telling you nothing. Researchers correct for this with a statistic called Cohen's kappa, and a data scientist may ask you for it. Across 21 judge models, raw agreement overstated the corrected figure by 33 to 41 points.",
       formula: "(both said fail + both said pass) / traces scored"
     },
     precision: {
@@ -284,7 +284,7 @@ const AIPM = (() => {
     },
     baserate: {
       label: "always-pass baseline",
-      def: "What a judge that answered pass to everything would score on this set. Your agreement has to beat this to mean anything at all.",
+      def: "What a judge that answered pass to everything would score on this set, without reading a word. Agreement has to beat this comfortably before it means anything. This is the plain version of correcting for luck.",
       formula: "traces you passed / traces scored"
     },
     nscored: {
