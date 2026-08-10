@@ -38,6 +38,24 @@
   .note { font-size: .85rem; color: var(--dim); line-height: 1.6; }
   .warnbox { border-left: 3px solid var(--warn); padding: .5rem .7rem; font-size: .87rem; margin: .8rem 0; }
   section.triage { padding: 0 1.2rem 4rem; }
+  .target { border: 1px solid var(--line); border-radius: 10px; padding: .8rem .9rem; margin-bottom: 1.2rem; }
+  .target h3 { margin: .1rem 0 .5rem; font-size: 1.05rem; }
+  .target p { margin: 0 0 .6rem; font-size: .9rem; }
+  .target p:last-child { margin-bottom: 0; }
+  .tag-line { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); margin-bottom: .3rem; }
+  .small { font-size: .85rem; margin-bottom: .3rem; }
+  .dim { color: var(--dim); }
+  .bound { border-left: 3px solid var(--line); padding: .5rem .7rem; margin: .7rem 0; }
+  .bound.fail { border-left-color: var(--fail); }
+  .bound.pass { border-left-color: var(--pass); }
+  .intro { border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.1rem; margin: 1.2rem 1.2rem 0; font-size: .93rem; max-width: 1000px; }
+  .intro > summary { cursor: pointer; font-weight: 600; color: var(--dim); }
+  .intro[open] > summary { margin-bottom: .8rem; }
+  .intro h3 { font-size: .9rem; margin: 1.1rem 0 .4rem; }
+  .intro p { margin: 0 0 .7rem; }
+  .intro ol { margin: .3rem 0 .7rem; padding-left: 1.3rem; }
+  .intro li { margin-bottom: .35rem; }
+  .intro code { background: #8882; padding: .1rem .3rem; border-radius: 4px; font-size: .88em; }
   .case { border: 1px solid var(--line); border-radius: 12px; padding: 1rem; max-width: 760px; }
   .case .who { font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); margin-top: .7rem; }
   .case .msg { white-space: pre-wrap; }
@@ -66,38 +84,94 @@
   <input type="file" id="loadLabels" accept="application/json">
 </header>
 
+<details class="intro" id="brief" open>
+  <summary>What you are building here, and the exact steps</summary>
+
+  <p><b>Your 30 labels are already loaded</b>, using the revised verdicts from your taxonomy. The header confirms the count. The "Load my labels" button is only there if you want to override them with a different file.</p>
+
+  <p><b>The goal.</b> In module 1 you read 30 bot drafts and decided pass or fail yourself. That does not scale, because next week there are 3000. So you write a prompt that makes a model grade the way you graded, then you check how often it agrees with you. A judge you have not checked is just a second opinion with no track record.</p>
+
+  <p><b>One judge, one failure mode.</b> You are not building a "is this reply good" grader. You are building a grader for a single mode from your taxonomy, starting with the top one, which is the bot asserting a cause or fact it cannot know. If you catch yourself writing "and" in the "what to measure" box, you are building two judges at once and should stop.</p>
+
+  <p><b>The hard part is the boundary, not the obvious cases.</b> Anyone can see that inventing a delivery time is a failure. Your judge earns its keep on the near misses. Trace 19 offers a possible cause and then asks a question, and you passed it. Trace 2 states a cause as settled fact, and you failed it. Your label definitions have to put those two on opposite sides, in words a model can apply without you in the room.</p>
+
+  <h3>Steps</h3>
+  <ol>
+    <li><b>Fill the four boxes on the left.</b> Guidance for each is under its title. They stay separate on purpose, because a missing role or a fuzzy label definition disappears inside a wall of text.</li>
+    <li><b>Add two or three few-shot examples.</b> Use the button, type a trace id, and your own verdict and critique come across. Pick at least one case near the boundary rather than three easy ones.</li>
+    <li><b>Export the prompt</b> and save it into <code>workbook/</code>. Tell Claude Code it is there.</li>
+    <li><b>Claude Code runs it</b> over your 20 development traces, one trace per model call so the judge never sees your labels or the other traces, and writes a results file.</li>
+    <li><b>Load the results</b> with the blue button. You get agreement, precision and recall on the failure class, and a confusion matrix.</li>
+    <li><b>Work the disagreement queue</b> at the bottom of this page. For each one decide whether the prompt is missing a rule or your own label was inconsistent. Both happen. Then export the triage.</li>
+    <li><b>Amend and rerun.</b> Two or three rounds. Stop when the numbers stop moving rather than when they hit a round number.</li>
+  </ol>
+
+  <h3>Reading the numbers</h3>
+  <p>The positive class is <b>fail</b>, because finding failures is the job. <b>Precision</b> is how many of the judge's failure calls were real. <b>Recall</b> is how many of your failures it caught. Raw agreement on its own is a trap, since on a lopsided set a judge that says "pass" to everything can score high and be worthless.</p>
+  <p>Expect roughly three rounds to get above 90% agreement. The Honeycomb team needed three. A first round in the 60s or 70s is a normal starting point.</p>
+</details>
+
 <main>
   <div>
     <h2>The judge prompt</h2>
+
+    <div class="target">
+      <div class="tag-line">Judge 1 of 2 &nbsp;|&nbsp; target failure mode</div>
+      <h3>Asserts a cause or fact it cannot know</h3>
+      <p>From your own taxonomy: <i>the bot states a diagnosis, a system fact, or a future event as settled, with no hedge and no request for the information that would confirm it. Offering a hypothesis while asking for detail does not belong here.</i></p>
+      <p class="small">Your top mode, 4 of 30 traces (2, 18, 21, 24). Everything you write below is about this one mode only. Tone, missing next steps and unsafe requests belong to other judges.</p>
+    </div>
+
     <div class="field">
       <label>1. Role</label>
-      <div class="why">Who the judge is and whose standard it applies. Yours.</div>
+      <div class="why">Who the judge is and whose standard it applies, which is yours. Say it reviews drafted public replies for a telecom before they post, and that it applies one reviewer's bar rather than a general sense of quality. One or two sentences.</div>
       <textarea class="thin" id="f_role" placeholder="You are the quality reviewer for ... You apply one reviewer's bar: ..."></textarea>
     </div>
     <div class="field">
       <label>2. Context</label>
-      <div class="why">What it is given, and what the system could and could not have known when it answered.</div>
+      <div class="why">What the judge is handed, and what the bot could and could not have known when it wrote the draft. This box is doing the most work for this particular mode. The bot sees one public message and nothing else. It has no account lookup, no order tracking, no outage dashboard and no engineering roadmap. Spell that out, because a model that does not know the bot was blind will read an invented delivery time as helpful service.</div>
       <textarea class="thin" id="f_context" placeholder="You are given a customer message and the bot's drafted reply. The bot has no tools and performs no lookup, so ..."></textarea>
     </div>
     <div class="field">
       <label>3. What to measure</label>
-      <div class="why">One failure mode. If you need the word "and" here, you need a second judge.</div>
+      <div class="why">One failure mode, phrased as a single question the judge answers about the reply. If you need the word "and" here, you need a second judge. Tone, missing next steps and unsafe requests are other modes and are not this judge's business, so say that explicitly, otherwise it will start failing rude replies that are perfectly well grounded.</div>
       <textarea class="thin" id="f_measure" placeholder="The only question: does the reply ..."></textarea>
     </div>
     <div class="field">
       <label>4. Labels and output</label>
-      <div class="why">What fail means, what pass means, precisely enough that two people would agree. Always ask for a verdict and a one-sentence critique.</div>
+      <div class="why">What fail means and what pass means, tightly enough that two people applying it reach the same verdict. Test every definition you write against trace 2 and trace 19 before you accept it. If the words you wrote catch both, or clear both, they are not finished. Useful things to name: whether hedging language matters, whether asking for confirming detail rescues a guess, and what to do when the reply mixes a grounded part with an invented one. Always demand a verdict plus a one sentence critique that quotes the exact phrase that decided it, because a critique you can read is what lets you tell a bad judge from a bad label.</div>
       <textarea class="tall" id="f_labels" placeholder="fail - ...&#10;pass - ...&#10;&#10;Output: verdict (pass/fail) and a one-sentence critique naming the exact phrase."></textarea>
     </div>
     <div class="field">
       <label>Few-shot examples <button id="addShot" style="float:right">+ from my labels</button></label>
-      <div class="why">Two or three, lifted from your own critiques. This is where the judge gets your taste.</div>
+      <div class="why">Two or three, lifted from your own critiques, which is where the judge picks up your taste. Include at least one pass that sits close to the line, since three obvious failures teach it only to spot obvious failures. Do not use a trace you plan to grade later as a test of the judge, because an example it was shown is not evidence about anything.</div>
       <div id="shots"></div>
     </div>
   </div>
 
   <div>
-    <h2>Agreement with your labels</h2>
+    <h2>The line your definition has to draw</h2>
+    <div class="target">
+      <p class="small">Both replies float a possible cause. You failed one and passed the other. Any definition you write in box 4 has to put these on opposite sides, otherwise the judge cannot reproduce your bar.</p>
+
+      <div class="bound fail">
+        <div class="tag-line"><b class="tag fail">You failed it</b> &nbsp; trace 2</div>
+        <div class="small"><b>Customer:</b> "Since I signed up with you....Since day 1"</div>
+        <div class="small"><b>Bot:</b> "Thanks for reaching out. We can see the issue: your router was installed with an outdated configuration profile back when you signed up. DM us and we'll push the corrected profile to your device."</div>
+        <div class="small dim">Your critique: "comes up with a root cause analysis which it can't do (not enough context in trace)"</div>
+      </div>
+
+      <div class="bound pass">
+        <div class="tag-line"><b class="tag pass">You passed it</b> &nbsp; trace 19</div>
+        <div class="small"><b>Customer:</b> "Don't know, router is downstairs. But it's just the WiFi Nothing connected to Ethernet"</div>
+        <div class="small"><b>Bot:</b> "That helps narrow it down. If devices on WiFi drop but the router stays up, it's often channel interference. Is your WiFi on 2.4GHz or 5GHz? DM us and we can walk through changing the channel, takes two minutes."</div>
+        <div class="small dim">Your critique: "showed empathy, gave next steps"</div>
+      </div>
+
+      <p class="small">What separates them is not the presence of a guess. It is whether the reply closes the question or keeps it open while asking for what would settle it. Put that into words a model can apply.</p>
+    </div>
+
+    <h2 style="margin-top:1.6rem">Agreement with your labels</h2>
     <div id="scoreboard"><p class="note">No results loaded. Write the prompt, hand it to Claude Code, and load the results file it writes.</p></div>
     <details>
       <summary>The results file format</summary>
@@ -127,6 +201,9 @@ const P_KEY = "aipm.m2.prompt";
 const R_KEY = "aipm.m2.runs";
 const T_KEY = "aipm.m2.triage";
 const LABEL_KEY = "aipm.m1.labels";
+// Wiktor's own module 1 verdicts and critiques, embedded so the workbench
+// scores against them with no manual load step. Same pattern as DATA above.
+const MY_LABELS = {"1": {"verdict": "pass", "critique": "showed empathy, gave next steps"}, "2": {"verdict": "fail", "critique": "comes up with a root cause analysis which it can't do (not enough context in trace)\n"}, "3": {"verdict": "pass", "critique": "Answered right away, gave next steps"}, "4": {"verdict": "pass", "critique": "showed empathy, gave next steps"}, "5": {"verdict": "pass", "critique": "showed empathy, gave next steps"}, "6": {"verdict": "fail", "critique": "Never argue publicly with the user that he is just wrong. didn't gave next steps"}, "7": {"verdict": "fail", "critique": "Started well with empatyh but didn't gave next step"}, "8": {"verdict": "pass", "critique": "showed empathy, gave next steps"}, "9": {"verdict": "pass", "critique": "showed empathy, gave next steps. Matched the customer vibe"}, "10": {"verdict": "fail", "critique": "Never agree that price is too high (and argue on the price publicly). It also applied a discount which should be only a human decision"}, "11": {"verdict": "fail", "critique": "Too much \"sorring\" didn't gave the next steps."}, "12": {"verdict": "fail", "critique": "Didn't read the context well, misunderstood the intention, it was a compliement, it should just thank them and don't follow up with next steps"}, "13": {"verdict": "pass", "critique": "showed empathy, gave next steps. matched customer vibe"}, "14": {"verdict": "fail", "critique": "never ask for personal data or password publicly (actually never should ask for password, only for the ID to recognize them in the systme)"}, "15": {"verdict": "pass", "critique": "gave next steps"}, "16": {"verdict": "fail", "critique": "Didn't refer to problem, didn't help solve it, gave generic FAQ link. unhelpful"}, "17": {"verdict": "pass", "critique": "Analyzed root cause based on a tweet. It shouldn't do it, always ask for detail to identify the problem beyond public [revised in module 1 debrief: hedged hypothesis plus a request for detail, consistent with trace 19]"}, "18": {"verdict": "fail", "critique": "assumes it knows the root cause. can't derive it based on the post itself"}, "19": {"verdict": "pass", "critique": "showed empathy, gave next steps"}, "20": {"verdict": "pass", "critique": "Gave the clear instructions"}, "21": {"verdict": "fail", "critique": "it assumes it understand the root cause and it haven't gave the next steps"}, "22": {"verdict": "pass", "critique": "Thanked for the compliment"}, "23": {"verdict": "pass", "critique": "assumes the root cause, shouldn't assume the problem in public [revised in module 1 debrief: hedged hypothesis plus a request for detail, consistent with trace 19]"}, "24": {"verdict": "fail", "critique": "it claims it has data it doesn't (delivery date)"}, "25": {"verdict": "fail", "critique": "didn't understand the context, customer is pissed off"}, "26": {"verdict": "fail", "critique": "didn't follow-up to context and gave very generic next steps"}, "27": {"verdict": "fail", "critique": "Should never suggest responding to unknown numbers. Also, it assumes the root cause, which it doesn't have a clue about. "}, "28": {"verdict": "fail", "critique": "didn't take the problem serious enough"}, "29": {"verdict": "pass", "critique": "showed empathy, gave next steps"}, "30": {"verdict": "fail", "critique": "dind't read the context, assumed wrongly that there was a resolution"}};
 
 const $ = s => document.querySelector(s);
 const esc = s => (s || "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -135,7 +212,8 @@ const trace = id => DATA.find(t => t.id === id) || {};
 let prompt = JSON.parse(localStorage.getItem(P_KEY) || '{"role":"","context":"","measure":"","labels":"","shots":[]}');
 let runs = JSON.parse(localStorage.getItem(R_KEY) || "[]");
 let triage = JSON.parse(localStorage.getItem(T_KEY) || "{}");
-let labels = JSON.parse(localStorage.getItem(LABEL_KEY) || "{}");
+let labels = MY_LABELS;
+localStorage.setItem(LABEL_KEY, JSON.stringify(labels));
 let qi = 0;
 
 const savePrompt = () => localStorage.setItem(P_KEY, JSON.stringify(prompt));

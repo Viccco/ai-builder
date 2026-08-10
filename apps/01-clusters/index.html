@@ -37,6 +37,12 @@
   .notes { padding: 0 1.2rem 3rem; color: var(--dim); font-size: .85rem; max-width: 800px; }
   .flag { color: var(--warn); }
   .empty { color: var(--dim); font-size: .85rem; padding: .4rem; }
+  #warnbar { display: none; margin: 1.2rem 1.2rem 0; padding: .7rem .9rem; border: 1px solid var(--warn); border-radius: 10px; color: var(--warn); font-size: .9rem; }
+  .intro { border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.1rem; margin: 1.2rem 1.2rem 0; font-size: .93rem; }
+  .intro > summary { cursor: pointer; font-weight: 600; color: var(--dim); }
+  .intro[open] > summary { margin-bottom: .8rem; }
+  .intro p { margin: 0 0 .7rem; }
+  .intro p:last-child { margin-bottom: 0; }
   #load { display: none; }
 </style>
 </head>
@@ -50,6 +56,17 @@
   <button id="export">Export taxonomy</button>
   <input type="file" id="load" accept="application/json">
 </header>
+
+<div id="warnbar"></div>
+
+<details class="intro" id="brief" open>
+  <summary>What this step is, and how to work it</summary>
+  <p>You just labeled 30 bot drafts pass or fail. This step turns that pile of individual complaints into a small number of named failure modes, which is the thing you can actually take to an engineering team. The method has a name, axial coding: you read the critiques you wrote, notice the same underlying cause showing up in different words, and give that cause a name.</p>
+  <p><strong>Only your failures appear here.</strong> The passes are not on this page on purpose, because you are mapping how the product breaks, not summarising everything it did.</p>
+  <p><strong>What makes a good category.</strong> Name the cause, not the remedy. "Invents facts it cannot know" is a cause. "Add a knowledge check" is a fix, and several different causes can share one fix, so naming by fix collapses things that should stay apart. Each category needs one sentence saying what has to be true for a trace to belong in it. If you cannot write that sentence, the category is not real yet. Aim for 3 to 6 categories overall.</p>
+  <p><strong>How to move things.</strong> Drag a card into a category box, or click a card to select it and then click the box you want it in. Click a card twice to show the bot reply behind the critique. Once a category has traces in it, click the star on the trace you would show someone as the clearest example of that mode.</p>
+  <p>When everything is sorted, export and hand the file to Claude Code for the counts and the argument about whether your categories hold up.</p>
+</details>
 
 <main>
   <div class="col">
@@ -90,8 +107,16 @@ function loadFromStorage() {
 
 function loadFromFile(text) {
   const arr = JSON.parse(text);
+  // Loading a file replaces the labeling session held in this browser, so say so
+  // rather than silently discarding work someone spent half an hour on.
+  const existing = Object.values(labels).filter(l => l && l.verdict).length;
+  if (existing && !confirm(`This browser already holds ${existing} labeled trace(s). Loading a file replaces them. Continue?`)) return;
   labels = {};
   arr.forEach(r => labels[r.id] = { verdict: r.verdict, critique: r.critique });
+  // Persist the labels themselves, not just the cluster state. Without this a
+  // refresh drops everything loaded from a file while the placements survive,
+  // which leaves placements pointing at traces the page can no longer see.
+  localStorage.setItem(LABEL_KEY, JSON.stringify(labels));
   save();
   render();
 }
@@ -121,9 +146,17 @@ function cardHTML(id) {
 function render() {
   const fails = failures();
   const passCount = Object.values(labels).filter(l => l.verdict === "pass").length;
-  $("#status").textContent = fails.length
-    ? `${fails.length} failures, ${passCount} passes, ${fails.filter(id => bucketOf(id) === null).length} unsorted`
+  const labeled = fails.length + passCount;
+  $("#status").textContent = labeled
+    ? `${labeled} of ${DATA.length} traces labeled: ${fails.length} failures, ${passCount} passes, ${fails.filter(id => bucketOf(id) === null).length} unsorted`
     : "no labels loaded yet";
+
+  // Be loud about a partial labeling run. Showing 1 card out of an expected 30
+  // with no explanation reads as a broken page rather than as missing input.
+  $("#warnbar").innerHTML = labeled && labeled < DATA.length
+    ? `Only ${labeled} of ${DATA.length} traces carry a verdict, so this page can only show failures from those ${labeled}. Finish labeling in the labeler, or use "Load labels file" to bring in a complete set.`
+    : "";
+  $("#warnbar").style.display = labeled && labeled < DATA.length ? "block" : "none";
 
   const pool = fails.filter(id => bucketOf(id) === null);
   $("#pool").innerHTML = pool.length
