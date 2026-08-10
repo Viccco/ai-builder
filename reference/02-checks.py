@@ -1,4 +1,4 @@
-"""Worked example. Module 2, step 7: code assertions for the mechanical failures.
+"""Worked example. Module 2, step 8: code assertions for the mechanical failures.
 
 These are deterministic policy checks. A model judge grades the fuzzy thing
 ("did it over-assert"). Code grades the things that are never a judgement call:
