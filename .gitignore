@@ -3,8 +3,12 @@ __pycache__/
 *.pyc
 .env
 .venv/
+*.html.bak
 
 # the learner's own work stays local unless they choose to commit it
 workbook/*
 !workbook/.gitkeep
 !workbook/README.md
+
+# drafts for a later rework, not part of the course
+_later/

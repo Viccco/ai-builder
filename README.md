@@ -1,67 +1,70 @@
-# Evals and harness literacy: a working course for AI PMs
+# Evals for AI product managers, a working course
 
-Five sessions, about 1.5 hours each. You finish able to build evals with your own hands, read and diagnose an agent system, and talk about both from practice instead of from articles.
+Two modules, about ninety minutes each. You finish able to build an eval with your own hands, defend a quality number to an engineer, and say why most teams' eval dashboards are measuring nothing.
 
-This is not a reading course. In every session you do the judgment work yourself: you label real traces, you name the failure modes, you write the judge prompt, you make the ship call. Claude Code does the plumbing around you (running scripts, scoring, counting, writing files) and argues with you when your reasoning is thin.
+This is not a reading course. In every session you do the judgment yourself. You label real bot replies one at a time, you name the ways the product fails, you write the prompt that grades them, and you make the ship call. Claude Code does the plumbing around you, meaning the scripts, the scoring, the counting and the file writing, and it argues with you when your reasoning is thin.
 
-## Who it's for
+## Who it is for
 
-A product manager who is moving into AI products and can already ship software with a team, but has never personally built an eval, read an agent trace, or defended a quality number to an engineer. No coding required. You will read code and decide rules, and Claude Code writes it.
+A product manager moving into AI products who can already ship software with a team, but has never personally built an eval or defended a quality number to an engineer. No coding required. You read code and decide rules, and Claude Code writes it.
 
-## Why these two skills
+## How to start
 
-Every serious AI product team runs the same loop: ship something, look at what it actually does, name the failures, measure them, fix the biggest one, repeat. Evals are how you make that loop measurable. The harness is the thing being measured, meaning the model plus its tools, prompts, memory, and control flow. A PM who can run the loop personally is rare and gets hired for it.
+1. Clone or download this repo.
+2. Open the folder in [Claude Code](https://docs.claude.com/en/docs/claude-code/overview).
+3. Type anything. Hello, start, or a question.
+4. Pick where to begin when it asks.
 
-## The five modules
+Nothing to install and no commands to run. Claude Code reads the repo and takes it from there.
 
-| # | Module | What you walk out with |
+## The two modules
+
+**Module 1, error analysis and the failure taxonomy.** You label 30 real traces by hand, cluster your own critiques into named failure modes, and count them. You walk out with a taxonomy you built and can defend, and with the number that starts every conversation about whether the thing is safe to ship.
+
+**Module 2, LLM as judge and eval-driven development.** You take those labels and build a judge that grades the way you do, then validate it, because a judge is itself an AI product that can be wrong. You measure its agreement with you, fix what disagrees, and only then run it on traces it has never seen. Ends with a ship memo backed by evidence you produced.
+
+They are one continuous build. Module 2 consumes what you make in module 1, so the order is fixed.
+
+## How the pieces move
+
+You work in two places. Browser pages under `apps/` hold everything you read, sort and decide. The chat with Claude Code is where the counting and arguing happen.
+
+When Claude Code needs your work, you click **Copy for Claude Code** and paste it into the chat. That is the only manual step in the course. When Claude Code has something for you, it writes straight into the page and you reload the tab. The apps pass work to each other on their own.
+
+## Files
+
+| File | What it is | Where it is used |
 |---|---|---|
-| 1 | [Error analysis and the failure taxonomy](modules/01-error-analysis.md) | 30 traces you labeled yourself and a named, counted taxonomy of how the product fails |
-| 2 | [LLM-as-judge and eval-driven development](modules/02-llm-judge.md) | A validated judge, code assertions, and a ship memo backed by eval evidence |
-| 3 | [Harness literacy: agent loops, tools, context](modules/03-harness-literacy.md) | A failure log from real failed agent runs and a ranked list of harness fixes |
-| 4 | [After ship: online evals, guardrails, the flywheel](modules/04-after-ship.md) | A monitoring and triage plan that survives contact with production traffic |
-| 5 | [Capstone: your product, end to end](modules/05-capstone.md) | An eval plan for a product you actually work on, plus a cold mock interview |
+| `CLAUDE.md` | The greeting and router Claude Code reads first | Every session |
+| `RUNNING.md` | Operating rules for Claude Code | Loaded once you pick a starting point |
+| `modules/` | The two sessions, with their pre-reads and exercises | Read with Claude Code as you go |
+| `apps/` | The browser pages where your judgment happens | Start at `apps/index.html` |
+| `data/` | The scenario data, with provenance in `data/PROVENANCE.md` | Loaded into the apps |
+| `workbook/` | Empty. Your own outputs land here | Written by Claude Code as you work |
+| `reference/` | Worked versions, from one real run through the course | Open after you finish a module |
+| `tools/` | Small scripts for running a judge and rebuilding the apps | Mostly maintenance |
 
-Modules 1 and 2 are one continuous build. Module 2 uses the labels you produce in module 1, so don't swap the order. Modules 3, 4 and 5 build on the vocabulary from 1 and 2.
+`reference/` will spoil the exercises. It exists so you can compare your judgment to someone else's after you have committed to your own, which is the point of the debrief.
 
-## How to run a module
+## Requirements
 
-1. Do the pre-read before you sit down. Fifteen minutes, one link.
-2. Open the module file in a fresh Claude Code session and paste its kickoff prompt.
-3. Work through the exercise. The interactive apps in `apps/` are where your judgment happens. Claude Code runs everything that needs a model or a script.
-4. End with the interview drill. Answer out loud and let Claude push back.
-5. Check the "done when" list. If something is fuzzy, say so and drill it again.
+Claude Code, and a Claude subscription or an API key with credit. Module 2 grades 30 short traces, which is a few cents of usage rather than dollars. A recent Chrome, Edge, Firefox or Safari for the app pages. Nothing else.
 
-Setup takes about ten minutes: [SETUP.md](SETUP.md).
-
-## What's in here
-
-```
-modules/     the five sessions
-apps/        the interactive tools, plain HTML, start at apps/index.html
-data/        the scenario data, with provenance in data/PROVENANCE.md
-workbook/    empty, your own outputs land here
-reference/   worked solutions, open only after you've done the module
-tools/       small scripts: run a judge, rebuild the data
-```
-
-`reference/` will spoil the exercises. It exists so you can compare your judgment to someone else's after you've committed to your own, which is the point of the debrief.
+Python is optional. One script uses it if you have an API key, and Claude Code can do that work without it.
 
 ## Sources
 
 The course is built on public writing from people who do this work.
 
-Evals:
-- Aman Khan, Beyond vibe checks: a PM's complete guide to evals. https://www.lennysnewsletter.com/p/beyond-vibe-checks-a-pms-complete
+- Aman Khan, Beyond vibe checks, a PM's complete guide to evals. https://www.lennysnewsletter.com/p/beyond-vibe-checks-a-pms-complete
 - Hamel Husain, Your AI product needs evals. https://hamel.dev/blog/posts/evals/
-- Hamel Husain, Creating an LLM-as-a-judge that drives business results. https://hamel.dev/blog/posts/llm-judge/
+- Hamel Husain, Creating an LLM as a judge that drives business results. https://hamel.dev/blog/posts/llm-judge/
 - Hamel Husain, A field guide to rapidly improving AI products. https://hamel.dev/blog/posts/field-guide/
 - Anthropic, Demystifying evals for AI agents. https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents
 - OpenAI Cookbook, Eval driven system design. https://developers.openai.com/cookbook/examples/partners/eval_driven_system_design/receipt_inspection
 
-Harness:
-- Anthropic, Building effective agents. https://www.anthropic.com/engineering/building-effective-agents
-- Anthropic, Effective context engineering for AI agents. https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
-- Anthropic, Writing effective tools for agents. https://www.anthropic.com/engineering/writing-tools-for-agents
-
 Licence and data attribution: [LICENSE.md](LICENSE.md) and [data/PROVENANCE.md](data/PROVENANCE.md).
+
+---
+
+I'm Wiktor, I built this course. www.linkedin.com/in/wiktorsobolak

@@ -64,37 +64,45 @@ The OpenAI receipt-inspection cookbook treats the eval suite as the spec: define
 
 ### Keeping the suite honest
 
-From Anthropic's operational guidance: evals saturate (100% pass means the eval stopped teaching you anything, so retire it or harden it), suites need an owner, and offline evals are one layer of Swiss cheese. Production monitoring and A/B tests cover the holes offline evals can't see, like drift and real user behaviour. That's module 4.
+From Anthropic's operational guidance: evals saturate (100% pass means the eval stopped teaching you anything, so retire it or harden it), suites need an owner, and offline evals are one layer of Swiss cheese. Production monitoring and A/B tests cover the holes offline evals can't see, like drift and real user behaviour. That half is beyond this course, and it is the next thing to read about once you have built one of these.
 
 ## Exercise (~75 min)
 
 Continue as Northline's AI PM. Yesterday you found the dominant failure mode. Today you automate its detection and use the result to make a ship call.
 
-1. **Split first.** Tell Claude Code to split your 30 labeled traces into 20 development and 10 held-out, and to not show you the held-out ids again until step 6. (~2 min)
+1. **Split first.** Tell Claude Code to split your 30 labeled traces into 20 development and 10 held-out. It writes the split into the app and never shows you which is which. (~2 min)
 
-2. **Write judge one.** Open `apps/02-judge/index.html`. Four fields, one per part of the prompt, because a missing role or a fuzzy label definition is invisible in a wall of text. Take the top failure mode from your taxonomy. Lift 2 or 3 few-shot examples straight from your own critiques. You write the label definitions yourself, that's the PM part. Export the prompt to `workbook/`. (~15 min)
+2. **Calibrate the mode.** Open `apps/02-judge/index.html` and pick the failure mode this judge is for. Then go through all 30 traces and answer one question about each: does this fail *this mode*. (~8 min)
 
-3. **Score and read.** Claude Code runs the judge over the 20 development traces and writes a results file (`tools/run_judge.py` if you have an API key in the environment, one trace per subagent if not, and either way the judge only ever sees one trace at a time). Load it in the app: confusion matrix, agreement, precision and recall on the failure class. Then work the disagreement queue, one case per screen, and decide each: judge prompt is missing a rule, or your label was wrong. Export your decisions. (~15 min)
+   This step feels redundant and is not. Your module 1 verdict answered "would I post this", and a draft can be rude, useless and perfectly honest about what it knows. If you score a grounding judge against a verdict that also punished tone, every trace that failed for another reason looks like a miss when the judge did its job correctly. Traces you put in this category during clustering start as fails so you are confirming rather than starting cold.
 
-4. **Iterate.** Amend the prompt, rerun, watch the run history. Two or three rounds. Stop when the numbers stop moving, not when they hit a round number. (~15 min)
+   While you go, star the clearest failure and the pass that sits closest to the line. Both appear beside the prompt editor, and separating those two is the whole job in step 3.
 
-5. **The held-out run.** Once. Claude Code runs the frozen judge over the 10 traces you never tuned against and reports the same metrics. Compare the two. Write down the gap and what you think caused it, in `workbook/02-judge-notes.md`. This is the most honest number you will produce today. (~8 min)
+3. **Write judge one.** Four fields, one per part of the prompt, because a missing role or a fuzzy label definition is invisible in a wall of text. Add 2 or 3 few-shot examples with the picker, which shows you every trace in full so you never choose by number. Anything you use as an example is excluded from the score, because a trace the judge was shown is not evidence about that trace. You write the label definitions yourself, and that is the PM part. Then click **Copy prompt for Claude Code** and paste it into the chat. (~15 min)
 
-6. **Judge two, fast.** Pick the second failure mode from your taxonomy and build its judge in one pass, reusing what you learned. Run it over all 30. The point is felt, not explained: notice how much sharper a definition gets when it only has one job, and check whether any trace now fails both judges. (~10 min)
+4. **Score and read.** Claude Code grades the development traces one at a time, so the judge never sees your labels or the other traces, then writes the results into the page. Reload the tab and the scoreboard fills in: confusion matrix, agreement, precision and recall on the failure class, with every exclusion named. Work the disagreement queue and decide each one. The prompt is missing a rule, your calibration was wrong, it fails a different mode entirely, or it is genuinely ambiguous. Copy the triage when you are through. (~15 min)
 
-7. **Code assertions.** Two mechanical rules from your taxonomy that never need a model (candidates: reply asks for credentials in public, reply contains an unverified link, reply exceeds a length cap). You define the rules and the constants, Claude Code writes `workbook/checks.py`. Run it. (~5 min)
+5. **Iterate.** Amend the prompt, paste it again, watch the run history. Two or three rounds. Stop when the numbers stop moving, not when they hit a round number. (~15 min)
 
-8. **The ship call.** Claude Code generates replies for 10 fresh customer messages from `data/support_tweets_200.json` with two different bot system prompts, A and B. Your suite (both judges plus the assertions) scores both. You write the decision memo, five sentences max, into `workbook/02-ship-call.md`: which variant, on what evidence, what the suite can't see, and what you'd monitor in production. (~10 min)
+6. **The held-out run.** Once. Claude Code runs the frozen judge over the 10 traces you never tuned against and reports the same metrics. Compare the two. Write down the gap and what you think caused it, in `workbook/02-judge-notes.md`. This is the most honest number you will produce today. (~8 min)
+
+7. **Judge two, fast.** Pick the second failure mode from your taxonomy and build its judge in one pass, reusing what you learned. Calibrate it, write it, run it. The point is felt rather than explained: notice how much sharper a definition gets when it only has one job, and check whether any trace now fails both judges. (~10 min)
+
+8. **Code assertions.** Two mechanical rules from your taxonomy that never need a model (candidates: reply asks for credentials in public, reply contains an unverified link, reply exceeds a length cap). You define the rules and the constants, Claude Code writes `workbook/checks.py`. Run it. (~5 min)
+
+9. **The ship call.** Claude Code generates replies for 10 fresh customer messages from `data/support_tweets_200.json` with two different bot system prompts, A and B. Your suite (both judges plus the assertions) scores both. You write the decision memo, five sentences max, into `workbook/02-ship-call.md`: which variant, on what evidence, what the suite can't see, and what you'd monitor in production. (~10 min)
 
 Kickoff prompt for a fresh Claude Code session:
 
 ```
-Module 2 of the AI PM evals course. Read modules/02-llm-judge.md, plus my module 1 outputs
-(workbook/01-taxonomy.md and workbook/01-labels.json). Run the exercise with me. Start by
-splitting my 30 labels into 20 dev and 10 held-out, and keep the held-out ids from me until
-I ask. I write the judge prompts and decide every disagreement, you run the scoring and write
-the results file for the app. Push back if a label definition is vague or if I'm about to
-change a label just to make the number go up. End with the two-variant ship call.
+Module 2 of the AI PM evals course. Read modules/02-llm-judge.md and RUNNING.md, plus my
+module 1 outputs (workbook/01-taxonomy.md and workbook/01-labels.json). Run the exercise with
+me. Start by splitting my 30 labels into 20 dev and 10 held-out, inject the split into the
+judge workbench, and never tell me which ids are held out. I write the judge prompts, do the
+per-mode calibration, and decide every disagreement. You grade one trace at a time, write the
+results back into the page, and tell me to reload. Push back if a label definition is vague,
+and especially if I am about to move a calibration just to make a number go up. End with the
+two-variant ship call.
 ```
 
 ## Interview drill (~15 min)

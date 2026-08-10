@@ -19,4 +19,4 @@ Five sentences, and every one of them does a job.
 - The evidence is numbers from a suite, with the denominator visible. "9 of 10" is checkable. "Mostly failed" is not.
 - The incident is separated from the quality miss, because they are different kinds of thing and get different treatment.
 - The limitation is named by the author, not by the reader. Anyone who read the judge prompt would have found it in a minute, and finding it yourself is worth more than being caught.
-- The last sentence is what happens after ship, which is what an exec actually wants to know and what module 4 is about.
+- The last sentence is what happens after ship, which is what an exec actually wants to know.

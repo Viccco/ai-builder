@@ -16,17 +16,3 @@ Brand names appear in the raw messages because customers wrote them (Verizon, Sp
 
 `session1_seed_notes.md` holds the seeded verdicts. It is the instructor key for the module 1 debrief, and it is not the ground truth. The labeler's own calls are.
 
-## taubench_retail_failed.json
-
-8 failed runs of a GPT-4o retail support agent, taken from tau-bench's published historical trajectories. Each record holds the agent policy as the system prompt, the full conversation with tool calls and results, a reward of 0.0, and an `info` block with the user's actual goal and the ground truth actions.
-
-Source: https://github.com/sierra-research/tau-bench/tree/main/historical_trajectories
-Licence: MIT. Attribution is enough.
-
-## production_stream.json
-
-Written from scratch by `tools/make_stream.py`, customer messages included, so module 4 carries no upstream licence at all. A day of traffic for the support assistant, with a quality regression planted partway through and four policy incidents scattered across it. Regenerate it with `python3 tools/make_stream.py`, which is deterministic.
-
-## capstone-scenario.md
-
-Written for module 5. The fallback product for anyone who arrives without one of their own.

@@ -8,55 +8,74 @@
   :root { color-scheme: light dark; --line: #8884; --dim: #8889; --accent: #4a7fd4; --pass: #2e9e5b; --fail: #d64545; --warn: #d98c1f; }
   * { box-sizing: border-box; }
   body { font-family: -apple-system, system-ui, sans-serif; margin: 0; line-height: 1.45; }
-  header { position: sticky; top: 0; z-index: 5; background: Canvas; border-bottom: 1px solid var(--line); padding: .7rem 1rem; display: flex; gap: .7rem; align-items: center; flex-wrap: wrap; }
+  header { position: sticky; top: 0; z-index: 20; background: Canvas; border-bottom: 1px solid var(--line); padding: .7rem 1rem; display: flex; gap: .7rem; align-items: center; flex-wrap: wrap; }
   header .grow { flex: 1; }
   button { font: inherit; font-size: .9rem; padding: .4rem .9rem; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: inherit; cursor: pointer; }
   button:hover { border-color: var(--dim); }
   button.primary { border-color: var(--accent); color: var(--accent); font-weight: 600; }
-  main { display: grid; grid-template-columns: 1fr 1fr; gap: 1.3rem; padding: 1.2rem; align-items: start; }
-  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+  .wrap { max-width: min(var(--aipm-w, 1400px), 96vw); margin: 0 auto; padding: 0 1rem 5rem; }
+  main { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; align-items: start; }
+  @media (max-width: 1000px) { main { grid-template-columns: 1fr; } }
   h2 { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); margin: 0 0 .7rem; font-weight: 600; }
   .field { margin-bottom: 1rem; }
   .field label { display: block; font-weight: 600; font-size: .92rem; margin-bottom: .15rem; }
-  .field .why { font-size: .8rem; color: var(--dim); margin-bottom: .35rem; }
-  textarea { width: 100%; font: inherit; font-size: .9rem; padding: .55rem; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: inherit; resize: vertical; }
-  textarea.thin { min-height: 3.2rem; }
-  textarea.tall { min-height: 6.5rem; }
+  .field .why { font-size: .8rem; color: var(--dim); margin-bottom: .35rem; line-height: 1.5; }
+  textarea, input[type=text] { width: 100%; font: inherit; font-size: .9rem; padding: .55rem; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: inherit; resize: vertical; }
+  textarea.thin { min-height: 3.4rem; }
+  textarea.tall { min-height: 7rem; }
   .missing { border-color: var(--warn); }
-  .shot { border: 1px solid var(--line); border-radius: 8px; padding: .5rem .6rem; margin-bottom: .5rem; font-size: .87rem; }
-  .shot .row { display: flex; gap: .5rem; align-items: center; margin-bottom: .3rem; }
-  .shot select, .shot input { font: inherit; font-size: .85rem; background: transparent; color: inherit; border: 1px solid var(--line); border-radius: 6px; padding: .2rem .35rem; }
-  .shot .txt { color: var(--dim); font-size: .82rem; white-space: pre-wrap; }
-  table { border-collapse: collapse; font-size: .9rem; }
-  td, th { border: 1px solid var(--line); padding: .35rem .6rem; text-align: center; }
-  th { color: var(--dim); font-weight: 600; font-size: .8rem; }
-  .metrics { display: flex; gap: 1.4rem; margin: .9rem 0; flex-wrap: wrap; }
-  .metric b { display: block; font-size: 1.35rem; font-weight: 600; }
-  .metric span { font-size: .78rem; color: var(--dim); }
-  .hist { font-size: .85rem; border-collapse: collapse; margin-top: .8rem; width: 100%; }
-  .hist td, .hist th { text-align: left; }
-  .note { font-size: .85rem; color: var(--dim); line-height: 1.6; }
-  .warnbox { border-left: 3px solid var(--warn); padding: .5rem .7rem; font-size: .87rem; margin: .8rem 0; }
-  section.triage { padding: 0 1.2rem 4rem; }
-  .target { border: 1px solid var(--line); border-radius: 10px; padding: .8rem .9rem; margin-bottom: 1.2rem; }
-  .target h3 { margin: .1rem 0 .5rem; font-size: 1.05rem; }
-  .target p { margin: 0 0 .6rem; font-size: .9rem; }
-  .target p:last-child { margin-bottom: 0; }
+  .panel { border: 1px solid var(--line); border-radius: 10px; padding: .85rem .95rem; margin-bottom: 1.2rem; }
+  .panel h3 { margin: .1rem 0 .5rem; font-size: 1.02rem; }
+  .panel p { margin: 0 0 .6rem; font-size: .9rem; }
+  .panel p:last-child { margin-bottom: 0; }
   .tag-line { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); margin-bottom: .3rem; }
-  .small { font-size: .85rem; margin-bottom: .3rem; }
+  .small { font-size: .85rem; margin-bottom: .3rem; line-height: 1.5; }
   .dim { color: var(--dim); }
+  .modes { display: flex; gap: .45rem; flex-wrap: wrap; margin-bottom: .8rem; }
+  .modes button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   .bound { border-left: 3px solid var(--line); padding: .5rem .7rem; margin: .7rem 0; }
   .bound.fail { border-left-color: var(--fail); }
   .bound.pass { border-left-color: var(--pass); }
-  .intro { border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.1rem; margin: 1.2rem 1.2rem 0; font-size: .93rem; max-width: 1000px; }
+  .shot { border: 1px solid var(--line); border-radius: 8px; padding: .5rem .6rem; margin-bottom: .5rem; font-size: .87rem; }
+  .shot .row { display: flex; gap: .5rem; align-items: center; margin-bottom: .3rem; }
+  .shot select { font: inherit; font-size: .85rem; background: transparent; color: inherit; border: 1px solid var(--line); border-radius: 6px; padding: .2rem .35rem; }
+  .shot .txt { color: var(--dim); font-size: .82rem; white-space: pre-wrap; margin-bottom: .35rem; }
+  .shot.bad { border-color: var(--fail); }
+  table.cm { border-collapse: collapse; font-size: .9rem; }
+  table.cm td, table.cm th { border: 1px solid var(--line); padding: .35rem .6rem; text-align: center; }
+  table.cm th { color: var(--dim); font-weight: 600; font-size: .8rem; }
+  .hist { font-size: .85rem; border-collapse: collapse; margin-top: .8rem; width: 100%; }
+  .hist td, .hist th { text-align: left; padding: .25rem .5rem; border-bottom: 1px solid var(--line); }
+  .note { font-size: .86rem; color: var(--dim); line-height: 1.6; }
+  .warnbox { border-left: 3px solid var(--warn); padding: .5rem .7rem; font-size: .87rem; margin: .8rem 0; }
+  .intro { border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.1rem; margin: 1.2rem 0; font-size: .93rem; }
   .intro > summary { cursor: pointer; font-weight: 600; color: var(--dim); }
   .intro[open] > summary { margin-bottom: .8rem; }
-  .intro h3 { font-size: .9rem; margin: 1.1rem 0 .4rem; }
   .intro p { margin: 0 0 .7rem; }
   .intro ol { margin: .3rem 0 .7rem; padding-left: 1.3rem; }
   .intro li { margin-bottom: .35rem; }
-  .intro code { background: #8882; padding: .1rem .3rem; border-radius: 4px; font-size: .88em; }
-  .case { border: 1px solid var(--line); border-radius: 12px; padding: 1rem; max-width: 760px; }
+  .gate { opacity: .4; pointer-events: none; }
+  .cal { border: 1px solid var(--line); border-radius: 8px; margin-bottom: .4rem; padding: .5rem .6rem; display: grid; grid-template-columns: 1fr auto; gap: .7rem; align-items: start; }
+  .cal .txt { font-size: .85rem; }
+  .cal .txt .c { margin-bottom: .25rem; }
+  .cal .txt .b { color: var(--dim); }
+  .cal .mine { font-size: .78rem; color: var(--dim); margin-top: .3rem; font-style: italic; }
+  .cal .ctl { display: flex; gap: .3rem; align-items: center; white-space: nowrap; }
+  .cal .ctl button { font-size: .8rem; padding: .25rem .55rem; }
+  .cal button.on-fail { background: var(--fail); border-color: var(--fail); color: #fff; }
+  .cal button.on-pass { background: var(--pass); border-color: var(--pass); color: #fff; }
+  .cal.unconfirmed { border-style: dashed; }
+  .cal .star { cursor: pointer; opacity: .3; }
+  .cal .star.on { opacity: 1; color: var(--warn); }
+  #picker { position: fixed; inset: 0; background: #0009; display: none; align-items: flex-start; justify-content: center; z-index: 40; padding: 2rem 1rem; overflow: auto; }
+  #picker.on { display: flex; }
+  .picker-inner { background: Canvas; border-radius: 12px; padding: 1rem; max-width: 860px; width: 100%; }
+  .picker-inner .row { border: 1px solid var(--line); border-radius: 8px; padding: .5rem .6rem; margin-bottom: .45rem; cursor: pointer; font-size: .86rem; }
+  .picker-inner .row:hover { border-color: var(--accent); }
+  .chips { display: flex; gap: .4rem; margin: .6rem 0; flex-wrap: wrap; }
+  .chips button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .case { border: 1px solid var(--line); border-radius: 12px; padding: 1rem; max-width: 820px; }
   .case .who { font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); margin-top: .7rem; }
   .case .msg { white-space: pre-wrap; }
   .verdicts { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; margin: .9rem 0; }
@@ -66,9 +85,7 @@
   .tag.fail { color: var(--fail); }
   .choice { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .6rem; }
   .choice button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
-  details { font-size: .85rem; color: var(--dim); margin-top: 1rem; }
-  pre { background: #8881; padding: .6rem; border-radius: 8px; overflow-x: auto; font-size: .8rem; }
-  #load, #loadLabels { display: none; }
+  select { font: inherit; font-size: .85rem; background: transparent; color: inherit; border: 1px solid var(--line); border-radius: 6px; padding: .25rem .4rem; }
 </style>
 </head>
 <body>
@@ -76,381 +93,1174 @@
   <strong>Judge workbench</strong>
   <span id="status" class="note"></span>
   <span class="grow"></span>
-  <button id="pickLabels">Load my labels</button>
-  <button id="pick" class="primary">Load judge results</button>
-  <button id="exportPrompt">Export prompt</button>
-  <button id="exportTriage">Export triage</button>
-  <input type="file" id="load" accept="application/json">
-  <input type="file" id="loadLabels" accept="application/json">
+  <span id="aipm-chrome"></span>
+  <button id="copyPrompt" class="primary">Copy prompt for Claude Code</button>
+  <button id="copyTriage">Copy triage</button>
+  <button id="download">Download prompt</button>
 </header>
 
-<details class="intro" id="brief" open>
-  <summary>What you are building here, and the exact steps</summary>
+<div class="wrap">
+  <details class="intro" id="brief" open>
+    <summary>What you are building here, and the steps</summary>
+    <p><b>The goal.</b> In module 1 you read 30 drafts and decided pass or fail yourself. That does not scale, because next week there are 3000. So you write a prompt that makes a model grade the way you graded, then you measure how often it agrees with you. A judge nobody has checked is just a second opinion with no track record.</p>
+    <p><b>One judge, one failure mode.</b> You are not building an "is this reply good" grader. You build one for a single mode from your own taxonomy. A reply can be perfectly grounded and tonally offensive, and a judge forced to hold both questions at once produces errors that look random.</p>
+    <p><b>The hard part is the boundary, not the obvious cases.</b> Anyone can see that inventing a delivery time is a failure. Your judge earns its keep on the near misses, so your definitions have to separate the failure you pinned from the pass that sits closest to it.</p>
+    <ol>
+      <li><b>Pick the mode</b> this judge is for.</li>
+      <li><b>Calibrate it.</b> Go through the traces and say, for each one, whether it fails <i>this mode</i>. Your module 1 verdict answered a different question, so it cannot be the answer key here.</li>
+      <li><b>Write the four boxes</b> and add two or three examples from your own labels.</li>
+      <li><b>Copy the prompt for Claude Code</b>, which runs it and writes the results back into this page. Reload and the scoreboard fills in.</li>
+      <li><b>Work the disagreements</b>, decide what each one means, then amend and rerun. Two or three rounds is normal.</li>
+    </ol>
+    <p class="note">Claude Code writes into this page. When it says it has written something, reload the tab.</p>
+  </details>
 
-  <p><b>Your 30 labels are already loaded</b>, using the revised verdicts from your taxonomy. The header confirms the count. The "Load my labels" button is only there if you want to override them with a different file.</p>
+  <div id="modeBar"></div>
 
-  <p><b>The goal.</b> In module 1 you read 30 bot drafts and decided pass or fail yourself. That does not scale, because next week there are 3000. So you write a prompt that makes a model grade the way you graded, then you check how often it agrees with you. A judge you have not checked is just a second opinion with no track record.</p>
-
-  <p><b>One judge, one failure mode.</b> You are not building a "is this reply good" grader. You are building a grader for a single mode from your taxonomy, starting with the top one, which is the bot asserting a cause or fact it cannot know. If you catch yourself writing "and" in the "what to measure" box, you are building two judges at once and should stop.</p>
-
-  <p><b>The hard part is the boundary, not the obvious cases.</b> Anyone can see that inventing a delivery time is a failure. Your judge earns its keep on the near misses. Trace 19 offers a possible cause and then asks a question, and you passed it. Trace 2 states a cause as settled fact, and you failed it. Your label definitions have to put those two on opposite sides, in words a model can apply without you in the room.</p>
-
-  <h3>Steps</h3>
-  <ol>
-    <li><b>Fill the four boxes on the left.</b> Guidance for each is under its title. They stay separate on purpose, because a missing role or a fuzzy label definition disappears inside a wall of text.</li>
-    <li><b>Add two or three few-shot examples.</b> Use the button, type a trace id, and your own verdict and critique come across. Pick at least one case near the boundary rather than three easy ones.</li>
-    <li><b>Export the prompt</b> and save it into <code>workbook/</code>. Tell Claude Code it is there.</li>
-    <li><b>Claude Code runs it</b> over your 20 development traces, one trace per model call so the judge never sees your labels or the other traces, and writes a results file.</li>
-    <li><b>Load the results</b> with the blue button. You get agreement, precision and recall on the failure class, and a confusion matrix.</li>
-    <li><b>Work the disagreement queue</b> at the bottom of this page. For each one decide whether the prompt is missing a rule or your own label was inconsistent. Both happen. Then export the triage.</li>
-    <li><b>Amend and rerun.</b> Two or three rounds. Stop when the numbers stop moving rather than when they hit a round number.</li>
-  </ol>
-
-  <h3>Reading the numbers</h3>
-  <p>The positive class is <b>fail</b>, because finding failures is the job. <b>Precision</b> is how many of the judge's failure calls were real. <b>Recall</b> is how many of your failures it caught. Raw agreement on its own is a trap, since on a lopsided set a judge that says "pass" to everything can score high and be worthless.</p>
-  <p>Expect roughly three rounds to get above 90% agreement. The Honeycomb team needed three. A first round in the 60s or 70s is a normal starting point.</p>
-</details>
-
-<main>
-  <div>
-    <h2>The judge prompt</h2>
-
-    <div class="target">
-      <div class="tag-line">Judge 1 of 2 &nbsp;|&nbsp; target failure mode</div>
-      <h3>Asserts a cause or fact it cannot know</h3>
-      <p>From your own taxonomy: <i>the bot states a diagnosis, a system fact, or a future event as settled, with no hedge and no request for the information that would confirm it. Offering a hypothesis while asking for detail does not belong here.</i></p>
-      <p class="small">Your top mode, 4 of 30 traces (2, 18, 21, 24). Everything you write below is about this one mode only. Tone, missing next steps and unsafe requests belong to other judges.</p>
+  <main>
+    <div>
+      <h2>The judge prompt</h2>
+      <div id="calibrate"></div>
+      <div id="promptEditor"></div>
     </div>
-
-    <div class="field">
-      <label>1. Role</label>
-      <div class="why">Who the judge is and whose standard it applies, which is yours. Say it reviews drafted public replies for a telecom before they post, and that it applies one reviewer's bar rather than a general sense of quality. One or two sentences.</div>
-      <textarea class="thin" id="f_role" placeholder="You are the quality reviewer for ... You apply one reviewer's bar: ..."></textarea>
+    <div>
+      <h2>The line your definition has to draw</h2>
+      <div id="boundary"></div>
+      <h2 style="margin-top:1.6rem">Agreement with your labels</h2>
+      <div id="scoreboard"></div>
     </div>
-    <div class="field">
-      <label>2. Context</label>
-      <div class="why">What the judge is handed, and what the bot could and could not have known when it wrote the draft. This box is doing the most work for this particular mode. The bot sees one public message and nothing else. It has no account lookup, no order tracking, no outage dashboard and no engineering roadmap. Spell that out, because a model that does not know the bot was blind will read an invented delivery time as helpful service.</div>
-      <textarea class="thin" id="f_context" placeholder="You are given a customer message and the bot's drafted reply. The bot has no tools and performs no lookup, so ..."></textarea>
-    </div>
-    <div class="field">
-      <label>3. What to measure</label>
-      <div class="why">One failure mode, phrased as a single question the judge answers about the reply. If you need the word "and" here, you need a second judge. Tone, missing next steps and unsafe requests are other modes and are not this judge's business, so say that explicitly, otherwise it will start failing rude replies that are perfectly well grounded.</div>
-      <textarea class="thin" id="f_measure" placeholder="The only question: does the reply ..."></textarea>
-    </div>
-    <div class="field">
-      <label>4. Labels and output</label>
-      <div class="why">What fail means and what pass means, tightly enough that two people applying it reach the same verdict. Test every definition you write against trace 2 and trace 19 before you accept it. If the words you wrote catch both, or clear both, they are not finished. Useful things to name: whether hedging language matters, whether asking for confirming detail rescues a guess, and what to do when the reply mixes a grounded part with an invented one. Always demand a verdict plus a one sentence critique that quotes the exact phrase that decided it, because a critique you can read is what lets you tell a bad judge from a bad label.</div>
-      <textarea class="tall" id="f_labels" placeholder="fail - ...&#10;pass - ...&#10;&#10;Output: verdict (pass/fail) and a one-sentence critique naming the exact phrase."></textarea>
-    </div>
-    <div class="field">
-      <label>Few-shot examples <button id="addShot" style="float:right">+ from my labels</button></label>
-      <div class="why">Two or three, lifted from your own critiques, which is where the judge picks up your taste. Include at least one pass that sits close to the line, since three obvious failures teach it only to spot obvious failures. Do not use a trace you plan to grade later as a test of the judge, because an example it was shown is not evidence about anything.</div>
-      <div id="shots"></div>
-    </div>
-  </div>
+  </main>
 
-  <div>
-    <h2>The line your definition has to draw</h2>
-    <div class="target">
-      <p class="small">Both replies float a possible cause. You failed one and passed the other. Any definition you write in box 4 has to put these on opposite sides, otherwise the judge cannot reproduce your bar.</p>
+  <section>
+    <h2 style="margin-top:2rem">Disagreements</h2>
+    <div id="triage"></div>
+  </section>
+</div>
 
-      <div class="bound fail">
-        <div class="tag-line"><b class="tag fail">You failed it</b> &nbsp; trace 2</div>
-        <div class="small"><b>Customer:</b> "Since I signed up with you....Since day 1"</div>
-        <div class="small"><b>Bot:</b> "Thanks for reaching out. We can see the issue: your router was installed with an outdated configuration profile back when you signed up. DM us and we'll push the corrected profile to your device."</div>
-        <div class="small dim">Your critique: "comes up with a root cause analysis which it can't do (not enough context in trace)"</div>
-      </div>
-
-      <div class="bound pass">
-        <div class="tag-line"><b class="tag pass">You passed it</b> &nbsp; trace 19</div>
-        <div class="small"><b>Customer:</b> "Don't know, router is downstairs. But it's just the WiFi Nothing connected to Ethernet"</div>
-        <div class="small"><b>Bot:</b> "That helps narrow it down. If devices on WiFi drop but the router stays up, it's often channel interference. Is your WiFi on 2.4GHz or 5GHz? DM us and we can walk through changing the channel, takes two minutes."</div>
-        <div class="small dim">Your critique: "showed empathy, gave next steps"</div>
-      </div>
-
-      <p class="small">What separates them is not the presence of a guess. It is whether the reply closes the question or keeps it open while asking for what would settle it. Put that into words a model can apply.</p>
-    </div>
-
-    <h2 style="margin-top:1.6rem">Agreement with your labels</h2>
-    <div id="scoreboard"><p class="note">No results loaded. Write the prompt, hand it to Claude Code, and load the results file it writes.</p></div>
-    <details>
-      <summary>The results file format</summary>
-      <p>Ask Claude Code to write JSON in this shape. Anything extra is ignored.</p>
-<pre>{
-  "round": 1,
-  "set": "dev",
-  "judge": "asserts what it can't back",
-  "results": [
-    { "id": 2, "verdict": "fail", "critique": "States a cause as fact." },
-    { "id": 4, "verdict": "pass", "critique": "Asks for data instead of asserting." }
-  ]
-}</pre>
-      <p>The positive class is <b>fail</b>, because finding failures is the job. Precision is how many of the judge's fails were real. Recall is how many of your fails it found.</p>
-    </details>
-  </div>
-</main>
-
-<section class="triage">
-  <h2>Disagreements</h2>
-  <div id="triage"><p class="note">Load results to work the queue.</p></div>
-</section>
+<div id="picker"><div class="picker-inner" id="pickerInner"></div></div>
 
 <script>
-const DATA = [{"id": 1, "customer": "y’all lie about your “great” connection. 5 bars LTE, still won’t load something. Smh.", "bot_reply": "Sorry about that, that's frustrating when the bars say one thing and the connection says another. If you DM us your zip code we can run a diagnostic on the towers near you and check for congestion."}, {"id": 2, "customer": "Since I signed up with you....Since day 1", "bot_reply": "Thanks for reaching out. We can see the issue: your router was installed with an outdated configuration profile back when you signed up. DM us and we'll push the corrected profile to your device."}, {"id": 3, "customer": "You gonna magically change your connectivity for me and my whole family ?", "bot_reply": "Great news! Yes we can! 🎉 Our team loves helping families get connected. What kind of change were you thinking about?"}, {"id": 4, "customer": "whenever I contact customer support, they tell me I have shortcode enabled on my account, but I have never in the 4 years I have tried", "bot_reply": "That mismatch shouldn't be happening and we'd like to get to the bottom of it. DM us your account number and we'll check what flag is actually set on the account and clear it if it's wrong."}, {"id": 5, "customer": "actually that is a broken link you sent me and incorrect information", "bot_reply": "We apologize for the inconvenience! Here is the correct link: https://help.northline.com/billing-faq. Let us know if there's anything else we can help with."}, {"id": 6, "customer": "That is INCORRECT information I have the form in front of me that is faxed overmaybe you need to maintain up to date information", "bot_reply": "We understand your concern, however our records indicate the policy shared with you earlier is current. The form you have may be an older version. We recommend checking our website for the latest documentation."}, {"id": 7, "customer": "Would you like me to email you a copy of one since Spectrum is not updating your training?", "bot_reply": "We're sorry to hear you've had this experience. Your feedback is important to us and helps us improve our service."}, {"id": 8, "customer": "I received this from your corporate office would you like a copy?", "bot_reply": "Yes, please DM it over. If our info is out of date we want to fix it, and we'll pass your copy to the team that maintains our documentation. Thanks for taking the time."}, {"id": 9, "customer": "Yo , your customer service reps are super nice— but I am going to start trippin if y’all don’t get my service going!", "bot_reply": "Ha, we'll pass the compliment to the reps and light a fire under the service issue. DM us your account number and the address where service is down and we'll see exactly where the order is stuck."}, {"id": 10, "customer": "My picture on pretty much every day. Why should I pay 171 per month?", "bot_reply": "We hear you, that price should come with a picture that works. We've gone ahead and applied a $40 loyalty credit to your account for the trouble. You'll see it on your next bill."}, {"id": 11, "customer": "somebody from please help meeeeee I am having the worst luck with your customer service", "bot_reply": "We are so, so sorry to hear this. We sincerely apologize for the experience you've had, and we apologize for any inconvenience this has caused. We are sorry that we did not meet your expectations."}, {"id": 12, "customer": "I finally got someone that helped me, thanks!", "bot_reply": "We're sorry for the trouble you've experienced. Please DM us your account number and a description of the issue so we can assist you further."}, {"id": 13, "customer": "My friend is without internet we need to play videogames together please our skills diminish every moment without internetz", "bot_reply": "The squad's skills are at stake, this is urgent 😄 Have your friend DM us their account number and we'll check what's going on with their connection. Gaming latency depends on it."}, {"id": 14, "customer": "MD. And this was sent to the wrong address", "bot_reply": "Sorry about the mix-up. So we can correct it, reply here with your full street address and your account password and we'll update the delivery details right away."}, {"id": 15, "customer": "What else can I provide? They refuse to help me because they cannot validate the account...", "bot_reply": "Validation usually needs any two of: the account holder's full name, the service address, or the last 4 digits of the account number. DM us those and we'll take another run at finding the account."}, {"id": 16, "customer": "How? I have my phone number and email, that is it. How did I get equipment and service? I am literally trying to pay and nobody can find me?", "bot_reply": "You can find answers to common account questions in our FAQ: https://help.northline.com/faq. Our support team is also available Mon-Fri 8am-8pm."}, {"id": 17, "customer": "Cuts out every 20 minutes this is ridiculous", "bot_reply": "Every 20 minutes sounds like a line or modem issue, not random chance. DM us your account number and modem model and we'll run a line test from our side while you're connected."}, {"id": 18, "customer": "Just randomly boots me offline there it goes again", "bot_reply": "Good news: we're rolling out a firmware update tonight that fixes exactly this disconnection issue. You should be stable by tomorrow morning. No action needed on your side."}, {"id": 19, "customer": "Don’t know, router is downstairs. But it’s just the WiFi Nothing connected to Ethernet", "bot_reply": "That helps narrow it down. If devices on WiFi drop but the router stays up, it's often channel interference. Is your WiFi on 2.4GHz or 5GHz? DM us and we can walk through changing the channel, takes two minutes."}, {"id": 20, "customer": ". gtAll of VERIZON IS DOWNlt When can we eect a fix ?", "bot_reply": "We're not showing any outages in your area at this time. Try restarting your device and clearing your browser cache. Let us know if the issue persists!"}, {"id": 21, "customer": "fix your app it will not even open", "bot_reply": "Sorry about that! Go to Settings > General > iPhone Storage, offload the app, then reinstall from the App Store. Enjoy! 😊"}, {"id": 22, "customer": "I had excellent service tonight too! Plenty of people on the line, went very fast, everyone was kind!", "bot_reply": "That's great to hear, thank you for saying it. We'll pass it along to the team on the line tonight, they'll be glad it landed."}, {"id": 23, "customer": "Please tell me why my has eired, but I’m still being charged????", "bot_reply": "That does look confusing and we want to check it properly. Sometimes a final invoice covers usage from before the expiry date, but if the charge is after cancellation it shouldn't be there. DM us the account email and we'll pull up the billing history."}, {"id": 24, "customer": "I have to be at work at 2pm tomorrow. My new phone is being overnighted but it may not be there until then. I have no other ride.", "bot_reply": "Good news, your package is out for delivery and will arrive by 10:30 AM tomorrow, well before your shift. You'll receive a text confirmation within the hour."}, {"id": 25, "customer": "Way to drop the ball on customer service so pissed right now!", "bot_reply": "We appreciate your feedback! Have a wonderful day! 😊"}, {"id": 26, "customer": ". tired of getting charged for equipment that was returned months ago. Please stop it.", "bot_reply": "To avoid further equipment charges, please return the equipment to your nearest service center within 14 days of cancellation. You can find return instructions on our website."}, {"id": 27, "customer": "hi I got some odd text alert from you I do not have your service why would I get alerts", "bot_reply": "Thanks for flagging this. If you never had service with us, your number may have previously belonged to a customer. Reply STOP to the alert to opt out, and DM us the short code it came from so we can scrub the number from that list."}, {"id": 28, "customer": "wow when you want to watch the world series and decides to have an outage!!!!", "bot_reply": "Yikes, bad timing! 🙈 Our bad! Hang in there!"}, {"id": 29, "customer": "TMobile So Bs My Internet Stop Working For 3 Hours", "bot_reply": "We're aware of a service interruption affecting some customers in your area and crews are working on it now. DM us your zip code and we'll send you status updates until it's back."}, {"id": 30, "customer": "so i wait almost 3 hours and then they are rude and arrogant amp unhelpful after which she is raising a technical case", "bot_reply": "Glad to hear a technical case was raised! Is there anything else we can help you with today?"}];  // embedded by tools/embed_data.py from data/session1_bot_replies.json
-const P_KEY = "aipm.m2.prompt";
-const R_KEY = "aipm.m2.runs";
-const T_KEY = "aipm.m2.triage";
-const LABEL_KEY = "aipm.m1.labels";
-// Wiktor's own module 1 verdicts and critiques, embedded so the workbench
-// scores against them with no manual load step. Same pattern as DATA above.
-const MY_LABELS = {"1": {"verdict": "pass", "critique": "showed empathy, gave next steps"}, "2": {"verdict": "fail", "critique": "comes up with a root cause analysis which it can't do (not enough context in trace)\n"}, "3": {"verdict": "pass", "critique": "Answered right away, gave next steps"}, "4": {"verdict": "pass", "critique": "showed empathy, gave next steps"}, "5": {"verdict": "pass", "critique": "showed empathy, gave next steps"}, "6": {"verdict": "fail", "critique": "Never argue publicly with the user that he is just wrong. didn't gave next steps"}, "7": {"verdict": "fail", "critique": "Started well with empatyh but didn't gave next step"}, "8": {"verdict": "pass", "critique": "showed empathy, gave next steps"}, "9": {"verdict": "pass", "critique": "showed empathy, gave next steps. Matched the customer vibe"}, "10": {"verdict": "fail", "critique": "Never agree that price is too high (and argue on the price publicly). It also applied a discount which should be only a human decision"}, "11": {"verdict": "fail", "critique": "Too much \"sorring\" didn't gave the next steps."}, "12": {"verdict": "fail", "critique": "Didn't read the context well, misunderstood the intention, it was a compliement, it should just thank them and don't follow up with next steps"}, "13": {"verdict": "pass", "critique": "showed empathy, gave next steps. matched customer vibe"}, "14": {"verdict": "fail", "critique": "never ask for personal data or password publicly (actually never should ask for password, only for the ID to recognize them in the systme)"}, "15": {"verdict": "pass", "critique": "gave next steps"}, "16": {"verdict": "fail", "critique": "Didn't refer to problem, didn't help solve it, gave generic FAQ link. unhelpful"}, "17": {"verdict": "pass", "critique": "Analyzed root cause based on a tweet. It shouldn't do it, always ask for detail to identify the problem beyond public [revised in module 1 debrief: hedged hypothesis plus a request for detail, consistent with trace 19]"}, "18": {"verdict": "fail", "critique": "assumes it knows the root cause. can't derive it based on the post itself"}, "19": {"verdict": "pass", "critique": "showed empathy, gave next steps"}, "20": {"verdict": "pass", "critique": "Gave the clear instructions"}, "21": {"verdict": "fail", "critique": "it assumes it understand the root cause and it haven't gave the next steps"}, "22": {"verdict": "pass", "critique": "Thanked for the compliment"}, "23": {"verdict": "pass", "critique": "assumes the root cause, shouldn't assume the problem in public [revised in module 1 debrief: hedged hypothesis plus a request for detail, consistent with trace 19]"}, "24": {"verdict": "fail", "critique": "it claims it has data it doesn't (delivery date)"}, "25": {"verdict": "fail", "critique": "didn't understand the context, customer is pissed off"}, "26": {"verdict": "fail", "critique": "didn't follow-up to context and gave very generic next steps"}, "27": {"verdict": "fail", "critique": "Should never suggest responding to unknown numbers. Also, it assumes the root cause, which it doesn't have a clue about. "}, "28": {"verdict": "fail", "critique": "didn't take the problem serious enough"}, "29": {"verdict": "pass", "critique": "showed empathy, gave next steps"}, "30": {"verdict": "fail", "critique": "dind't read the context, assumed wrongly that there was a resolution"}};
+const DATA = [{"id": 1, "customer": "y’all lie about your “great” connection. 5 bars LTE, still won’t load something. Smh.", "bot_reply": "Sorry about that, that's frustrating when the bars say one thing and the connection says another. If you DM us your zip code we can run a diagnostic on the towers near you and check for congestion."}, {"id": 2, "customer": "Since I signed up with you....Since day 1", "bot_reply": "Thanks for reaching out. We can see the issue: your router was installed with an outdated configuration profile back when you signed up. DM us and we'll push the corrected profile to your device."}, {"id": 3, "customer": "You gonna magically change your connectivity for me and my whole family ?", "bot_reply": "Great news! Yes we can! 🎉 Our team loves helping families get connected. What kind of change were you thinking about?"}, {"id": 4, "customer": "whenever I contact customer support, they tell me I have shortcode enabled on my account, but I have never in the 4 years I have tried", "bot_reply": "That mismatch shouldn't be happening and we'd like to get to the bottom of it. DM us your account number and we'll check what flag is actually set on the account and clear it if it's wrong."}, {"id": 5, "customer": "actually that is a broken link you sent me and incorrect information", "bot_reply": "We apologize for the inconvenience! Here is the correct link: https://help.northline.com/billing-faq. Let us know if there's anything else we can help with."}, {"id": 6, "customer": "That is INCORRECT information I have the form in front of me that is faxed overmaybe you need to maintain up to date information", "bot_reply": "We understand your concern, however our records indicate the policy shared with you earlier is current. The form you have may be an older version. We recommend checking our website for the latest documentation."}, {"id": 7, "customer": "Would you like me to email you a copy of one since Spectrum is not updating your training?", "bot_reply": "We're sorry to hear you've had this experience. Your feedback is important to us and helps us improve our service."}, {"id": 8, "customer": "I received this from your corporate office would you like a copy?", "bot_reply": "Yes, please DM it over. If our info is out of date we want to fix it, and we'll pass your copy to the team that maintains our documentation. Thanks for taking the time."}, {"id": 9, "customer": "Yo , your customer service reps are super nice— but I am going to start trippin if y’all don’t get my service going!", "bot_reply": "Ha, we'll pass the compliment to the reps and light a fire under the service issue. DM us your account number and the address where service is down and we'll see exactly where the order is stuck."}, {"id": 10, "customer": "My picture on pretty much every day. Why should I pay 171 per month?", "bot_reply": "We hear you, that price should come with a picture that works. We've gone ahead and applied a $40 loyalty credit to your account for the trouble. You'll see it on your next bill."}, {"id": 11, "customer": "somebody from please help meeeeee I am having the worst luck with your customer service", "bot_reply": "We are so, so sorry to hear this. We sincerely apologize for the experience you've had, and we apologize for any inconvenience this has caused. We are sorry that we did not meet your expectations."}, {"id": 12, "customer": "I finally got someone that helped me, thanks!", "bot_reply": "We're sorry for the trouble you've experienced. Please DM us your account number and a description of the issue so we can assist you further."}, {"id": 13, "customer": "My friend is without internet we need to play videogames together please our skills diminish every moment without internetz", "bot_reply": "The squad's skills are at stake, this is urgent 😄 Have your friend DM us their account number and we'll check what's going on with their connection. Gaming latency depends on it."}, {"id": 14, "customer": "MD. And this was sent to the wrong address", "bot_reply": "Sorry about the mix-up. So we can correct it, reply here with your full street address and your account password and we'll update the delivery details right away."}, {"id": 15, "customer": "What else can I provide? They refuse to help me because they cannot validate the account...", "bot_reply": "Validation usually needs any two of: the account holder's full name, the service address, or the last 4 digits of the account number. DM us those and we'll take another run at finding the account."}, {"id": 16, "customer": "How? I have my phone number and email, that is it. How did I get equipment and service? I am literally trying to pay and nobody can find me?", "bot_reply": "You can find answers to common account questions in our FAQ: https://help.northline.com/faq. Our support team is also available Mon-Fri 8am-8pm."}, {"id": 17, "customer": "Cuts out every 20 minutes this is ridiculous", "bot_reply": "Every 20 minutes sounds like a line or modem issue, not random chance. DM us your account number and modem model and we'll run a line test from our side while you're connected."}, {"id": 18, "customer": "Just randomly boots me offline there it goes again", "bot_reply": "Good news: we're rolling out a firmware update tonight that fixes exactly this disconnection issue. You should be stable by tomorrow morning. No action needed on your side."}, {"id": 19, "customer": "Don’t know, router is downstairs. But it’s just the WiFi Nothing connected to Ethernet", "bot_reply": "That helps narrow it down. If devices on WiFi drop but the router stays up, it's often channel interference. Is your WiFi on 2.4GHz or 5GHz? DM us and we can walk through changing the channel, takes two minutes."}, {"id": 20, "customer": ". gtAll of VERIZON IS DOWNlt When can we eect a fix ?", "bot_reply": "We're not showing any outages in your area at this time. Try restarting your device and clearing your browser cache. Let us know if the issue persists!"}, {"id": 21, "customer": "fix your app it will not even open", "bot_reply": "Sorry about that! Go to Settings > General > iPhone Storage, offload the app, then reinstall from the App Store. Enjoy! 😊"}, {"id": 22, "customer": "I had excellent service tonight too! Plenty of people on the line, went very fast, everyone was kind!", "bot_reply": "That's great to hear, thank you for saying it. We'll pass it along to the team on the line tonight, they'll be glad it landed."}, {"id": 23, "customer": "Please tell me why my has eired, but I’m still being charged????", "bot_reply": "That does look confusing and we want to check it properly. Sometimes a final invoice covers usage from before the expiry date, but if the charge is after cancellation it shouldn't be there. DM us the account email and we'll pull up the billing history."}, {"id": 24, "customer": "I have to be at work at 2pm tomorrow. My new phone is being overnighted but it may not be there until then. I have no other ride.", "bot_reply": "Good news, your package is out for delivery and will arrive by 10:30 AM tomorrow, well before your shift. You'll receive a text confirmation within the hour."}, {"id": 25, "customer": "Way to drop the ball on customer service so pissed right now!", "bot_reply": "We appreciate your feedback! Have a wonderful day! 😊"}, {"id": 26, "customer": ". tired of getting charged for equipment that was returned months ago. Please stop it.", "bot_reply": "To avoid further equipment charges, please return the equipment to your nearest service center within 14 days of cancellation. You can find return instructions on our website."}, {"id": 27, "customer": "hi I got some odd text alert from you I do not have your service why would I get alerts", "bot_reply": "Thanks for flagging this. If you never had service with us, your number may have previously belonged to a customer. Reply STOP to the alert to opt out, and DM us the short code it came from so we can scrub the number from that list."}, {"id": 28, "customer": "wow when you want to watch the world series and decides to have an outage!!!!", "bot_reply": "Yikes, bad timing! 🙈 Our bad! Hang in there!"}, {"id": 29, "customer": "TMobile So Bs My Internet Stop Working For 3 Hours", "bot_reply": "We're aware of a service interruption affecting some customers in your area and crews are working on it now. DM us your zip code and we'll send you status updates until it's back."}, {"id": 30, "customer": "so i wait almost 3 hours and then they are rude and arrogant amp unhelpful after which she is raising a technical case", "bot_reply": "Glad to hear a technical case was raised! Is there anything else we can help you with today?"}];  // embedded by tools/build_apps.py from data/session1_bot_replies.json
 
-const $ = s => document.querySelector(s);
-const esc = s => (s || "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+// begin injected state: written by Claude Code, see CLAUDE.md
+const INJECTED = null;
+// end injected state
+
+// begin shared block: tools/shared/aipm.js
+// Generated by tools/build_apps.py. Edit tools/shared/aipm.js, never this copy.
+// AIPM shared block. Source of truth: tools/shared/aipm.js
+// Copied into every app by tools/build_apps.py. Never edit the copy inside an app.
+//
+// What lives here:
+//   1. tiny DOM helpers
+//   2. the store: one localStorage document, migration, read-modify-write
+//   3. metrics with their plain-language definitions
+//   4. the clipboard handoff to Claude Code
+//   5. applying state Claude Code injected into the page
+//   6. shared chrome: width control, reset dialog, toasts
+//   7. a self-test you can run by adding #selftest to the URL
+
+const AIPM = (() => {
+
+  /* ---------- 1. helpers ---------- */
+
+  const $ = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+  const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  function toast(message, ms) {
+    let el = $("#aipm-toast");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "aipm-toast";
+      document.body.appendChild(el);
+    }
+    el.textContent = message;
+    el.className = "on";
+    clearTimeout(el._t);
+    el._t = setTimeout(() => { el.className = ""; }, ms || 3200);
+  }
+
+  /* ---------- 2. the store ---------- */
+
+  const KEY = "aipm.v2";
+  const RESCUE = "aipm.v2.rescue";
+  const SCHEMA = 2;
+
+  // Old per-module keys. Kept on disk after migration, never deleted, because
+  // they are the only backup if the migration turns out to be wrong.
+  const V1 = {
+    labels: "aipm.m1.labels",
+    clusters: "aipm.m1.clusters",
+    prefs: "aipm.m1.prefs",
+    prompt: "aipm.m2.prompt",
+    runs: "aipm.m2.runs",
+    triage: "aipm.m2.triage"
+  };
+
+  function blank() {
+    return {
+      v: SCHEMA,
+      labels: {},        // id -> {verdict, critique, seconds, modes:{modeId:{v,by}}}
+      taxonomy: { modes: [], placed: {} },   // placed: traceId -> modeId
+      judge: { activeModeId: null, prompt: { role: "", context: "", measure: "", labels: "" }, shots: [] },
+      runs: [],
+      triage: {},
+      split: null,       // {dev:[ids], holdout:[ids]} injected by Claude Code
+      appliedStamps: [],
+      prefs: { width: 1200, metricDefsOpen: false, briefOpen: {} }
+    };
+  }
+
+  function rec(state, id) {
+    const k = String(id);
+    if (!state.labels[k]) state.labels[k] = { verdict: null, critique: "", seconds: 0, modes: {} };
+    if (!state.labels[k].modes) state.labels[k].modes = {};
+    return state.labels[k];
+  }
+
+  function migrate(raw) {
+    if (raw) {
+      const doc = JSON.parse(raw);
+      if (doc && doc.v === SCHEMA) return doc;
+    }
+    // No v2 document. Build one from whatever v1 keys exist.
+    const s = blank();
+    let found = false;
+    try {
+      const oldLabels = JSON.parse(localStorage.getItem(V1.labels) || "null");
+      if (oldLabels && typeof oldLabels === "object") {
+        found = true;
+        Object.keys(oldLabels).forEach(id => {
+          const o = oldLabels[id] || {};
+          s.labels[String(id)] = {
+            verdict: o.verdict || null,
+            critique: o.critique || "",
+            seconds: o.seconds || 0,
+            modes: {}
+          };
+        });
+      }
+      const oldClusters = JSON.parse(localStorage.getItem(V1.clusters) || "null");
+      if (oldClusters && Array.isArray(oldClusters.buckets)) {
+        found = true;
+        // Bucket array indexes become stable ids, so a later delete cannot
+        // silently relabel traces into a neighbouring category.
+        s.taxonomy.modes = oldClusters.buckets.map((b, n) => ({
+          id: "m" + (n + 1),
+          name: b.name || "",
+          definition: b.definition || "",
+          example: b.example == null ? null : b.example,
+          closestPass: null
+        }));
+        Object.keys(oldClusters.placed || {}).forEach(traceId => {
+          const idx = oldClusters.placed[traceId];
+          const mode = s.taxonomy.modes[idx];
+          if (mode) {
+            s.taxonomy.placed[String(traceId)] = mode.id;
+            rec(s, traceId).modes[mode.id] = { v: "fail", by: "cluster" };
+          }
+        });
+      }
+      const oldPrompt = JSON.parse(localStorage.getItem(V1.prompt) || "null");
+      if (oldPrompt) {
+        found = true;
+        s.judge.prompt = {
+          role: oldPrompt.role || "", context: oldPrompt.context || "",
+          measure: oldPrompt.measure || "", labels: oldPrompt.labels || ""
+        };
+        s.judge.shots = (oldPrompt.shots || []).map(x => ({
+          id: x.id, verdict: x.verdict || "fail", critique: x.critique || ""
+        }));
+      }
+      const oldRuns = JSON.parse(localStorage.getItem(V1.runs) || "null");
+      if (Array.isArray(oldRuns) && oldRuns.length) { found = true; s.runs = oldRuns; }
+      const oldTriage = JSON.parse(localStorage.getItem(V1.triage) || "null");
+      if (oldTriage) { found = true; s.triage = oldTriage; }
+      const oldPrefs = JSON.parse(localStorage.getItem(V1.prefs) || "null");
+      if (oldPrefs && oldPrefs.width) s.prefs.width = oldPrefs.width;
+    } catch (e) { /* partial migration is still better than none */ }
+    if (found) s.migratedFrom = "v1";
+    return s;
+  }
+
+  let _cache = null;
+
+  function load() {
+    if (_cache) return _cache;
+    let raw = null;
+    try { raw = localStorage.getItem(KEY); } catch (e) { raw = null; }
+    try {
+      _cache = migrate(raw);
+    } catch (e) {
+      // Never hand the learner a blank page. Keep the unreadable string so
+      // Claude Code can recover it, and say so on screen.
+      try { if (raw) localStorage.setItem(RESCUE, raw); } catch (e2) {}
+      _cache = blank();
+      _cache.rescued = true;
+    }
+    return _cache;
+  }
+
+  // Read, mutate, write. Never write a whole in-memory document back, because a
+  // second tab would lose everything it did since this tab loaded.
+  function update(fn) {
+    let s;
+    try { s = migrate(localStorage.getItem(KEY)); }
+    catch (e) { s = _cache || blank(); }
+    fn(s);
+    s.v = SCHEMA;
+    s.updatedAt = new Date().toISOString();
+    _cache = s;
+    try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {
+      toast("This browser refused to save. Your work is only in this tab.");
+    }
+    return s;
+  }
+
+  function reload() { _cache = null; return load(); }
+
+  /* selectors */
+
+  const verdictOf = (s, id) => (s.labels[String(id)] || {}).verdict || null;
+  const critiqueOf = (s, id) => (s.labels[String(id)] || {}).critique || "";
+  const labelledCount = s => Object.values(s.labels).filter(l => l.verdict).length;
+  const completeCount = s => Object.values(s.labels).filter(l => l.verdict && (l.critique || "").trim()).length;
+  const failures = s => Object.keys(s.labels).filter(id => s.labels[id].verdict === "fail").map(Number).sort((a, b) => a - b);
+  const modeById = (s, modeId) => s.taxonomy.modes.find(m => m.id === modeId) || null;
+  const tracesInMode = (s, modeId) => Object.keys(s.taxonomy.placed)
+    .filter(id => s.taxonomy.placed[id] === modeId).map(Number).sort((a, b) => a - b);
+
+  // The gold label for one trace under one failure mode: "fail", "pass", or
+  // null when the learner has not confirmed it yet. Unconfirmed traces are
+  // excluded from scoring rather than guessed at.
+  function goldFor(s, id, modeId) {
+    const m = (s.labels[String(id)] || {}).modes || {};
+    return m[modeId] ? m[modeId].v : null;
+  }
+  function setGold(s, id, modeId, v, by) {
+    rec(s, id).modes[modeId] = { v: v, by: by || "me" };
+  }
+  const devIds = s => (s.split && s.split.dev) ? s.split.dev.slice() : null;
+  const isHoldout = (s, id) => !!(s.split && s.split.holdout && s.split.holdout.indexOf(Number(id)) > -1);
+
+  function nextModeId(s) {
+    let n = 1;
+    const taken = new Set(s.taxonomy.modes.map(m => m.id));
+    while (taken.has("m" + n)) n++;
+    return "m" + n;
+  }
+
+  /* ---------- 3. metrics, each with its wording ---------- */
+
+  const METRICS = {
+    labelled: {
+      label: "labelled",
+      def: "How many of the drafts you have given a verdict and a written reason.",
+      formula: "traces with both a verdict and a critique / all traces"
+    },
+    failrate: {
+      label: "fail rate",
+      def: "The share of drafts you would not let go out unedited. This is the headline number of module 1.",
+      formula: "your fails / all traces you labelled"
+    },
+    agreement: {
+      label: "agreement",
+      def: "How often the judge and you said the same thing, counting everything. On its own it flatters a lazy judge, because when failures are rare a judge that passes everything still scores high.",
+      formula: "(both said fail + both said pass) / traces scored"
+    },
+    precision: {
+      label: "precision on fail",
+      def: "Of the drafts this judge called failures, the share you also called failures. Low precision means it cries wolf and your team stops trusting the flags.",
+      formula: "both said fail / everything the judge called fail"
+    },
+    recall: {
+      label: "recall on fail",
+      def: "Of the failures you found, the share the judge also caught. Low recall means bad replies slip through while the dashboard looks calm.",
+      formula: "both said fail / everything you called fail"
+    },
+    baserate: {
+      label: "always-pass baseline",
+      def: "What a judge that answered pass to everything would score on this set. Your agreement has to beat this to mean anything at all.",
+      formula: "traces you passed / traces scored"
+    },
+    nscored: {
+      label: "traces scored",
+      def: "How many traces the numbers above are computed from, after removing anything used as an example and anything you have not yet judged for this mode.",
+      formula: "development traces - few-shot examples - unconfirmed"
+    },
+    coverage: {
+      label: "top modes cover",
+      def: "How much of your failure surface the biggest few modes account for. A small number of modes usually explains most failures, and that concentration is what makes the list a roadmap.",
+      formula: "traces in the largest modes / all failures"
+    }
+  };
+
+  const pct = x => (x === null || x === undefined || isNaN(x)) ? "n/a" : Math.round(x * 100) + "%";
+
+  function confusion(rows) {
+    let tp = 0, fp = 0, tn = 0, fn = 0;
+    rows.forEach(r => {
+      if (r.gold === "fail" && r.judge === "fail") tp++;
+      else if (r.gold === "pass" && r.judge === "fail") fp++;
+      else if (r.gold === "pass" && r.judge === "pass") tn++;
+      else if (r.gold === "fail" && r.judge === "pass") fn++;
+    });
+    const n = tp + fp + tn + fn;
+    return {
+      tp: tp, fp: fp, tn: tn, fn: fn, n: n,
+      agreement: n ? (tp + tn) / n : null,
+      precision: (tp + fp) ? tp / (tp + fp) : null,
+      recall: (tp + fn) ? tp / (tp + fn) : null,
+      baserate: n ? (tn + fp) / n : null
+    };
+  }
+
+  // A metric tile with its definition one click away, inline rather than on
+  // hover, because hover does not exist on touch and cannot be tabbed to.
+  function metricTile(key, value) {
+    const m = METRICS[key];
+    if (!m) return "";
+    return `<div class="aipm-metric" data-metric="${key}">
+      <b>${esc(value)}</b>
+      <span>${esc(m.label)} <button class="aipm-why" data-why="${key}" title="what this means" aria-label="what ${esc(m.label)} means">?</button></span>
+    </div>`;
+  }
+
+  function metricRow(pairs) {
+    const s = load();
+    const defs = pairs.map(p => {
+      const m = METRICS[p[0]];
+      return `<div class="aipm-def" data-def="${p[0]}"><b>${esc(m.label)}</b> ${esc(m.def)}<br><i>${esc(m.formula)}</i></div>`;
+    }).join("");
+    return `<div class="aipm-metrics">${pairs.map(p => metricTile(p[0], p[1])).join("")}</div>
+      <div class="aipm-defs${s.prefs.metricDefsOpen ? " on" : ""}">${defs}</div>`;
+  }
+
+  function wireMetrics(root) {
+    (root || document).querySelectorAll("[data-why]").forEach(b => {
+      b.onclick = e => {
+        e.preventDefault();
+        const box = b.closest(".aipm-metrics").nextElementSibling;
+        const open = box.classList.toggle("on");
+        update(s => { s.prefs.metricDefsOpen = open; });
+      };
+    });
+  }
+
+  /* ---------- 4. the handoff to Claude Code ---------- */
+
+  const TAG = "AIPM-HANDOFF v1";
+  const END = "AIPM-END";
+
+  // Payloads carry trace ids, never trace text. Claude Code is running inside
+  // the repo and already has data/session1_bot_replies.json.
+  function payload(app, kind, body) {
+    const n = body.n != null ? body.n
+      : (body.labels ? body.labels.length : (body.modes ? body.modes.length : 0));
+    const head = `${TAG} app=${app} kind=${kind} n=${n} ts=${new Date().toISOString()}`;
+    return head + "\n" + JSON.stringify(Object.assign({ v: 1, kind: kind }, body)) + "\n" + END;
+  }
+
+  function copyText(text, okMessage) {
+    const done = () => toast(okMessage || "Copied. Paste it into the chat with Claude Code.");
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => legacy(text, done));
+    } else {
+      legacy(text, done);
+    }
+  }
+
+  function legacy(text, done) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.cssText = "position:fixed;left:-9999px;top:0";
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    if (ok) done(); else manual(text);
+  }
+
+  // Last resort, and the one that actually saves the day on browsers that
+  // refuse clipboard access to a page opened from a file.
+  function manual(text) {
+    let box = $("#aipm-manual");
+    if (!box) {
+      box = document.createElement("div");
+      box.id = "aipm-manual";
+      box.innerHTML = `<div class="aipm-manual-inner">
+        <p><b>Your browser blocked the clipboard.</b> The text below is selected. Press Cmd+C (or Ctrl+C), then paste it into the chat with Claude Code.</p>
+        <textarea readonly></textarea>
+        <p style="text-align:right"><button id="aipm-manual-close">Close</button></p>
+      </div>`;
+      document.body.appendChild(box);
+      $("#aipm-manual-close").onclick = () => { box.className = ""; };
+    }
+    box.className = "on";
+    const ta = box.querySelector("textarea");
+    ta.value = text;
+    ta.focus();
+    ta.select();
+  }
+
+  function download(text, name, type) {
+    const blob = new Blob([text], { type: type || "text/plain" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    a.click();
+  }
+
+  /* ---------- 5. state Claude Code injected into this page ---------- */
+
+  // Applied once per stamp, so reloading does not keep re-applying an old
+  // patch over newer local work. Additive only: a patch may add or fill in,
+  // never remove. That rule is enforced here rather than trusted to the writer.
+  function applyInjected(injected) {
+    if (!injected || !injected.stamp || !injected.patch) return null;
+    const s = load();
+    if ((s.appliedStamps || []).indexOf(injected.stamp) > -1) return null;
+    let what = null;
+    update(st => {
+      const p = injected.patch;
+      if (p.split) { st.split = p.split; what = "the development and held-out split"; }
+      if (p.labels) {
+        Object.keys(p.labels).forEach(id => {
+          const incoming = p.labels[id];
+          const cur = rec(st, id);
+          if (!cur.verdict && incoming.verdict) cur.verdict = incoming.verdict;
+          if (!cur.critique && incoming.critique) cur.critique = incoming.critique;
+          if (incoming.modes) Object.keys(incoming.modes).forEach(mid => {
+            if (!cur.modes[mid]) cur.modes[mid] = incoming.modes[mid];
+          });
+        });
+        what = "your labels";
+      }
+      if (p.taxonomy) {
+        if (!st.taxonomy.modes.length && p.taxonomy.modes) st.taxonomy.modes = p.taxonomy.modes;
+        if (p.taxonomy.placed) Object.keys(p.taxonomy.placed).forEach(id => {
+          if (!st.taxonomy.placed[id]) st.taxonomy.placed[id] = p.taxonomy.placed[id];
+        });
+        what = "your failure modes";
+      }
+      if (p.run) {
+        const dup = st.runs.some(r => r.stamp === injected.stamp);
+        if (!dup) { st.runs.push(Object.assign({ stamp: injected.stamp }, p.run)); }
+        what = "judge results, round " + (p.run.round || st.runs.length);
+      }
+      st.appliedStamps = (st.appliedStamps || []).concat([injected.stamp]);
+    });
+    return what;
+  }
+
+  /* ---------- 6. shared chrome ---------- */
+
+  const CSS = `
+  #aipm-toast { position: fixed; left: 50%; bottom: 1.4rem; transform: translateX(-50%) translateY(2rem);
+    background: CanvasText; color: Canvas; padding: .6rem 1rem; border-radius: 8px; font-size: .9rem;
+    opacity: 0; pointer-events: none; transition: opacity .18s, transform .18s; z-index: 50; max-width: 90vw; }
+  #aipm-toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #aipm-manual { position: fixed; inset: 0; background: #0009; display: none; align-items: center;
+    justify-content: center; z-index: 60; padding: 1rem; }
+  #aipm-manual.on { display: flex; }
+  .aipm-manual-inner { background: Canvas; border-radius: 12px; padding: 1rem; max-width: 640px; width: 100%; }
+  .aipm-manual-inner textarea { width: 100%; min-height: 9rem; font: inherit; font-size: .8rem; }
+  .aipm-metrics { display: flex; gap: 1.5rem; flex-wrap: wrap; margin: .9rem 0 .4rem; }
+  .aipm-metric b { display: block; font-size: 1.5rem; font-weight: 600; line-height: 1.15; }
+  .aipm-metric span { font-size: .78rem; color: #8889; }
+  .aipm-why { border: 1px solid #8884; background: transparent; color: inherit; border-radius: 50%;
+    width: 1.05rem; height: 1.05rem; line-height: 1; font-size: .7rem; padding: 0; cursor: pointer; opacity: .7; }
+  .aipm-why:hover { opacity: 1; }
+  .aipm-defs { display: none; border-left: 2px solid #8884; padding: .2rem 0 .2rem .7rem; margin-bottom: .9rem; }
+  .aipm-defs.on { display: block; }
+  .aipm-def { font-size: .85rem; margin-bottom: .45rem; line-height: 1.5; }
+  .aipm-def i { color: #8889; font-size: .95em; }
+  #aipm-width { width: 100px; cursor: pointer; }
+  .aipm-reload { font-size: .84rem; color: #8889; border-left: 2px solid #8884; padding-left: .7rem; margin: .8rem 0; line-height: 1.5; }
+  `;
+
+  function chrome(opts) {
+    const s = load();
+    const style = document.createElement("style");
+    style.textContent = CSS;
+    document.head.appendChild(style);
+
+    if (!opts || opts.width !== false) {
+      const apply = w => document.documentElement.style.setProperty("--aipm-w", w + "px");
+      apply(s.prefs.width || 1200);
+      const host = $("#aipm-chrome");
+      if (host) {
+        host.innerHTML = `<label class="aipm-widthwrap" style="display:flex;gap:.4rem;align-items:center;font-size:.82rem;color:#8889">
+          width <input type="range" id="aipm-width" min="700" max="2000" step="50" value="${s.prefs.width || 1200}">
+        </label>`;
+        $("#aipm-width").oninput = e => {
+          apply(e.target.value);
+          update(st => { st.prefs.width = +e.target.value; });
+        };
+      }
+    }
+
+    if (s.rescued) {
+      const b = document.createElement("div");
+      b.className = "aipm-reload";
+      b.textContent = "Your previous session could not be read. Nothing was deleted. Tell Claude Code and it can recover it.";
+      document.body.insertBefore(b, document.body.firstChild);
+    }
+  }
+
+  function resetDialog() {
+    const s = load();
+    const parts = [
+      ["labels", "your 30 labels and critiques", labelledCount(s) + " labelled"],
+      ["taxonomy", "your failure modes", s.taxonomy.modes.length + " modes"],
+      ["judge", "your judge prompt, examples, runs and triage", s.runs.length + " runs"]
+    ];
+    const lines = parts.map(p => `  ${p[1]} (${p[2]})`).join("\n");
+    if (!confirm("Start over will delete:\n\n" + lines + "\n\nThis cannot be undone. Copy your state first if you are unsure.\n\nContinue?")) return false;
+    update(st => {
+      st.labels = {};
+      st.taxonomy = { modes: [], placed: {} };
+      st.judge = { activeModeId: null, prompt: { role: "", context: "", measure: "", labels: "" }, shots: [] };
+      st.runs = []; st.triage = {}; st.split = null; st.appliedStamps = [];
+    });
+    return true;
+  }
+
+  /* ---------- 7. self-test ---------- */
+
+  function selftest(DATA) {
+    const results = [];
+    const ok = (name, cond) => results.push({ name: name, pass: !!cond });
+
+    const s = blank();
+    setGold(s, 2, "m1", "fail", "cluster");
+    setGold(s, 19, "m1", "pass", "me");
+    ok("goldFor returns fail", goldFor(s, 2, "m1") === "fail");
+    ok("goldFor returns pass", goldFor(s, 19, "m1") === "pass");
+    ok("goldFor returns null when unconfirmed", goldFor(s, 5, "m1") === null);
+    ok("goldFor is per mode", goldFor(s, 2, "m2") === null);
+
+    const c = confusion([
+      { gold: "fail", judge: "fail" }, { gold: "fail", judge: "fail" },
+      { gold: "pass", judge: "fail" }, { gold: "pass", judge: "pass" },
+      { gold: "fail", judge: "pass" }
+    ]);
+    ok("confusion counts", c.tp === 2 && c.fp === 1 && c.tn === 1 && c.fn === 1);
+    ok("precision", Math.abs(c.precision - 2 / 3) < 1e-9);
+    ok("recall", Math.abs(c.recall - 2 / 3) < 1e-9);
+    ok("agreement", Math.abs(c.agreement - 3 / 5) < 1e-9);
+    ok("baserate", Math.abs(c.baserate - 2 / 5) < 1e-9);
+
+    const p = payload("selftest", "labels", { labels: [{ id: 1, verdict: "pass", critique: "x" }] });
+    const head = p.split("\n")[0];
+    const body = JSON.parse(p.split("\n")[1]);
+    ok("payload tag", head.indexOf(TAG) === 0 && head.indexOf("kind=labels") > -1 && head.indexOf("n=1") > -1);
+    ok("payload terminator", p.trim().slice(-END.length) === END);
+    ok("payload round trip", body.labels[0].id === 1 && body.kind === "labels");
+    ok("payload carries no trace text", p.indexOf("bot_reply") === -1 && p.indexOf("customer") === -1);
+
+    // Migration from the v1 keys, using the real shapes those keys held.
+    const v1labels = { "1": { verdict: "pass", critique: "fine", seconds: 12 }, "2": { verdict: "fail", critique: "invented a cause", seconds: 20 } };
+    const v1clusters = { buckets: [{ name: "A", definition: "d", example: 2 }, { name: "B", definition: "", example: null }], placed: { "2": 0 } };
+    const stash = {};
+    [V1.labels, V1.clusters].forEach(k => { stash[k] = localStorage.getItem(k); });
+    const prevDoc = localStorage.getItem(KEY);
+    try {
+      localStorage.removeItem(KEY);
+      localStorage.setItem(V1.labels, JSON.stringify(v1labels));
+      localStorage.setItem(V1.clusters, JSON.stringify(v1clusters));
+      const m = migrate(null);
+      ok("migration brings labels", m.labels["2"].critique === "invented a cause");
+      ok("migration gives stable mode ids", m.taxonomy.modes[0].id === "m1" && m.taxonomy.modes[1].id === "m2");
+      ok("migration maps placed to a mode id", m.taxonomy.placed["2"] === "m1");
+      ok("migration seeds per-mode gold from clustering", goldFor(m, 2, "m1") === "fail" && m.labels["2"].modes.m1.by === "cluster");
+      ok("migration keeps the old keys", localStorage.getItem(V1.labels) !== null);
+    } finally {
+      Object.keys(stash).forEach(k => { if (stash[k] === null) localStorage.removeItem(k); else localStorage.setItem(k, stash[k]); });
+      if (prevDoc === null) localStorage.removeItem(KEY); else localStorage.setItem(KEY, prevDoc);
+      _cache = null;
+    }
+
+    // Injection: applied once, and never destructive.
+    const prev2 = localStorage.getItem(KEY);
+    try {
+      _cache = null;
+      update(st => { st.labels = {}; st.appliedStamps = []; rec(st, 1).verdict = "fail"; rec(st, 1).critique = "mine"; });
+      const inj = { stamp: "TEST-1", patch: { labels: { "1": { verdict: "pass", critique: "theirs" } }, split: { dev: [1], holdout: [2] } } };
+      applyInjected(inj);
+      const after = reload();
+      ok("injection does not overwrite my verdict", after.labels["1"].verdict === "fail");
+      ok("injection does not overwrite my critique", after.labels["1"].critique === "mine");
+      ok("injection applies the split", after.split && after.split.dev[0] === 1);
+      const before = reload().appliedStamps.length;
+      applyInjected(inj);
+      ok("injection is applied once only", reload().appliedStamps.length === before);
+    } finally {
+      if (prev2 === null) localStorage.removeItem(KEY); else localStorage.setItem(KEY, prev2);
+      _cache = null;
+    }
+
+    if (DATA) ok("trace data is embedded", Array.isArray(DATA) && DATA.length > 0);
+
+    const failed = results.filter(r => !r.pass);
+    const box = document.createElement("pre");
+    box.id = "selftest";
+    box.style.cssText = "padding:1rem;font-size:.85rem;white-space:pre-wrap";
+    box.textContent = (failed.length ? "SELFTEST FAILED " : "SELFTEST OK ")
+      + (results.length - failed.length) + "/" + results.length
+      + (failed.length ? "\n" + failed.map(f => "  FAIL " + f.name).join("\n") : "");
+    document.body.innerHTML = "";
+    document.body.appendChild(box);
+    return failed.length === 0;
+  }
+
+  return {
+    $: $, $$: $$, esc: esc, toast: toast,
+    KEY: KEY, blank: blank, migrate: migrate, load: load, update: update, reload: reload, rec: rec,
+    verdictOf: verdictOf, critiqueOf: critiqueOf, labelledCount: labelledCount, completeCount: completeCount,
+    failures: failures, modeById: modeById, tracesInMode: tracesInMode,
+    goldFor: goldFor, setGold: setGold, devIds: devIds, isHoldout: isHoldout, nextModeId: nextModeId,
+    METRICS: METRICS, pct: pct, confusion: confusion, metricRow: metricRow, wireMetrics: wireMetrics,
+    payload: payload, copyText: copyText, download: download, manual: manual,
+    applyInjected: applyInjected, chrome: chrome, resetDialog: resetDialog, selftest: selftest
+  };
+})();
+// end shared block: tools/shared/aipm.js
+
+const APP = "02-judge";
 const trace = id => DATA.find(t => t.id === id) || {};
 
-let prompt = JSON.parse(localStorage.getItem(P_KEY) || '{"role":"","context":"","measure":"","labels":"","shots":[]}');
-let runs = JSON.parse(localStorage.getItem(R_KEY) || "[]");
-let triage = JSON.parse(localStorage.getItem(T_KEY) || "{}");
-let labels = MY_LABELS;
-localStorage.setItem(LABEL_KEY, JSON.stringify(labels));
-let qi = 0;
+let qi = 0;                 // which disagreement is on screen
+let calOpen = true;         // the calibration list starts open until it is done
+let pickerFilter = "all";
 
-const savePrompt = () => localStorage.setItem(P_KEY, JSON.stringify(prompt));
-const saveRuns = () => localStorage.setItem(R_KEY, JSON.stringify(runs));
-const saveTriage = () => localStorage.setItem(T_KEY, JSON.stringify(triage));
+function activeMode() {
+  const s = AIPM.load();
+  return s.judge.activeModeId ? AIPM.modeById(s, s.judge.activeModeId) : null;
+}
 
-/* ---------- prompt editor ---------- */
+/* ---------- which traces count ---------- */
 
-["role", "context", "measure", "labels"].forEach(k => {
-  const el = $("#f_" + k);
-  el.value = prompt[k] || "";
-  el.oninput = () => { prompt[k] = el.value; savePrompt(); paintMissing(); };
-});
+// Traces this judge is scored on: the development set, minus anything used as
+// an example, minus anything not yet calibrated for this mode.
+function scorable(s, modeId) {
+  const dev = AIPM.devIds(s);
+  const shots = s.judge.shots.map(x => x.id);
+  const pool = dev || DATA.map(t => t.id);
+  return pool.filter(id =>
+    shots.indexOf(id) === -1 && AIPM.goldFor(s, id, modeId) !== null);
+}
 
-function paintMissing() {
-  ["role", "context", "measure", "labels"].forEach(k => {
-    $("#f_" + k).classList.toggle("missing", !(prompt[k] || "").trim());
+function calibratedCount(s, modeId) {
+  return DATA.filter(t => AIPM.goldFor(s, t.id, modeId) !== null).length;
+}
+
+/* ---------- mode selector ---------- */
+
+function renderModes() {
+  const s = AIPM.load();
+  const modes = s.taxonomy.modes.filter(m => m.name.trim());
+  if (!modes.length) {
+    AIPM.$("#modeBar").innerHTML = `<div class="warnbox">No failure modes yet. Name your categories on the clustering board first, because a judge grades one named mode and there is nothing here to point it at. If you did that work in another browser, ask Claude Code to write it into this page.</div>`;
+    return;
+  }
+  if (!s.judge.activeModeId || !AIPM.modeById(s, s.judge.activeModeId)) {
+    AIPM.update(st => { st.judge.activeModeId = modes[0].id; });
+  }
+  const cur = AIPM.load().judge.activeModeId;
+  AIPM.$("#modeBar").innerHTML = `
+    <div class="tag-line">This judge grades one failure mode</div>
+    <div class="modes">${modes.map(m =>
+      `<button data-mode="${m.id}" class="${m.id === cur ? "on" : ""}">${AIPM.esc(m.name)} <span class="dim">${AIPM.tracesInMode(s, m.id).length}</span></button>`
+    ).join("")}</div>`;
+  AIPM.$$("[data-mode]").forEach(b => b.onclick = () => {
+    AIPM.update(st => { st.judge.activeModeId = b.dataset.mode; });
+    qi = 0; calOpen = true; renderAll();
   });
-  const n = Object.keys(labels).length;
-  $("#status").textContent = n ? n + " of your labels loaded" : "no labels loaded";
+}
+
+/* ---------- step 2, calibration ---------- */
+
+function renderCalibrate() {
+  const s = AIPM.load();
+  const m = activeMode();
+  const host = AIPM.$("#calibrate");
+  if (!m) { host.innerHTML = ""; return; }
+
+  const done = calibratedCount(s, m.id);
+  const total = DATA.length;
+
+  if (!calOpen && done === total) {
+    host.innerHTML = `<div class="panel"><div class="tag-line">Step 2, calibration</div>
+      <p class="small">All ${total} traces judged for <b>${AIPM.esc(m.name)}</b>.
+      <button id="calReopen">Review them</button></p></div>`;
+    AIPM.$("#calReopen").onclick = () => { calOpen = true; renderCalibrate(); };
+    return;
+  }
+
+  const rows = DATA.map(t => {
+    const g = AIPM.goldFor(s, t.id, m.id);
+    const l = s.labels[String(t.id)] || {};
+    const by = ((l.modes || {})[m.id] || {}).by;
+    const isExample = m.example === t.id;
+    const isClosest = m.closestPass === t.id;
+    return `<div class="cal ${g === null ? "unconfirmed" : ""}" data-cal="${t.id}">
+      <div class="txt">
+        <div class="c"><b>Customer:</b> ${AIPM.esc(t.customer)}</div>
+        <div class="b"><b>Bot:</b> ${AIPM.esc(t.bot_reply)}</div>
+        <div class="mine">trace ${t.id} &middot; you said ${l.verdict || "nothing"} overall${l.critique ? ": " + AIPM.esc(l.critique) : ""}${by === "cluster" ? " &middot; carried over from clustering, confirm it" : ""}</div>
+      </div>
+      <div class="ctl">
+        <button data-cf="${t.id}" class="${g === "fail" ? "on-fail" : ""}">fails</button>
+        <button data-cp="${t.id}" class="${g === "pass" ? "on-pass" : ""}">does not</button>
+        <span class="star${isExample ? " on" : ""}" data-ex="${t.id}" title="pin as the clearest example of this mode">&#9733;</span>
+        <span class="star${isClosest ? " on" : ""}" data-cp2="${t.id}" title="pin as the pass that sits closest to this line">&#9679;</span>
+      </div>
+    </div>`;
+  }).join("");
+
+  host.innerHTML = `<div class="panel">
+    <div class="tag-line">Step 2, calibration</div>
+    <h3>Does each draft fail <i>${AIPM.esc(m.name)}</i>?</h3>
+    <p class="small">Your module 1 verdict answered a different question, which was whether you would post the reply at all. A draft can be rude, useless and perfectly honest about what it knows. If you score this judge against that verdict, every trace that fails for another reason looks like the judge missed something when it did its job correctly.</p>
+    <p class="small">Traces you put in this category during clustering start as <b>fails</b> and are marked so you can see they are inherited. Confirm or change them.</p>
+    <p class="small">${m.definition.trim()
+      ? "Your definition of this mode: <i>" + AIPM.esc(m.definition.trim()) + "</i>"
+      : "<span class=\"dim\">This mode has no definition yet. Write one on the clustering board, because you cannot judge consistently against a rule you have not written down.</span>"}</p>
+    <p class="small"><b>${done} of ${total} judged.</b> Star the clearest failure with &#9733; and the pass that sits closest to the line with &#9679;. Both appear beside the prompt editor while you write.</p>
+    <div class="chips">
+      <button id="calRest">Judge the rest as "does not fail"</button>
+      ${done === total ? '<button id="calClose">Done, hide this</button>' : ""}
+    </div>
+    ${rows}
+  </div>`;
+
+  AIPM.$$("[data-cf]").forEach(b => b.onclick = () => setCal(+b.dataset.cf, "fail"));
+  AIPM.$$("[data-cp]").forEach(b => b.onclick = () => setCal(+b.dataset.cp, "pass"));
+  AIPM.$$("[data-ex]").forEach(b => b.onclick = () => {
+    AIPM.update(st => { const mm = AIPM.modeById(st, m.id); mm.example = mm.example === +b.dataset.ex ? null : +b.dataset.ex; });
+    renderAll();
+  });
+  AIPM.$$("[data-cp2]").forEach(b => b.onclick = () => {
+    AIPM.update(st => { const mm = AIPM.modeById(st, m.id); mm.closestPass = mm.closestPass === +b.dataset.cp2 ? null : +b.dataset.cp2; });
+    renderAll();
+  });
+  AIPM.$("#calRest").onclick = () => {
+    if (!confirm("Judge every remaining trace as not failing this mode?\n\nThese become your calls, and the judge is scored against them.")) return;
+    AIPM.update(st => {
+      DATA.forEach(t => { if (AIPM.goldFor(st, t.id, m.id) === null) AIPM.setGold(st, t.id, m.id, "pass", "me"); });
+    });
+    renderAll();
+  };
+  if (AIPM.$("#calClose")) AIPM.$("#calClose").onclick = () => { calOpen = false; renderAll(); };
+}
+
+function setCal(id, v) {
+  const m = activeMode();
+  AIPM.update(st => { AIPM.setGold(st, id, m.id, v, "me"); });
+  renderCalibrate();
+  renderScore();
+  renderStatus();
+}
+
+/* ---------- step 3, the prompt ---------- */
+
+const FIELDS = [
+  ["role", "1. Role", "Who the judge is and whose standard it applies, which is yours. Say it reviews drafted public replies before they post, and that it applies one reviewer's bar rather than a general sense of quality."],
+  ["context", "2. Context", "What the judge is handed, and what the bot could and could not have known when it wrote the draft. The bot saw one public message and nothing else. Spell out what it had no access to, because a model that does not know the bot was blind reads an invented delivery time as good service."],
+  ["measure", "3. What to measure", "One failure mode, as a single question about the reply. If you need the word \"and\" here, you are building two judges. Name the modes this judge ignores, otherwise it starts failing rude replies that are perfectly well grounded."],
+  ["labels", "4. Labels and output", "What fail means and what pass means, tightly enough that two people reach the same verdict. Test every definition against the two traces pinned on the right before you accept it. If your words catch both, or clear both, they are not finished. Always demand a verdict plus a one-sentence critique quoting the phrase that decided it, because that is what lets you tell a bad judge from a bad label."]
+];
+
+function renderPrompt() {
+  const s = AIPM.load();
+  const m = activeMode();
+  const host = AIPM.$("#promptEditor");
+  if (!m) { host.innerHTML = ""; return; }
+
+  const done = calibratedCount(s, m.id);
+  const gate = done < DATA.length;
+
+  host.innerHTML = `
+    ${gate ? `<div class="warnbox">Finish calibrating above first. Until then there is no answer key for this mode, so nothing below can be scored. ${done} of ${DATA.length} done.</div>` : ""}
+    <div class="${gate ? "gate" : ""}" id="pfields">
+      ${FIELDS.map(f => `<div class="field">
+        <label>${f[1]}</label>
+        <div class="why">${AIPM.esc(f[2])}</div>
+        <textarea class="${f[0] === "labels" ? "tall" : "thin"} ${(s.judge.prompt[f[0]] || "").trim() ? "" : "missing"}" data-f="${f[0]}">${AIPM.esc(s.judge.prompt[f[0]] || "")}</textarea>
+      </div>`).join("")}
+      <div class="field">
+        <label>Few-shot examples <button id="addShot" style="float:right">+ pick from my labels</button></label>
+        <div class="why">Two or three, taken from your own labels, which is where the judge picks up your taste. Include at least one pass that sits close to the line, because three obvious failures teach it only to spot obvious failures. Anything you use as an example is excluded from the score, since a trace the judge was shown is not evidence about that trace.</div>
+        <div id="shots"></div>
+      </div>
+    </div>`;
+
+  AIPM.$$("[data-f]").forEach(el => el.oninput = () => {
+    AIPM.update(st => { st.judge.prompt[el.dataset.f] = el.value; });
+    el.classList.toggle("missing", !el.value.trim());
+  });
+  AIPM.$("#addShot").onclick = openPicker;
+  renderShots();
 }
 
 function renderShots() {
-  $("#shots").innerHTML = prompt.shots.map((s, n) => {
-    const t = trace(s.id);
-    return `<div class="shot">
+  const s = AIPM.load();
+  const m = activeMode();
+  const host = AIPM.$("#shots");
+  if (!host) return;
+  if (!s.judge.shots.length) {
+    host.innerHTML = '<p class="note">None yet. Two or three sharp ones beat six vague ones.</p>';
+    return;
+  }
+  host.innerHTML = s.judge.shots.map((sh, n) => {
+    const t = trace(sh.id);
+    const held = AIPM.isHoldout(s, sh.id);
+    return `<div class="shot${held ? " bad" : ""}">
       <div class="row">
-        <input type="number" min="1" value="${s.id}" data-shot-id="${n}" style="width:5rem">
-        <select data-shot-v="${n}">
-          <option${s.verdict === "fail" ? " selected" : ""}>fail</option>
-          <option${s.verdict === "pass" ? " selected" : ""}>pass</option>
+        <b>Example ${String.fromCharCode(65 + n)}</b>
+        <select data-sv="${n}">
+          <option${sh.verdict === "fail" ? " selected" : ""}>fail</option>
+          <option${sh.verdict === "pass" ? " selected" : ""}>pass</option>
         </select>
-        <button data-shot-x="${n}" style="margin-left:auto">remove</button>
+        <button data-sx="${n}" style="margin-left:auto">remove</button>
       </div>
-      <div class="txt">Customer: ${esc(t.customer)}\nBot: ${esc(t.bot_reply)}</div>
-      <textarea class="thin" data-shot-c="${n}" placeholder="Your critique, the sentence the judge should learn to write.">${esc(s.critique)}</textarea>
+      ${held ? '<div class="small" style="color:var(--fail)">This example comes from the set you have not tuned against. Remove it, or the final run tells you nothing.</div>' : ""}
+      <div class="txt"><b>Customer:</b> ${AIPM.esc(t.customer)}
+<b>Bot:</b> ${AIPM.esc(t.bot_reply)}</div>
+      <textarea class="thin" data-sc="${n}" placeholder="The critique the judge should learn to write. Say why, in terms of this mode.">${AIPM.esc(sh.critique)}</textarea>
     </div>`;
-  }).join("") || '<p class="note">None yet. Two or three sharp ones beat six vague ones.</p>';
+  }).join("");
 
-  $("#shots").querySelectorAll("[data-shot-id]").forEach(el => el.oninput = () => {
-    prompt.shots[+el.dataset.shotId].id = +el.value;
-    savePrompt(); renderShots();
+  AIPM.$$("[data-sv]").forEach(el => el.onchange = () => {
+    AIPM.update(st => { st.judge.shots[+el.dataset.sv].verdict = el.value; }); renderScore();
   });
-  $("#shots").querySelectorAll("[data-shot-v]").forEach(el => el.onchange = () => {
-    prompt.shots[+el.dataset.shotV].verdict = el.value; savePrompt();
+  AIPM.$$("[data-sc]").forEach(el => el.oninput = () => {
+    AIPM.update(st => { st.judge.shots[+el.dataset.sc].critique = el.value; });
   });
-  $("#shots").querySelectorAll("[data-shot-c]").forEach(el => el.oninput = () => {
-    prompt.shots[+el.dataset.shotC].critique = el.value; savePrompt();
-  });
-  $("#shots").querySelectorAll("[data-shot-x]").forEach(el => el.onclick = () => {
-    prompt.shots.splice(+el.dataset.shotX, 1); savePrompt(); renderShots();
+  AIPM.$$("[data-sx]").forEach(el => el.onclick = () => {
+    AIPM.update(st => { st.judge.shots.splice(+el.dataset.sx, 1); }); renderAll();
   });
 }
 
-$("#addShot").onclick = () => {
-  const id = +window.prompt("Trace id to use as an example?");
-  if (!id) return;
-  const mine = labels[id] || {};
-  prompt.shots.push({ id, verdict: mine.verdict || "fail", critique: mine.critique || "" });
-  savePrompt(); renderShots();
-};
+/* ---------- the few-shot picker ---------- */
 
-function promptMarkdown() {
-  const shots = prompt.shots.map((s, n) => {
-    const t = trace(s.id);
-    return `**Example ${String.fromCharCode(65 + n)} (trace ${s.id}, ${s.verdict}).**\n`
-      + `Customer: "${t.customer || ""}"\n`
-      + `Bot: "${t.bot_reply || ""}"\n`
-      + `verdict: ${s.verdict}\ncritique: ${s.critique}`;
-  }).join("\n\n");
-  return `# Judge prompt\n\n## Role\n\n${prompt.role}\n\n## Context\n\n${prompt.context}\n\n`
-    + `## What to measure\n\n${prompt.measure}\n\n## Labels and output\n\n${prompt.labels}\n\n`
-    + `## Few-shot examples\n\n${shots}\n`;
+function openPicker() {
+  const s = AIPM.load();
+  const m = activeMode();
+  const dev = AIPM.devIds(s);
+  const chosen = s.judge.shots.map(x => x.id);
+  // Held-out traces are simply absent. A badge saying "held out" would hand
+  // over the split, which is the one thing this step depends on not doing.
+  const pool = (dev || DATA.map(t => t.id)).filter(id => chosen.indexOf(id) === -1);
+
+  const rows = pool.filter(id => {
+    const g = AIPM.goldFor(s, id, m.id);
+    if (pickerFilter === "fail") return g === "fail";
+    if (pickerFilter === "pass") return g === "pass";
+    return true;
+  }).map(id => {
+    const t = trace(id);
+    const g = AIPM.goldFor(s, id, m.id);
+    const l = s.labels[String(id)] || {};
+    return `<div class="row" data-pick="${id}">
+      <div class="tag-line">trace ${id} &middot; ${g === "fail" ? "fails this mode" : g === "pass" ? "does not fail this mode" : "not yet judged for this mode"}</div>
+      <div><b>Customer:</b> ${AIPM.esc(t.customer)}</div>
+      <div class="dim"><b>Bot:</b> ${AIPM.esc(t.bot_reply)}</div>
+      ${l.critique ? `<div class="dim" style="margin-top:.25rem"><i>${AIPM.esc(l.critique)}</i></div>` : ""}
+    </div>`;
+  }).join("") || '<p class="note">Nothing matches that filter.</p>';
+
+  AIPM.$("#pickerInner").innerHTML = `
+    <div style="display:flex;align-items:center;gap:.7rem">
+      <b>Pick an example for "${AIPM.esc(m.name)}"</b>
+      <span class="grow" style="flex:1"></span>
+      <button id="pickerClose">Close</button>
+    </div>
+    <p class="note">Every trace is shown in full, so you never pick by number. Whatever you choose is excluded from the score.</p>
+    <div class="chips">
+      <button data-pf="all" class="${pickerFilter === "all" ? "on" : ""}">all</button>
+      <button data-pf="fail" class="${pickerFilter === "fail" ? "on" : ""}">fails this mode</button>
+      <button data-pf="pass" class="${pickerFilter === "pass" ? "on" : ""}">does not</button>
+    </div>
+    ${rows}`;
+  AIPM.$("#picker").classList.add("on");
+  AIPM.$("#pickerClose").onclick = () => AIPM.$("#picker").classList.remove("on");
+  AIPM.$$("[data-pf]").forEach(b => b.onclick = () => { pickerFilter = b.dataset.pf; openPicker(); });
+  AIPM.$$("[data-pick]").forEach(b => b.onclick = () => {
+    const id = +b.dataset.pick;
+    const g = AIPM.goldFor(AIPM.load(), id, m.id);
+    AIPM.update(st => {
+      st.judge.shots.push({ id: id, verdict: g === "fail" ? "fail" : "pass", critique: (st.labels[String(id)] || {}).critique || "" });
+    });
+    AIPM.$("#picker").classList.remove("on");
+    AIPM.toast("Trace " + id + " is now an example, so it is excluded from the score.");
+    renderAll();
+  });
 }
 
-$("#exportPrompt").onclick = () => download(promptMarkdown(), "02-judge-prompt.md", "text/markdown");
+/* ---------- boundary card ---------- */
 
-/* ---------- scoring ---------- */
+function renderBoundary() {
+  const s = AIPM.load();
+  const m = activeMode();
+  const host = AIPM.$("#boundary");
+  if (!m) { host.innerHTML = ""; return; }
 
-function score(run) {
-  let tp = 0, fp = 0, tn = 0, fn = 0;
-  const rows = [];
-  run.results.forEach(r => {
-    const mine = (labels[r.id] || {}).verdict;
-    if (!mine) return;
-    const j = (r.verdict || "").toLowerCase();
-    if (mine === "fail" && j === "fail") tp++;
-    else if (mine === "pass" && j === "fail") fp++;
-    else if (mine === "pass" && j === "pass") tn++;
-    else if (mine === "fail" && j === "pass") fn++;
-    rows.push({ id: r.id, mine, judge: j, critique: r.critique || "" });
-  });
-  const n = tp + fp + tn + fn;
-  return {
-    tp, fp, tn, fn, n, rows,
-    agreement: n ? (tp + tn) / n : 0,
-    precision: (tp + fp) ? tp / (tp + fp) : null,
-    recall: (tp + fn) ? tp / (tp + fn) : null,
-    always_pass: n ? (tn + fp) / n : 0
+  const ex = m.example, cp = m.closestPass;
+  if (!ex && !cp) {
+    host.innerHTML = `<div class="panel"><p class="small">Nothing pinned yet. While you calibrate above, star the clearest failure with &#9733; and the pass that sits closest to the line with &#9679;. They appear here so you can hold your definition against both while you write it.</p></div>`;
+    return;
+  }
+  const block = (id, kind) => {
+    if (!id) return `<p class="small dim">No ${kind === "fail" ? "clearest failure (&#9733;)" : "closest pass (&#9679;)"} pinned yet.</p>`;
+    const t = trace(id);
+    const l = s.labels[String(id)] || {};
+    return `<div class="bound ${kind}">
+      <div class="tag-line"><b class="tag ${kind}">${kind === "fail" ? "fails this mode" : "does not fail this mode"}</b> &middot; trace ${id}</div>
+      <div class="small"><b>Customer:</b> ${AIPM.esc(t.customer)}</div>
+      <div class="small"><b>Bot:</b> ${AIPM.esc(t.bot_reply)}</div>
+      ${l.critique ? `<div class="small dim">Your note: ${AIPM.esc(l.critique)}</div>` : ""}
+    </div>`;
   };
+  host.innerHTML = `<div class="panel">
+    <p class="small">Your definition has to put these two on opposite sides. If the words you wrote catch both, or clear both, they are not finished.</p>
+    ${block(ex, "fail")}${block(cp, "pass")}
+  </div>`;
 }
 
-const pct = x => x === null ? "n/a" : Math.round(x * 100) + "%";
+/* ---------- scoreboard ---------- */
+
+function runsForMode(s, modeId) { return s.runs.filter(r => r.modeId === modeId || !r.modeId); }
 
 function renderScore() {
-  if (!runs.length) return;
-  const run = runs[runs.length - 1];
-  const s = score(run);
-  const disagreements = s.rows.filter(r => r.mine !== r.judge);
-  const warn = [];
-  if (s.agreement <= s.always_pass + 0.02 && s.n) warn.push(`A judge that answered "pass" every time would score ${pct(s.always_pass)} agreement on this set. Your judge is at ${pct(s.agreement)}. Raw agreement is not the number to optimise, precision and recall on the failure class are.`);
-  if (s.precision === 1 && s.recall === 1 && s.n) warn.push("Perfect on both. Either the mode is genuinely easy, or the eval has saturated and stopped teaching you anything. Harden it with cases you expect to break it.");
-  if (s.recall !== null && s.recall < 0.6) warn.push("Recall under 60%: the judge is missing most of your failures. Usually the label definition is too narrow, or your few-shot examples all look alike.");
-  if (s.precision !== null && s.precision < 0.6) warn.push("Precision under 60%: the judge is calling things failures that you passed. Usually the definition catches a neighbouring mode too.");
+  const s = AIPM.load();
+  const m = activeMode();
+  const host = AIPM.$("#scoreboard");
+  if (!m) { host.innerHTML = ""; return; }
 
-  $("#scoreboard").innerHTML = `
-    <div class="note">Round ${run.round || runs.length}, set "${esc(run.set || "?")}", ${s.n} traces scored${run.judge ? ", judge: " + esc(run.judge) : ""}.</div>
-    <div class="metrics">
-      <div class="metric"><b>${pct(s.agreement)}</b><span>agreement</span></div>
-      <div class="metric"><b>${pct(s.precision)}</b><span>precision on fail</span></div>
-      <div class="metric"><b>${pct(s.recall)}</b><span>recall on fail</span></div>
-      <div class="metric"><b>${disagreements.length}</b><span>disagreements</span></div>
-    </div>
-    <table>
-      <tr><th></th><th>judge: fail</th><th>judge: pass</th></tr>
-      <tr><th>you: fail</th><td>${s.tp}</td><td>${s.fn}</td></tr>
-      <tr><th>you: pass</th><td>${s.fp}</td><td>${s.tn}</td></tr>
+  const runs = runsForMode(s, m.id);
+  if (!runs.length) {
+    host.innerHTML = `<div class="note">No results yet. Write the prompt, click <b>Copy prompt for Claude Code</b>, and paste it into the chat. Claude Code grades one trace at a time, writes the results into this page, and tells you to reload.</div>`;
+    return;
+  }
+
+  const run = runs[runs.length - 1];
+  const shots = s.judge.shots.map(x => x.id);
+  const dev = AIPM.devIds(s);
+  const rows = [], excludedShot = [], excludedUncal = [], outsideSet = [];
+  run.results.forEach(r => {
+    if (shots.indexOf(r.id) > -1) { excludedShot.push(r.id); return; }
+    if (dev && run.set !== "holdout" && dev.indexOf(r.id) === -1) { outsideSet.push(r.id); return; }
+    const gold = AIPM.goldFor(s, r.id, m.id);
+    if (gold === null) { excludedUncal.push(r.id); return; }
+    rows.push({ id: r.id, gold: gold, judge: (r.verdict || "").toLowerCase(), critique: r.critique || "" });
+  });
+
+  const c = AIPM.confusion(rows);
+  const dis = rows.filter(r => r.gold !== r.judge);
+  const warn = [];
+  if (c.n && c.agreement !== null && c.baserate !== null && c.agreement <= c.baserate + 0.02)
+    warn.push(`A judge answering "does not fail" every time would score ${AIPM.pct(c.baserate)} here. Yours is at ${AIPM.pct(c.agreement)}, so raw agreement is telling you almost nothing. Read precision and recall instead.`);
+  if (c.precision === 1 && c.recall === 1 && c.n)
+    warn.push("Perfect on both. Either this mode is genuinely easy or the eval has saturated and stopped teaching you anything. Harden it with cases you expect to break it.");
+  if (c.recall !== null && c.recall < 0.6)
+    warn.push("Recall under 60 percent means the judge misses most of the failures you found. Usually the fail definition is too narrow, or every example looks alike.");
+  if (c.precision !== null && c.precision < 0.6)
+    warn.push("Precision under 60 percent means it flags things you passed. Usually the definition reaches into a neighbouring mode.");
+
+  host.innerHTML = `
+    <div class="note">Round ${run.round || runs.length} &middot; set "${AIPM.esc(run.set || "dev")}" &middot; judging <b>${AIPM.esc(m.name)}</b></div>
+    ${AIPM.metricRow([
+      ["agreement", AIPM.pct(c.agreement)],
+      ["precision", AIPM.pct(c.precision)],
+      ["recall", AIPM.pct(c.recall)],
+      ["nscored", String(c.n)]
+    ])}
+    <table class="cm">
+      <tr><th></th><th>judge: fails</th><th>judge: does not</th></tr>
+      <tr><th>you: fails</th><td>${c.tp}</td><td>${c.fn}</td></tr>
+      <tr><th>you: does not</th><td>${c.fp}</td><td>${c.tn}</td></tr>
     </table>
-    ${warn.map(w => `<div class="warnbox">${esc(w)}</div>`).join("")}
-    ${runs.length > 1 ? historyTable() : ""}
-    <p class="note"><button id="clearRuns">Clear run history</button></p>`;
-  $("#clearRuns").onclick = () => { if (confirm("Delete all loaded runs?")) { runs = []; saveRuns(); location.reload(); } };
+    <p class="note" style="margin-top:.6rem">
+      Scored on ${c.n} traces.
+      ${excludedShot.length ? excludedShot.length + " excluded as few-shot examples. " : ""}
+      ${excludedUncal.length ? excludedUncal.length + " excluded because you have not judged them for this mode. " : ""}
+      ${outsideSet.length ? outsideSet.length + " outside the development set. " : ""}
+      The always-pass baseline for this mode is ${AIPM.pct(c.baserate)}.
+    </p>
+    ${warn.map(w => `<div class="warnbox">${AIPM.esc(w)}</div>`).join("")}
+    ${runs.length > 1 ? history(s, runs) : ""}`;
+  AIPM.wireMetrics(host);
+  renderTriage(rows.filter(r => r.gold !== r.judge));
 }
 
-function historyTable() {
-  const rows = runs.map((r, n) => {
-    const s = score(r);
-    return `<tr><td>${r.round || n + 1}</td><td>${esc(r.set || "")}</td><td>${pct(s.agreement)}</td><td>${pct(s.precision)}</td><td>${pct(s.recall)}</td><td>${s.n}</td></tr>`;
+function history(s, runs) {
+  const shots = s.judge.shots.map(x => x.id);
+  const m = activeMode();
+  const body = runs.map((r, n) => {
+    const rows = r.results.filter(x => shots.indexOf(x.id) === -1 && AIPM.goldFor(s, x.id, m.id) !== null)
+      .map(x => ({ gold: AIPM.goldFor(s, x.id, m.id), judge: (x.verdict || "").toLowerCase() }));
+    const c = AIPM.confusion(rows);
+    return `<tr><td>${r.round || n + 1}</td><td>${AIPM.esc(r.set || "dev")}</td><td>${AIPM.pct(c.agreement)}</td><td>${AIPM.pct(c.precision)}</td><td>${AIPM.pct(c.recall)}</td><td>${c.n}</td></tr>`;
   }).join("");
-  return `<table class="hist"><tr><th>round</th><th>set</th><th>agreement</th><th>precision</th><th>recall</th><th>n</th></tr>${rows}</table>
-    <p class="note">If the held-out row is much worse than the development rows, the judge learned your examples instead of your rule.</p>`;
+  return `<table class="hist"><tr><th>round</th><th>set</th><th>agreement</th><th>precision</th><th>recall</th><th>n</th></tr>${body}</table>
+    <p class="note">If the held-out row is much worse than the development rows, the judge learned your examples rather than your rule, and the gap is the size of the self-deception.</p>`;
 }
 
 /* ---------- triage ---------- */
 
-function renderTriage() {
-  if (!runs.length) return;
-  const run = runs[runs.length - 1];
-  const rows = score(run).rows.filter(r => r.mine !== r.judge);
-  if (!rows.length) { $("#triage").innerHTML = '<p class="note">No disagreements in the last run.</p>'; return; }
+function renderTriage(rows) {
+  const host = AIPM.$("#triage");
+  if (!rows || !rows.length) { host.innerHTML = '<p class="note">No disagreements in the last run.</p>'; return; }
+  const s = AIPM.load();
+  const m = activeMode();
   qi = Math.min(qi, rows.length - 1);
   const r = rows[qi];
   const t = trace(r.id);
-  const mine = labels[r.id] || {};
-  const d = triage[r.id] || { call: null, note: "" };
-  $("#triage").innerHTML = `
+  const l = s.labels[String(r.id)] || {};
+  const d = s.triage[String(r.id)] || { call: null, note: "", otherModeId: null };
+  const others = s.taxonomy.modes.filter(x => x.id !== m.id && x.name.trim());
+
+  host.innerHTML = `
     <div class="case">
-      <div class="note">${qi + 1} of ${rows.length} disagreements &nbsp; | &nbsp; trace ${r.id}</div>
-      <div class="who">Customer</div><div class="msg">${esc(t.customer)}</div>
-      <div class="who">Bot draft</div><div class="msg">${esc(t.bot_reply)}</div>
+      <div class="note">${qi + 1} of ${rows.length} &middot; trace ${r.id}</div>
+      <div class="who">Customer</div><div class="msg">${AIPM.esc(t.customer)}</div>
+      <div class="who">Bot draft</div><div class="msg">${AIPM.esc(t.bot_reply)}</div>
       <div class="verdicts">
-        <div><span class="tag ${r.mine}">you: ${r.mine}</span><br>${esc(mine.critique) || "<em>no critique</em>"}</div>
-        <div><span class="tag ${r.judge}">judge: ${r.judge}</span><br>${esc(r.critique)}</div>
+        <div><span class="tag ${r.gold}">you: ${r.gold === "fail" ? "fails this mode" : "does not fail this mode"}</span><br>${AIPM.esc(l.critique) || "<em>no note</em>"}</div>
+        <div><span class="tag ${r.judge}">judge: ${r.judge === "fail" ? "fails" : "does not"}</span><br>${AIPM.esc(r.critique)}</div>
       </div>
       <div class="choice">
-        <button data-call="prompt" class="${d.call === "prompt" ? "on" : ""}">Judge prompt is missing a rule</button>
-        <button data-call="label" class="${d.call === "label" ? "on" : ""}">My label was inconsistent</button>
+        <button data-call="prompt" class="${d.call === "prompt" ? "on" : ""}">The prompt is missing a rule</button>
+        <button data-call="label" class="${d.call === "label" ? "on" : ""}">My calibration was wrong</button>
+        <button data-call="othermode" class="${d.call === "othermode" ? "on" : ""}">It fails a different mode</button>
         <button data-call="unclear" class="${d.call === "unclear" ? "on" : ""}">Genuinely ambiguous</button>
       </div>
-      <textarea class="thin" id="tnote" placeholder="What exactly, in one line. This becomes the prompt edit or the label fix.">${esc(d.note)}</textarea>
+      ${d.call === "othermode" ? `<div class="small">Which mode does it fail?
+        <select id="otherMode">
+          <option value="">choose one</option>
+          ${others.map(x => `<option value="${x.id}"${d.otherModeId === x.id ? " selected" : ""}>${AIPM.esc(x.name)}</option>`).join("")}
+        </select>
+        <span class="dim">This records a failure there and leaves this mode's answer alone, which is the point of one judge per mode.</span>
+      </div>` : ""}
+      <textarea class="thin" id="tnote" placeholder="What exactly, in one line. This becomes the prompt edit or the calibration fix.">${AIPM.esc(d.note)}</textarea>
       <div class="choice" style="margin-top:.7rem">
         <button id="tprev">&larr;</button><button id="tnext">&rarr;</button>
       </div>
     </div>`;
-  $("#triage").querySelectorAll("[data-call]").forEach(b => b.onclick = () => {
-    triage[r.id] = { call: b.dataset.call, note: $("#tnote").value };
-    saveTriage(); renderTriage();
+
+  AIPM.$$("[data-call]").forEach(b => b.onclick = () => {
+    AIPM.update(st => {
+      st.triage[String(r.id)] = { call: b.dataset.call, note: AIPM.$("#tnote").value, otherModeId: d.otherModeId || null };
+      if (b.dataset.call === "label") AIPM.setGold(st, r.id, m.id, r.judge, "triage");
+    });
+    renderAll();
   });
-  $("#tnote").oninput = e => { triage[r.id] = { call: d.call, note: e.target.value }; saveTriage(); };
-  $("#tprev").onclick = () => { qi = Math.max(0, qi - 1); renderTriage(); };
-  $("#tnext").onclick = () => { qi = Math.min(rows.length - 1, qi + 1); renderTriage(); };
+  if (AIPM.$("#otherMode")) AIPM.$("#otherMode").onchange = e => {
+    AIPM.update(st => {
+      st.triage[String(r.id)].otherModeId = e.target.value || null;
+      // Record the failure where it actually belongs. This mode's answer is
+      // left exactly as the learner calibrated it.
+      if (e.target.value) AIPM.setGold(st, r.id, e.target.value, "fail", "triage");
+    });
+    AIPM.toast("Recorded as a failure of that mode. This judge's answer is unchanged.");
+    renderAll();
+  };
+  AIPM.$("#tnote").oninput = e => {
+    AIPM.update(st => {
+      const cur = st.triage[String(r.id)] || { call: null, otherModeId: null };
+      cur.note = e.target.value;
+      st.triage[String(r.id)] = cur;
+    });
+  };
+  AIPM.$("#tprev").onclick = () => { qi = Math.max(0, qi - 1); renderTriage(rows); };
+  AIPM.$("#tnext").onclick = () => { qi = Math.min(rows.length - 1, qi + 1); renderTriage(rows); };
 }
 
-/* ---------- files ---------- */
+/* ---------- handoff ---------- */
 
-function download(text, name, type) {
-  const blob = new Blob([text], { type });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = name;
-  a.click();
+function promptMarkdown(s, m) {
+  const shots = s.judge.shots.map((sh, n) => {
+    const t = trace(sh.id);
+    return `**Example ${String.fromCharCode(65 + n)} (trace ${sh.id}, ${sh.verdict}).**\n`
+      + `Customer: "${t.customer || ""}"\n`
+      + `Bot: "${t.bot_reply || ""}"\n`
+      + `verdict: ${sh.verdict}\ncritique: ${sh.critique}`;
+  }).join("\n\n");
+  return `# Judge prompt: ${m.name}\n\n## Role\n\n${s.judge.prompt.role}\n\n## Context\n\n${s.judge.prompt.context}\n\n`
+    + `## What to measure\n\n${s.judge.prompt.measure}\n\n## Labels and output\n\n${s.judge.prompt.labels}\n\n`
+    + `## Few-shot examples\n\n${shots}\n`;
 }
 
-$("#pick").onclick = () => $("#load").click();
-$("#load").onchange = e => {
-  const f = e.target.files[0];
-  if (!f) return;
-  const r = new FileReader();
-  r.onload = () => {
-    const run = JSON.parse(r.result);
-    if (!run.results) { alert("That file has no 'results' array."); return; }
-    run.round = run.round || runs.length + 1;
-    runs.push(run);
-    saveRuns(); qi = 0; renderScore(); renderTriage();
-  };
-  r.readAsText(f);
+AIPM.$("#copyPrompt").onclick = () => {
+  const s = AIPM.load(), m = activeMode();
+  if (!m) { alert("Pick a failure mode first."); return; }
+  const empty = FIELDS.filter(f => !(s.judge.prompt[f[0]] || "").trim()).map(f => f[1]);
+  if (empty.length && !confirm("These boxes are still empty:\n\n  " + empty.join("\n  ") + "\n\nCopy anyway?")) return;
+  const grade = scorable(s, m.id);
+  AIPM.copyText(AIPM.payload(APP, "judge-prompt", {
+    n: grade.length,
+    mode: { id: m.id, name: m.name, definition: m.definition },
+    round: runsForMode(s, m.id).length + 1,
+    prompt: s.judge.prompt,
+    shots: s.judge.shots,
+    grade_ids: grade,
+    excluded_as_examples: s.judge.shots.map(x => x.id),
+    markdown: promptMarkdown(s, m)
+  }), "Copied. Paste it into the chat with Claude Code.");
 };
 
-$("#pickLabels").onclick = () => $("#loadLabels").click();
-$("#loadLabels").onchange = e => {
-  const f = e.target.files[0];
-  if (!f) return;
-  const r = new FileReader();
-  r.onload = () => {
-    labels = {};
-    JSON.parse(r.result).forEach(x => labels[x.id] = { verdict: x.verdict, critique: x.critique });
-    localStorage.setItem(LABEL_KEY, JSON.stringify(labels));
-    paintMissing(); renderScore(); renderTriage();
-  };
-  r.readAsText(f);
+AIPM.$("#copyTriage").onclick = () => {
+  const s = AIPM.load(), m = activeMode();
+  const decisions = Object.keys(s.triage).map(id => ({
+    id: +id, call: s.triage[id].call, otherModeId: s.triage[id].otherModeId || null, note: s.triage[id].note || ""
+  })).filter(x => x.call);
+  if (!decisions.length) { alert("No triage decisions yet. Work the disagreement queue first."); return; }
+  AIPM.copyText(AIPM.payload(APP, "triage", {
+    n: decisions.length,
+    modeId: m ? m.id : null,
+    round: runsForMode(s, m ? m.id : null).length,
+    decisions: decisions
+  }), "Copied. Paste it into the chat with Claude Code.");
 };
 
-$("#exportTriage").onclick = () => {
-  const out = Object.keys(triage).map(id => ({
-    id: +id,
-    call: triage[id].call,
-    note: triage[id].note,
-    your_verdict: (labels[id] || {}).verdict || null,
-    your_critique: (labels[id] || {}).critique || ""
-  }));
-  download(JSON.stringify(out, null, 1), "02-triage.json", "application/json");
+AIPM.$("#download").onclick = () => {
+  const s = AIPM.load(), m = activeMode();
+  if (m) AIPM.download(promptMarkdown(s, m), "02-judge-prompt.md", "text/markdown");
 };
 
-paintMissing();
-renderShots();
-renderScore();
-renderTriage();
+/* ---------- boot ---------- */
+
+function renderStatus() {
+  const s = AIPM.load();
+  const m = activeMode();
+  const labelled = AIPM.labelledCount(s);
+  AIPM.$("#status").textContent = m
+    ? `${labelled} labels, ${calibratedCount(s, m.id)} of ${DATA.length} judged for this mode`
+    : `${labelled} labels`;
+}
+
+function renderAll() {
+  renderModes();
+  renderCalibrate();
+  renderPrompt();
+  renderBoundary();
+  renderScore();
+  renderStatus();
+}
+
+if (location.hash === "#selftest") {
+  AIPM.selftest(DATA);
+} else {
+  AIPM.chrome();
+  const applied = AIPM.applyInjected(typeof INJECTED === "undefined" ? null : INJECTED);
+  renderAll();
+  if (applied) AIPM.toast("Loaded " + applied + " from Claude Code.");
+}
 </script>
 </body>
 </html>

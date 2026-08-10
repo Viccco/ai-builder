@@ -1,6 +1,6 @@
 # Module 1. Error analysis and the failure taxonomy
 
-The foundation. Everything later in the course consumes what you produce here.
+The foundation. Module 2 consumes everything you produce here.
 
 ## Pre-read (before the session, ~15 min)
 
@@ -19,7 +19,7 @@ The word covers two different activities and people mix them up:
 - Building a labeled dataset and grading outputs against it (offline evals). This is what "eval suite" means.
 - Watching quality in production through feedback, sampling, A/B tests (online evals).
 
-You need both eventually. Modules 1 to 3 build the offline kind because that's the one you build with your hands. Module 4 covers the online half.
+You need both eventually. This course builds the offline kind, because that's the one you build with your hands.
 
 ### Three kinds of graders
 
@@ -74,22 +74,22 @@ The customer messages are real. The bot replies were generated for this exercise
 
 Steps:
 
-1. Open `apps/01-labeler/index.html` in a browser. 30 traces, one per screen, autosaves as you go.
-2. Label all 30. Binary verdict plus one honest sentence per trace. You are the principal domain expert, so the bar is yours: "would I let this go out under the company name, unedited". Target pace is under a minute per trace, and the app shows you when you're stalling. Don't deliberate, your first read is the data. (~30 min)
-3. Export the labels (button, downloads `01-labels.json`) into `workbook/` and tell Claude Code where it is.
-4. Axial coding. Open `apps/01-clusters/index.html`, load your labels, and drag the critiques into buckets until the shape of the failure surface appears. You name the categories, you pin one example trace to each. Rule of thumb: 3 to 6 categories, each defined by one sentence. Export when it holds together. (~10 min)
-5. Give the export to Claude Code. It counts, checks whether any category is doing two jobs, argues with the definitions that are vague, and writes `workbook/01-taxonomy.md` with you. Finish it with one decision sentence: "the dominant failure mode is X, it appears in N of 30 traces, and the next fix is Y". (~5 min)
+1. Open `apps/01-labeler/index.html` in a browser. 30 traces, one per screen, saved as you go.
+2. Label all 30. Binary verdict plus one honest sentence per trace. You are the principal domain expert, so the bar is yours: "would I let this go out under the company name, unedited". Target pace is under a minute per trace, and the app shows you when you're stalling. Don't deliberate, your first read is the data. The keyboard is faster than the mouse here: `P` or `1` passes, `F` or `2` fails, `Tab` jumps to the reason box, and `Cmd+Enter` confirms and moves on from anywhere. It will not let you move on without both a verdict and a written reason, because the reason is what module 2 runs on. (~30 min)
+3. Click **Copy for Claude Code** and paste it into the chat. Claude Code counts your failures, reads the critiques, and names any place where two similar traces got opposite verdicts.
+4. Axial coding. Open `apps/01-clusters/index.html`. Your labels are already there. Drag the critiques into buckets until the shape of the failure surface appears. You name the categories and you pin one example trace to each. Every card shows the customer message and the bot reply, so you never have to remember what a trace number means. Rule of thumb: 3 to 6 categories, each defined by one sentence. (~10 min)
+5. Click **Copy for Claude Code** again and paste. It counts, checks whether any category is doing two jobs, argues with the definitions that are vague, and writes `workbook/01-taxonomy.md` with you. Finish it with one decision sentence: "the dominant failure mode is X, it appears in N of 30 traces, and the next fix is Y". (~5 min)
 6. Only now open `data/session1_seed_notes.md` and compare against what was seeded. Disagreement is fine and it's the interesting part. Your labels are the ground truth, the seed key is just the debrief.
 
 Kickoff prompt for a fresh Claude Code session:
 
 ```
-Module 1 of the AI PM evals course. Read modules/01-error-analysis.md and run the exercise
-with me. I'll label 30 traces in apps/01-labeler first, then cluster them in apps/01-clusters,
-then hand you both exports. Your job afterwards: count, challenge weak category definitions,
-push me when a category is named after a fix instead of a cause, and write
-workbook/01-taxonomy.md with me. Do not open data/session1_seed_notes.md until I say the
-labeling is done.
+Module 1 of the AI PM evals course. Read modules/01-error-analysis.md and RUNNING.md, then
+run the exercise with me. I'll label 30 traces in apps/01-labeler first, then cluster them in
+apps/01-clusters, and I'll paste each handoff into the chat. Your job afterwards: count,
+challenge weak category definitions, push me when a category is named after a fix instead of
+a cause, and write workbook/01-taxonomy.md with me. Do not open data/session1_seed_notes.md
+until I say the labeling is done.
 ```
 
 ## Interview drill (~15 min)
