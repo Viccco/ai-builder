@@ -171,13 +171,28 @@ const AIPM = (() => {
       v: SCHEMA,
       labels: {},        // id -> {verdict, critique, seconds, modes:{modeId:{v,by}}}
       taxonomy: { modes: [], placed: {} },   // placed: traceId -> modeId
-      judge: { activeModeId: null, prompt: { role: "", context: "", measure: "", labels: "" }, shots: [] },
+      // One judge per failure mode, all the way down. A shared prompt is what
+      // made a learner ask "did I write this, or did you?" after switching mode.
+      judge: { activeModeId: null },
+      judges: {},        // modeId -> {prompt:{role,context,measure,labels}, shots:[], triage:{}}
       runs: [],
-      triage: {},
       split: null,       // {dev:[ids], holdout:[ids]} injected by Claude Code
       appliedStamps: [],
       prefs: { width: 1200, metricDefsOpen: false, briefOpen: {} }
     };
+  }
+
+  // The judge belonging to one failure mode, created on first touch.
+  function judgeFor(state, modeId) {
+    if (!state.judges) state.judges = {};
+    if (!state.judges[modeId]) {
+      state.judges[modeId] = { prompt: { role: "", context: "", measure: "", labels: "" }, shots: [], triage: {} };
+    }
+    const j = state.judges[modeId];
+    if (!j.prompt) j.prompt = { role: "", context: "", measure: "", labels: "" };
+    if (!j.shots) j.shots = [];
+    if (!j.triage) j.triage = {};
+    return j;
   }
 
   function rec(state, id) {
@@ -190,7 +205,7 @@ const AIPM = (() => {
   function migrate(raw) {
     if (raw) {
       const doc = JSON.parse(raw);
-      if (doc && doc.v === SCHEMA) return doc;
+      if (doc && doc.v === SCHEMA) return upgrade(doc);
     }
     // No v2 document. Build one from whatever v1 keys exist.
     const s = blank();
@@ -231,25 +246,49 @@ const AIPM = (() => {
         });
       }
       const oldPrompt = JSON.parse(localStorage.getItem(V1.prompt) || "null");
-      if (oldPrompt) {
+      const firstMode = s.taxonomy.modes[0] && s.taxonomy.modes[0].id;
+      if (oldPrompt && firstMode) {
         found = true;
-        s.judge.prompt = {
+        const j = judgeFor(s, firstMode);
+        j.prompt = {
           role: oldPrompt.role || "", context: oldPrompt.context || "",
           measure: oldPrompt.measure || "", labels: oldPrompt.labels || ""
         };
-        s.judge.shots = (oldPrompt.shots || []).map(x => ({
+        j.shots = (oldPrompt.shots || []).map(x => ({
           id: x.id, verdict: x.verdict || "fail", critique: x.critique || ""
         }));
       }
       const oldRuns = JSON.parse(localStorage.getItem(V1.runs) || "null");
       if (Array.isArray(oldRuns) && oldRuns.length) { found = true; s.runs = oldRuns; }
       const oldTriage = JSON.parse(localStorage.getItem(V1.triage) || "null");
-      if (oldTriage) { found = true; s.triage = oldTriage; }
+      if (oldTriage && firstMode) { found = true; judgeFor(s, firstMode).triage = oldTriage; }
       const oldPrefs = JSON.parse(localStorage.getItem(V1.prefs) || "null");
       if (oldPrefs && oldPrefs.width) s.prefs.width = oldPrefs.width;
     } catch (e) { /* partial migration is still better than none */ }
     if (found) s.migratedFrom = "v1";
     return s;
+  }
+
+  // Earlier v2 documents held one prompt, one shot list and one triage map for
+  // every mode at once. Move them onto whichever mode was active, so the work
+  // survives and lands where it belongs.
+  function upgrade(doc) {
+    if (!doc.judges) doc.judges = {};
+    if (doc.judge && doc.judge.prompt) {
+      const target = doc.judge.activeModeId
+        || (doc.taxonomy && doc.taxonomy.modes && doc.taxonomy.modes[0] && doc.taxonomy.modes[0].id);
+      if (target) {
+        const j = judgeFor(doc, target);
+        const had = Object.values(doc.judge.prompt).some(v => (v || "").trim());
+        if (had && !Object.values(j.prompt).some(v => (v || "").trim())) j.prompt = doc.judge.prompt;
+        if ((doc.judge.shots || []).length && !j.shots.length) j.shots = doc.judge.shots;
+        if (doc.triage && Object.keys(doc.triage).length && !Object.keys(j.triage).length) j.triage = doc.triage;
+      }
+      doc.judge = { activeModeId: doc.judge.activeModeId || null };
+      delete doc.triage;
+    }
+    if (!doc.judge) doc.judge = { activeModeId: null };
+    return doc;
   }
 
   let _cache = null;
@@ -494,6 +533,7 @@ const AIPM = (() => {
     update(st => {
       const p = injected.patch;
       if (p.split) { st.split = p.split; what = "the development and held-out split"; }
+      if (p.activeMode && !st.judge.activeModeId) { st.judge.activeModeId = p.activeMode; }
       if (p.labels) {
         Object.keys(p.labels).forEach(id => {
           const incoming = p.labels[id];
@@ -546,14 +586,46 @@ const AIPM = (() => {
   .aipm-def { font-size: .85rem; margin-bottom: .45rem; line-height: 1.5; }
   .aipm-def i { color: #8889; font-size: .95em; }
   #aipm-width { width: 100px; cursor: pointer; }
+  #aipm-nav { border-bottom: 1px solid #8884; padding: .5rem 1rem; display: flex; gap: .3rem;
+    align-items: center; flex-wrap: wrap; font-size: .84rem; position: sticky; top: 0; z-index: 6; background: Canvas; }
+  #aipm-nav a { color: inherit; text-decoration: none; padding: .25rem .6rem; border-radius: 999px;
+    border: 1px solid transparent; opacity: .6; white-space: nowrap; }
+  #aipm-nav a:hover { opacity: 1; border-color: #8884; }
+  #aipm-nav a.here { opacity: 1; border-color: #8886; font-weight: 600; }
+  #aipm-nav a.home { opacity: .75; }
+  #aipm-nav .sep { opacity: .3; }
+  body { padding-top: 0; }
+  header { margin-top: 0; }
+  main, .wrap { padding-top: .6rem; }
   .aipm-reload { font-size: .84rem; color: #8889; border-left: 2px solid #8884; padding-left: .7rem; margin: .8rem 0; line-height: 1.5; }
   `;
+
+  // Where you are in the course, on every page, with the launcher one click
+  // away. Without this there is no way out of a page except the browser button.
+  const PAGES = [
+    { key: "labeler", href: "01-labeler/index.html", label: "1. Label the traces" },
+    { key: "clusters", href: "01-clusters/index.html", label: "2. Name the failure modes" },
+    { key: "judge", href: "02-judge/index.html", label: "3. Build the judge" }
+  ];
+
+  function nav(current) {
+    const up = current === "home" ? "" : "../";
+    const links = PAGES.map(p =>
+      `<a href="${up}${p.href}" class="${p.key === current ? "here" : ""}">${p.label}</a>`
+    ).join('<span class="sep">&rsaquo;</span>');
+    const bar = document.createElement("div");
+    bar.id = "aipm-nav";
+    bar.innerHTML = `<a class="home ${current === "home" ? "here" : ""}" href="${up}index.html">&#8962; All steps</a>
+      <span class="sep">|</span>${links}`;
+    document.body.insertBefore(bar, document.body.firstChild);
+  }
 
   function chrome(opts) {
     const s = load();
     const style = document.createElement("style");
     style.textContent = CSS;
     document.head.appendChild(style);
+    if (opts && opts.page) nav(opts.page);
 
     if (!opts || opts.width !== false) {
       const apply = w => document.documentElement.style.setProperty("--aipm-w", w + "px");
@@ -590,8 +662,9 @@ const AIPM = (() => {
     update(st => {
       st.labels = {};
       st.taxonomy = { modes: [], placed: {} };
-      st.judge = { activeModeId: null, prompt: { role: "", context: "", measure: "", labels: "" }, shots: [] };
-      st.runs = []; st.triage = {}; st.split = null; st.appliedStamps = [];
+      st.judge = { activeModeId: null };
+      st.judges = {};
+      st.runs = []; st.split = null; st.appliedStamps = [];
     });
     return true;
   }
@@ -692,7 +765,7 @@ const AIPM = (() => {
     goldFor: goldFor, setGold: setGold, devIds: devIds, isHoldout: isHoldout, nextModeId: nextModeId,
     METRICS: METRICS, pct: pct, confusion: confusion, metricRow: metricRow, wireMetrics: wireMetrics,
     payload: payload, copyText: copyText, download: download, manual: manual,
-    applyInjected: applyInjected, chrome: chrome, resetDialog: resetDialog, selftest: selftest
+    applyInjected: applyInjected, chrome: chrome, nav: nav, resetDialog: resetDialog, selftest: selftest
   };
 })();
 // end shared block: tools/shared/aipm.js
@@ -1129,7 +1202,7 @@ AIPM.$("#load").onchange = e => {
 if (location.hash === "#selftest") {
   AIPM.selftest(DATA);
 } else {
-  AIPM.chrome();
+  AIPM.chrome({ page: "clusters" });
   const applied = AIPM.applyInjected(typeof INJECTED === "undefined" ? null : INJECTED);
   // The brief is worth a full screen the first time and never again.
   const prefs = AIPM.load().prefs;

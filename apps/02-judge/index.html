@@ -17,6 +17,25 @@
   .wrap { max-width: min(var(--aipm-w, 1400px), 96vw); margin: 0 auto; padding: 0 1rem 5rem; }
   main { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; align-items: start; }
   main.calibrating { grid-template-columns: 1fr; }
+  main.single { grid-template-columns: 1fr; }
+  #rail { display: flex; align-items: center; gap: .25rem; flex-wrap: wrap; margin: 1rem 0 .5rem; }
+  .railstep { border: 1px solid transparent; background: transparent; color: inherit; font: inherit;
+    font-size: .85rem; padding: .3rem .7rem; border-radius: 999px; opacity: .45; cursor: pointer; }
+  .railstep .num { display: inline-block; width: 1.25rem; height: 1.25rem; line-height: 1.25rem;
+    border-radius: 50%; border: 1px solid currentColor; text-align: center; font-size: .72rem; margin-right: .4rem; }
+  .railstep.done { opacity: .75; }
+  .railstep.done:hover { opacity: 1; border-color: var(--line); }
+  .railstep.here { opacity: 1; border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .railstep.later { cursor: default; }
+  .railsep { opacity: .25; }
+  .raillead { flex-basis: 100%; font-size: .9rem; color: var(--dim); margin-top: .35rem; line-height: 1.5; }
+  .nextup { border-left: 3px solid var(--accent); padding: .5rem .8rem; margin: .2rem 0 1rem; font-size: .9rem; }
+  .nextup b { color: var(--dim); font-size: .74rem; text-transform: uppercase; letter-spacing: .06em; margin-right: .4rem; }
+  .modepick { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: .7rem; }
+  .modepick button { text-align: left; padding: .7rem .8rem; }
+  .modepick button.on { border-color: var(--accent); }
+  .modepick .mn { font-weight: 600; font-size: 1rem; display: block; margin-bottom: .2rem; }
+  .modepick .md { font-size: .84rem; color: var(--dim); }
   @media (max-width: 1000px) { main { grid-template-columns: 1fr; } }
   h2 { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); margin: 0 0 .7rem; font-weight: 600; }
   .field { margin-bottom: 1rem; }
@@ -65,6 +84,12 @@
   .calbtns { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; margin-bottom: .7rem; }
   .calbtns button { font-size: .95rem; padding: .45rem 1.1rem; }
   .calbtns button.on { background: var(--warn); border-color: var(--warn); color: #fff; }
+  .calbtns button.on-fail { background: var(--fail); border-color: var(--fail); color: #fff; }
+  .calbtns button.on-pass { background: var(--pass); border-color: var(--pass); color: #fff; }
+  .pins { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; margin: 0 0 .8rem; }
+  .pins button { font-size: .82rem; padding: .3rem .7rem; }
+  .pins button.on { border-color: var(--warn); color: var(--warn); }
+  .pinlead { font-size: .78rem; color: var(--dim); }
   .calbtns .on-fail-outline { border-color: var(--fail); color: var(--fail); font-weight: 600; }
   #calstrip { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 1rem; }
   #calstrip span { width: 22px; height: 22px; border: 1px solid var(--line); border-radius: 5px; font-size: .68rem; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--dim); }
@@ -115,23 +140,25 @@
 
 <div class="wrap">
 
+  <div id="rail"></div>
+  <div id="nextup"></div>
   <div id="modeBar"></div>
 
   <main>
     <div>
-      <h2>The judge prompt</h2>
+      <h2 id="hPrompt">The judge prompt</h2>
       <div id="calibrate"></div>
       <div id="promptEditor"></div>
     </div>
     <div>
-      <h2>The line your definition has to draw</h2>
+      <h2 id="hBoundary">The line your definition has to draw</h2>
       <div id="boundary"></div>
-      <h2 style="margin-top:1.6rem">Agreement with your labels</h2>
+      <h2 id="hScore" style="margin-top:1.6rem">Agreement with your labels</h2>
       <div id="scoreboard"></div>
     </div>
   </main>
 
-  <section>
+  <section id="triageWrap">
     <h2 style="margin-top:2rem">Disagreements</h2>
     <div id="triage"></div>
   </section>
@@ -219,13 +246,28 @@ const AIPM = (() => {
       v: SCHEMA,
       labels: {},        // id -> {verdict, critique, seconds, modes:{modeId:{v,by}}}
       taxonomy: { modes: [], placed: {} },   // placed: traceId -> modeId
-      judge: { activeModeId: null, prompt: { role: "", context: "", measure: "", labels: "" }, shots: [] },
+      // One judge per failure mode, all the way down. A shared prompt is what
+      // made a learner ask "did I write this, or did you?" after switching mode.
+      judge: { activeModeId: null },
+      judges: {},        // modeId -> {prompt:{role,context,measure,labels}, shots:[], triage:{}}
       runs: [],
-      triage: {},
       split: null,       // {dev:[ids], holdout:[ids]} injected by Claude Code
       appliedStamps: [],
       prefs: { width: 1200, metricDefsOpen: false, briefOpen: {} }
     };
+  }
+
+  // The judge belonging to one failure mode, created on first touch.
+  function judgeFor(state, modeId) {
+    if (!state.judges) state.judges = {};
+    if (!state.judges[modeId]) {
+      state.judges[modeId] = { prompt: { role: "", context: "", measure: "", labels: "" }, shots: [], triage: {} };
+    }
+    const j = state.judges[modeId];
+    if (!j.prompt) j.prompt = { role: "", context: "", measure: "", labels: "" };
+    if (!j.shots) j.shots = [];
+    if (!j.triage) j.triage = {};
+    return j;
   }
 
   function rec(state, id) {
@@ -238,7 +280,7 @@ const AIPM = (() => {
   function migrate(raw) {
     if (raw) {
       const doc = JSON.parse(raw);
-      if (doc && doc.v === SCHEMA) return doc;
+      if (doc && doc.v === SCHEMA) return upgrade(doc);
     }
     // No v2 document. Build one from whatever v1 keys exist.
     const s = blank();
@@ -279,25 +321,49 @@ const AIPM = (() => {
         });
       }
       const oldPrompt = JSON.parse(localStorage.getItem(V1.prompt) || "null");
-      if (oldPrompt) {
+      const firstMode = s.taxonomy.modes[0] && s.taxonomy.modes[0].id;
+      if (oldPrompt && firstMode) {
         found = true;
-        s.judge.prompt = {
+        const j = judgeFor(s, firstMode);
+        j.prompt = {
           role: oldPrompt.role || "", context: oldPrompt.context || "",
           measure: oldPrompt.measure || "", labels: oldPrompt.labels || ""
         };
-        s.judge.shots = (oldPrompt.shots || []).map(x => ({
+        j.shots = (oldPrompt.shots || []).map(x => ({
           id: x.id, verdict: x.verdict || "fail", critique: x.critique || ""
         }));
       }
       const oldRuns = JSON.parse(localStorage.getItem(V1.runs) || "null");
       if (Array.isArray(oldRuns) && oldRuns.length) { found = true; s.runs = oldRuns; }
       const oldTriage = JSON.parse(localStorage.getItem(V1.triage) || "null");
-      if (oldTriage) { found = true; s.triage = oldTriage; }
+      if (oldTriage && firstMode) { found = true; judgeFor(s, firstMode).triage = oldTriage; }
       const oldPrefs = JSON.parse(localStorage.getItem(V1.prefs) || "null");
       if (oldPrefs && oldPrefs.width) s.prefs.width = oldPrefs.width;
     } catch (e) { /* partial migration is still better than none */ }
     if (found) s.migratedFrom = "v1";
     return s;
+  }
+
+  // Earlier v2 documents held one prompt, one shot list and one triage map for
+  // every mode at once. Move them onto whichever mode was active, so the work
+  // survives and lands where it belongs.
+  function upgrade(doc) {
+    if (!doc.judges) doc.judges = {};
+    if (doc.judge && doc.judge.prompt) {
+      const target = doc.judge.activeModeId
+        || (doc.taxonomy && doc.taxonomy.modes && doc.taxonomy.modes[0] && doc.taxonomy.modes[0].id);
+      if (target) {
+        const j = judgeFor(doc, target);
+        const had = Object.values(doc.judge.prompt).some(v => (v || "").trim());
+        if (had && !Object.values(j.prompt).some(v => (v || "").trim())) j.prompt = doc.judge.prompt;
+        if ((doc.judge.shots || []).length && !j.shots.length) j.shots = doc.judge.shots;
+        if (doc.triage && Object.keys(doc.triage).length && !Object.keys(j.triage).length) j.triage = doc.triage;
+      }
+      doc.judge = { activeModeId: doc.judge.activeModeId || null };
+      delete doc.triage;
+    }
+    if (!doc.judge) doc.judge = { activeModeId: null };
+    return doc;
   }
 
   let _cache = null;
@@ -542,6 +608,7 @@ const AIPM = (() => {
     update(st => {
       const p = injected.patch;
       if (p.split) { st.split = p.split; what = "the development and held-out split"; }
+      if (p.activeMode && !st.judge.activeModeId) { st.judge.activeModeId = p.activeMode; }
       if (p.labels) {
         Object.keys(p.labels).forEach(id => {
           const incoming = p.labels[id];
@@ -594,14 +661,46 @@ const AIPM = (() => {
   .aipm-def { font-size: .85rem; margin-bottom: .45rem; line-height: 1.5; }
   .aipm-def i { color: #8889; font-size: .95em; }
   #aipm-width { width: 100px; cursor: pointer; }
+  #aipm-nav { border-bottom: 1px solid #8884; padding: .5rem 1rem; display: flex; gap: .3rem;
+    align-items: center; flex-wrap: wrap; font-size: .84rem; position: sticky; top: 0; z-index: 6; background: Canvas; }
+  #aipm-nav a { color: inherit; text-decoration: none; padding: .25rem .6rem; border-radius: 999px;
+    border: 1px solid transparent; opacity: .6; white-space: nowrap; }
+  #aipm-nav a:hover { opacity: 1; border-color: #8884; }
+  #aipm-nav a.here { opacity: 1; border-color: #8886; font-weight: 600; }
+  #aipm-nav a.home { opacity: .75; }
+  #aipm-nav .sep { opacity: .3; }
+  body { padding-top: 0; }
+  header { margin-top: 0; }
+  main, .wrap { padding-top: .6rem; }
   .aipm-reload { font-size: .84rem; color: #8889; border-left: 2px solid #8884; padding-left: .7rem; margin: .8rem 0; line-height: 1.5; }
   `;
+
+  // Where you are in the course, on every page, with the launcher one click
+  // away. Without this there is no way out of a page except the browser button.
+  const PAGES = [
+    { key: "labeler", href: "01-labeler/index.html", label: "1. Label the traces" },
+    { key: "clusters", href: "01-clusters/index.html", label: "2. Name the failure modes" },
+    { key: "judge", href: "02-judge/index.html", label: "3. Build the judge" }
+  ];
+
+  function nav(current) {
+    const up = current === "home" ? "" : "../";
+    const links = PAGES.map(p =>
+      `<a href="${up}${p.href}" class="${p.key === current ? "here" : ""}">${p.label}</a>`
+    ).join('<span class="sep">&rsaquo;</span>');
+    const bar = document.createElement("div");
+    bar.id = "aipm-nav";
+    bar.innerHTML = `<a class="home ${current === "home" ? "here" : ""}" href="${up}index.html">&#8962; All steps</a>
+      <span class="sep">|</span>${links}`;
+    document.body.insertBefore(bar, document.body.firstChild);
+  }
 
   function chrome(opts) {
     const s = load();
     const style = document.createElement("style");
     style.textContent = CSS;
     document.head.appendChild(style);
+    if (opts && opts.page) nav(opts.page);
 
     if (!opts || opts.width !== false) {
       const apply = w => document.documentElement.style.setProperty("--aipm-w", w + "px");
@@ -638,8 +737,9 @@ const AIPM = (() => {
     update(st => {
       st.labels = {};
       st.taxonomy = { modes: [], placed: {} };
-      st.judge = { activeModeId: null, prompt: { role: "", context: "", measure: "", labels: "" }, shots: [] };
-      st.runs = []; st.triage = {}; st.split = null; st.appliedStamps = [];
+      st.judge = { activeModeId: null };
+      st.judges = {};
+      st.runs = []; st.split = null; st.appliedStamps = [];
     });
     return true;
   }
@@ -740,12 +840,15 @@ const AIPM = (() => {
     goldFor: goldFor, setGold: setGold, devIds: devIds, isHoldout: isHoldout, nextModeId: nextModeId,
     METRICS: METRICS, pct: pct, confusion: confusion, metricRow: metricRow, wireMetrics: wireMetrics,
     payload: payload, copyText: copyText, download: download, manual: manual,
-    applyInjected: applyInjected, chrome: chrome, resetDialog: resetDialog, selftest: selftest
+    applyInjected: applyInjected, chrome: chrome, nav: nav, resetDialog: resetDialog, selftest: selftest
   };
 })();
 // end shared block: tools/shared/aipm.js
 
 const APP = "02-judge";
+// The active mode's id, and its own judge record. One judge per failure mode.
+const mid = () => AIPM.load().judge.activeModeId;
+const myJudge = s => AIPM.judgeFor(s, s.judge.activeModeId || "none");
 const trace = id => DATA.find(t => t.id === id) || {};
 
 let qi = 0;                 // which disagreement is on screen
@@ -764,7 +867,7 @@ function activeMode() {
 // an example, minus anything not yet calibrated for this mode.
 function scorable(s, modeId) {
   const dev = AIPM.devIds(s);
-  const shots = s.judge.shots.map(x => x.id);
+  const shots = myJudge(s).shots.map(x => x.id);
   const pool = dev || DATA.map(t => t.id);
   return pool.filter(id =>
     shots.indexOf(id) === -1 && AIPM.goldFor(s, id, modeId) !== null);
@@ -776,25 +879,44 @@ function calibratedCount(s, modeId) {
 
 /* ---------- mode selector ---------- */
 
+// Only drops a selection that no longer exists, for instance after a category
+// was deleted on the clustering board. It deliberately does not choose for the
+// learner, because picking the mode is step 1 and it is their call.
 function renderModes() {
   const s = AIPM.load();
+  if (s.judge.activeModeId && !AIPM.modeById(s, s.judge.activeModeId)) {
+    AIPM.update(st => { st.judge.activeModeId = null; });
+  }
+}
+
+/* ---------- step 1, pick the mode ---------- */
+
+// A real step rather than a strip of chips, because choosing the mode decides
+// everything downstream and deserves the screen for a moment.
+function renderModePicker(s) {
+  const host = AIPM.$("#modeBar");
   const modes = s.taxonomy.modes.filter(m => m.name.trim());
   if (!modes.length) {
-    AIPM.$("#modeBar").innerHTML = `<div class="warnbox">No failure modes yet. Name your categories on the clustering board first, because a judge grades one named mode and there is nothing here to point it at. If you did that work in another browser, ask Claude Code to write it into this page.</div>`;
+    host.innerHTML = `<div class="warnbox">No failure modes yet. Name your categories on the clustering board first, because a judge grades one named mode and there is nothing here to point it at.</div>`;
     return;
   }
-  if (!s.judge.activeModeId || !AIPM.modeById(s, s.judge.activeModeId)) {
-    AIPM.update(st => { st.judge.activeModeId = modes[0].id; });
-  }
-  const cur = AIPM.load().judge.activeModeId;
-  AIPM.$("#modeBar").innerHTML = `
-    <div class="tag-line">This judge grades one failure mode</div>
-    <div class="modes">${modes.map(m =>
-      `<button data-mode="${m.id}" class="${m.id === cur ? "on" : ""}">${AIPM.esc(m.name)} <span class="dim">${AIPM.tracesInMode(s, m.id).length}</span></button>`
-    ).join("")}</div>`;
-  AIPM.$$("[data-mode]").forEach(b => b.onclick = () => {
-    AIPM.update(st => { st.judge.activeModeId = b.dataset.mode; });
-    qi = 0; ci = 0; calReview = false; renderAll();
+  const cur = s.judge.activeModeId;
+  const biggest = modes.slice().sort((a, b) => AIPM.tracesInMode(s, b.id).length - AIPM.tracesInMode(s, a.id).length)[0];
+  host.innerHTML = `
+    <div class="modepick">${modes.map(m => {
+      const n = AIPM.tracesInMode(s, m.id).length;
+      const j = (s.judges || {})[m.id];
+      const started = j && (Object.values(j.prompt || {}).some(v => (v || "").trim()) || (j.shots || []).length);
+      return `<button data-pick-mode="${m.id}" class="${m.id === cur ? "on" : ""}">
+        <span class="mn">${AIPM.esc(m.name)}</span>
+        <span class="md">${n} trace${n === 1 ? "" : "s"} in this mode${m.id === biggest.id && n > 1 ? " &middot; the most you have" : ""}${started ? " &middot; you have started a judge for this one" : ""}</span>
+      </button>`;
+    }).join("")}</div>
+    <p class="note" style="margin-top:.7rem">Start with the mode holding the most traces. A judge for a mode with two or three examples cannot be measured, because a single trace moves the numbers by a third.</p>`;
+  AIPM.$$("[data-pick-mode]").forEach(b => b.onclick = () => {
+    AIPM.update(st => { st.judge.activeModeId = b.dataset.pickMode; });
+    qi = 0; ci = 0; calReview = false; stepOverride = null;
+    renderAll();
   });
 }
 
@@ -821,9 +943,11 @@ function renderCalibrate() {
   // is the page nobody complains about.
   const queue = DATA.filter(t => AIPM.goldFor(s, t.id, m.id) === null).map(t => t.id);
 
-  if (queue.length && !calReview) {
-    ci = Math.min(ci, queue.length - 1);
-    const id = queue[ci];
+  if ((queue.length || peekId) && !calReview) {
+    ci = Math.min(ci, Math.max(0, queue.length - 1));
+    // peekId wins, so an already-judged trace can be reopened and changed.
+    const id = peekId != null ? peekId : queue[ci];
+    const g = AIPM.goldFor(s, id, m.id);
     const t = trace(id);
     const l = s.labels[String(id)] || {};
     const by = ((l.modes || {})[m.id] || {}).by;
@@ -834,12 +958,15 @@ function renderCalibrate() {
       <div class="who">Bot draft</div><div class="calmsg bot">${AIPM.esc(t.bot_reply)}</div>
       <div class="mineblock"><b>Module 1, you said ${AIPM.esc(l.verdict || "nothing")}</b>${AIPM.esc(l.critique) || "<i>no critique</i>"}${by === "cluster" ? '<div class="dim" style="margin-top:.3rem">You put this trace in this category during clustering, so confirm or change it.</div>' : ""}</div>
       <div class="calbtns">
-        <button id="cf" class="on-fail-outline">Fails this mode</button>
-        <button id="cp">Does not fail it</button>
-        <span class="grow" style="flex:1"></span>
-        <button id="ex" class="${m.example === id ? "on" : ""}" title="pin as the clearest example">&#9733; clearest failure</button>
-        <button id="cp2" class="${m.closestPass === id ? "on" : ""}" title="pin as the closest pass">&#9679; closest pass</button>
+        <button id="cf" class="${g === "fail" ? "on-fail" : "on-fail-outline"}">Fails this mode</button>
+        <button id="cp" class="${g === "pass" ? "on-pass" : ""}">Does not fail it</button>
+        ${peekId != null && queue.length ? '<span style="flex:1"></span><button id="backq">Back to the queue</button>' : ""}
       </div>
+      ${g ? `<div class="pins">
+        <span class="pinlead">Optional, and useful when you write the judge:</span>
+        <button id="ex" class="${m.example === id ? "on" : ""}">${m.example === id ? "&#10003; " : ""}Show this one to the judge as the example</button>
+        <button id="cp2" class="${m.closestPass === id ? "on" : ""}">${m.closestPass === id ? "&#10003; " : ""}This is the near miss my definition must clear</button>
+      </div>` : ""}
       <div class="keys">
         <span><kbd>F</kbd> or <kbd>1</kbd> fails</span>
         <span><kbd>P</kbd> or <kbd>2</kbd> does not</span>
@@ -852,19 +979,16 @@ function renderCalibrate() {
       </div>
     </div>`;
 
-    AIPM.$("#cf").onclick = () => setCal(id, "fail");
-    AIPM.$("#cp").onclick = () => setCal(id, "pass");
-    AIPM.$("#ex").onclick = () => { pin("example", id); };
-    AIPM.$("#cp2").onclick = () => { pin("closestPass", id); };
+    AIPM.$("#cf").onclick = () => setCal(id, "fail", peekId != null);
+    AIPM.$("#cp").onclick = () => setCal(id, "pass", peekId != null);
+    if (AIPM.$("#ex")) AIPM.$("#ex").onclick = () => pin("example", id);
+    if (AIPM.$("#cp2")) AIPM.$("#cp2").onclick = () => pin("closestPass", id);
+    if (AIPM.$("#backq")) AIPM.$("#backq").onclick = () => { peekId = null; renderCalibrate(); };
     AIPM.$("#calstrip").innerHTML = DATA.map(t2 => {
       const g2 = AIPM.goldFor(s, t2.id, m.id);
       return `<span class="${g2 === "fail" ? "gf" : g2 === "pass" ? "gp" : ""}${t2.id === id ? " here" : ""}" data-cgo="${t2.id}" title="trace ${t2.id}">${t2.id}</span>`;
     }).join("");
-    AIPM.$$("[data-cgo]").forEach(el => el.onclick = () => {
-      const at = queue.indexOf(+el.dataset.cgo);
-      if (at > -1) { ci = at; renderCalibrate(); }
-      else { calReview = true; renderCalibrate(); }
-    });
+    AIPM.$$("[data-cgo]").forEach(el => el.onclick = () => { openTrace(+el.dataset.cgo); });
   } else {
     // Review list, compact, for changing an earlier answer.
     const rows = DATA.map(t => {
@@ -920,11 +1044,22 @@ document.addEventListener("keydown", e => {
   else if (e.key === "ArrowRight") { e.preventDefault(); ci = ci + 1; renderCalibrate(); }
 });
 
+// Any trace, judged or not, opens in the single-trace view. Reviewing an
+// earlier call should cost one click.
+let peekId = null;
+function openTrace(id) {
+  peekId = id;
+  calReview = false;
+  renderCalibrate();
+}
+
 function pin(which, id) {
   const m = activeMode();
   AIPM.update(st => {
     const mm = AIPM.modeById(st, m.id);
+    const other = which === "example" ? "closestPass" : "example";
     mm[which] = mm[which] === id ? null : id;
+    if (mm[which] === id && mm[other] === id) mm[other] = null;
   });
   renderAll();
 }
@@ -932,7 +1067,7 @@ function pin(which, id) {
 function setCal(id, v, stay) {
   const m = activeMode();
   AIPM.update(st => { AIPM.setGold(st, id, m.id, v, "me"); });
-  if (!stay) ci = 0;   // the queue shrank under us, so restart at its head
+  if (!stay) { ci = 0; peekId = null; }   // the queue shrank under us, so restart at its head
   renderCalibrate();
   renderScore();
   renderStatus();
@@ -962,7 +1097,7 @@ function renderPrompt() {
       ${FIELDS.map(f => `<div class="field">
         <label>${f[1]}</label>
         <div class="why">${AIPM.esc(f[2])}</div>
-        <textarea class="${f[0] === "labels" ? "tall" : "thin"} ${(s.judge.prompt[f[0]] || "").trim() ? "" : "missing"}" data-f="${f[0]}">${AIPM.esc(s.judge.prompt[f[0]] || "")}</textarea>
+        <textarea class="${f[0] === "labels" ? "tall" : "thin"} ${(myJudge(s).prompt[f[0]] || "").trim() ? "" : "missing"}" data-f="${f[0]}">${AIPM.esc(myJudge(s).prompt[f[0]] || "")}</textarea>
       </div>`).join("")}
       <div class="field">
         <label>Few-shot examples <button id="addShot" style="float:right">+ pick from my labels</button></label>
@@ -972,7 +1107,7 @@ function renderPrompt() {
     </div>`;
 
   AIPM.$$("[data-f]").forEach(el => el.oninput = () => {
-    AIPM.update(st => { st.judge.prompt[el.dataset.f] = el.value; });
+    AIPM.update(st => { AIPM.judgeFor(st, mid()).prompt[el.dataset.f] = el.value; });
     el.classList.toggle("missing", !el.value.trim());
   });
   AIPM.$("#addShot").onclick = openPicker;
@@ -984,11 +1119,11 @@ function renderShots() {
   const m = activeMode();
   const host = AIPM.$("#shots");
   if (!host) return;
-  if (!s.judge.shots.length) {
+  if (!myJudge(s).shots.length) {
     host.innerHTML = '<p class="note">None yet. Two or three sharp ones beat six vague ones.</p>';
     return;
   }
-  host.innerHTML = s.judge.shots.map((sh, n) => {
+  host.innerHTML = myJudge(s).shots.map((sh, n) => {
     const t = trace(sh.id);
     const held = AIPM.isHoldout(s, sh.id);
     return `<div class="shot${held ? " bad" : ""}">
@@ -1008,13 +1143,13 @@ function renderShots() {
   }).join("");
 
   AIPM.$$("[data-sv]").forEach(el => el.onchange = () => {
-    AIPM.update(st => { st.judge.shots[+el.dataset.sv].verdict = el.value; }); renderScore();
+    AIPM.update(st => { AIPM.judgeFor(st, mid()).shots[+el.dataset.sv].verdict = el.value; }); renderScore();
   });
   AIPM.$$("[data-sc]").forEach(el => el.oninput = () => {
-    AIPM.update(st => { st.judge.shots[+el.dataset.sc].critique = el.value; });
+    AIPM.update(st => { AIPM.judgeFor(st, mid()).shots[+el.dataset.sc].critique = el.value; });
   });
   AIPM.$$("[data-sx]").forEach(el => el.onclick = () => {
-    AIPM.update(st => { st.judge.shots.splice(+el.dataset.sx, 1); }); renderAll();
+    AIPM.update(st => { AIPM.judgeFor(st, mid()).shots.splice(+el.dataset.sx, 1); }); renderAll();
   });
 }
 
@@ -1024,7 +1159,7 @@ function openPicker() {
   const s = AIPM.load();
   const m = activeMode();
   const dev = AIPM.devIds(s);
-  const chosen = s.judge.shots.map(x => x.id);
+  const chosen = myJudge(s).shots.map(x => x.id);
   // Held-out traces are simply absent. A badge saying "held out" would hand
   // over the split, which is the one thing this step depends on not doing.
   const pool = (dev || DATA.map(t => t.id)).filter(id => chosen.indexOf(id) === -1);
@@ -1066,7 +1201,7 @@ function openPicker() {
     const id = +b.dataset.pick;
     const g = AIPM.goldFor(AIPM.load(), id, m.id);
     AIPM.update(st => {
-      st.judge.shots.push({ id: id, verdict: g === "fail" ? "fail" : "pass", critique: (st.labels[String(id)] || {}).critique || "" });
+      AIPM.judgeFor(st, mid()).shots.push({ id: id, verdict: g === "fail" ? "fail" : "pass", critique: (st.labels[String(id)] || {}).critique || "" });
     });
     AIPM.$("#picker").classList.remove("on");
     AIPM.toast("Trace " + id + " is now an example, so it is excluded from the score.");
@@ -1121,7 +1256,7 @@ function renderScore() {
   }
 
   const run = runs[runs.length - 1];
-  const shots = s.judge.shots.map(x => x.id);
+  const shots = myJudge(s).shots.map(x => x.id);
   const dev = AIPM.devIds(s);
   const rows = [], excludedShot = [], excludedUncal = [], outsideSet = [];
   run.results.forEach(r => {
@@ -1183,7 +1318,7 @@ function renderScore() {
 }
 
 function history(s, runs) {
-  const shots = s.judge.shots.map(x => x.id);
+  const shots = myJudge(s).shots.map(x => x.id);
   const m = activeMode();
   const body = runs.map((r, n) => {
     const rows = r.results.filter(x => shots.indexOf(x.id) === -1 && AIPM.goldFor(s, x.id, m.id) !== null)
@@ -1206,7 +1341,7 @@ function renderTriage(rows) {
   const r = rows[qi];
   const t = trace(r.id);
   const l = s.labels[String(r.id)] || {};
-  const d = s.triage[String(r.id)] || { call: null, note: "", otherModeId: null };
+  const d = myJudge(s).triage[String(r.id)] || { call: null, note: "", otherModeId: null };
   const others = s.taxonomy.modes.filter(x => x.id !== m.id && x.name.trim());
 
   host.innerHTML = `
@@ -1239,14 +1374,14 @@ function renderTriage(rows) {
 
   AIPM.$$("[data-call]").forEach(b => b.onclick = () => {
     AIPM.update(st => {
-      st.triage[String(r.id)] = { call: b.dataset.call, note: AIPM.$("#tnote").value, otherModeId: d.otherModeId || null };
+      AIPM.judgeFor(st, mid()).triage[String(r.id)] = { call: b.dataset.call, note: AIPM.$("#tnote").value, otherModeId: d.otherModeId || null };
       if (b.dataset.call === "label") AIPM.setGold(st, r.id, m.id, r.judge, "triage");
     });
     renderAll();
   });
   if (AIPM.$("#otherMode")) AIPM.$("#otherMode").onchange = e => {
     AIPM.update(st => {
-      st.triage[String(r.id)].otherModeId = e.target.value || null;
+      AIPM.judgeFor(st, mid()).triage[String(r.id)].otherModeId = e.target.value || null;
       // Record the failure where it actually belongs. This mode's answer is
       // left exactly as the learner calibrated it.
       if (e.target.value) AIPM.setGold(st, r.id, e.target.value, "fail", "triage");
@@ -1256,9 +1391,9 @@ function renderTriage(rows) {
   };
   AIPM.$("#tnote").oninput = e => {
     AIPM.update(st => {
-      const cur = st.triage[String(r.id)] || { call: null, otherModeId: null };
+      const cur = AIPM.judgeFor(st, mid()).triage[String(r.id)] || { call: null, otherModeId: null };
       cur.note = e.target.value;
-      st.triage[String(r.id)] = cur;
+      AIPM.judgeFor(st, mid()).triage[String(r.id)] = cur;
     });
   };
   AIPM.$("#tprev").onclick = () => { qi = Math.max(0, qi - 1); renderTriage(rows); };
@@ -1268,40 +1403,40 @@ function renderTriage(rows) {
 /* ---------- handoff ---------- */
 
 function promptMarkdown(s, m) {
-  const shots = s.judge.shots.map((sh, n) => {
+  const shots = myJudge(s).shots.map((sh, n) => {
     const t = trace(sh.id);
     return `**Example ${String.fromCharCode(65 + n)} (trace ${sh.id}, ${sh.verdict}).**\n`
       + `Customer: "${t.customer || ""}"\n`
       + `Bot: "${t.bot_reply || ""}"\n`
       + `verdict: ${sh.verdict}\ncritique: ${sh.critique}`;
   }).join("\n\n");
-  return `# Judge prompt: ${m.name}\n\n## Role\n\n${s.judge.prompt.role}\n\n## Context\n\n${s.judge.prompt.context}\n\n`
-    + `## What to measure\n\n${s.judge.prompt.measure}\n\n## Labels and output\n\n${s.judge.prompt.labels}\n\n`
+  return `# Judge prompt: ${m.name}\n\n## Role\n\n${myJudge(s).prompt.role}\n\n## Context\n\n${myJudge(s).prompt.context}\n\n`
+    + `## What to measure\n\n${myJudge(s).prompt.measure}\n\n## Labels and output\n\n${myJudge(s).prompt.labels}\n\n`
     + `## Few-shot examples\n\n${shots}\n`;
 }
 
 AIPM.$("#copyPrompt").onclick = () => {
   const s = AIPM.load(), m = activeMode();
   if (!m) { alert("Pick a failure mode first."); return; }
-  const empty = FIELDS.filter(f => !(s.judge.prompt[f[0]] || "").trim()).map(f => f[1]);
+  const empty = FIELDS.filter(f => !(myJudge(s).prompt[f[0]] || "").trim()).map(f => f[1]);
   if (empty.length && !confirm("These boxes are still empty:\n\n  " + empty.join("\n  ") + "\n\nCopy anyway?")) return;
   const grade = scorable(s, m.id);
   AIPM.copyText(AIPM.payload(APP, "judge-prompt", {
     n: grade.length,
     mode: { id: m.id, name: m.name, definition: m.definition },
     round: runsForMode(s, m.id).length + 1,
-    prompt: s.judge.prompt,
-    shots: s.judge.shots,
+    prompt: myJudge(s).prompt,
+    shots: myJudge(s).shots,
     grade_ids: grade,
-    excluded_as_examples: s.judge.shots.map(x => x.id),
+    excluded_as_examples: myJudge(s).shots.map(x => x.id),
     markdown: promptMarkdown(s, m)
   }), "Copied. Paste it into the chat with Claude Code.");
 };
 
 AIPM.$("#copyTriage").onclick = () => {
   const s = AIPM.load(), m = activeMode();
-  const decisions = Object.keys(s.triage).map(id => ({
-    id: +id, call: s.triage[id].call, otherModeId: s.triage[id].otherModeId || null, note: s.triage[id].note || ""
+  const decisions = Object.keys(myJudge(s).triage).map(id => ({
+    id: +id, call: myJudge(s).triage[id].call, otherModeId: myJudge(s).triage[id].otherModeId || null, note: myJudge(s).triage[id].note || ""
   })).filter(x => x.call);
   if (!decisions.length) { alert("No triage decisions yet. Work the disagreement queue first."); return; }
   AIPM.copyText(AIPM.payload(APP, "triage", {
@@ -1328,22 +1463,99 @@ function renderStatus() {
     : `${labelled} labels`;
 }
 
+/* ---------- the step model ---------- */
+
+// Which step the learner is actually on, derived from their work rather than
+// from a click. The page shows one step at a time, because meeting the whole
+// machine at once is what made it unreadable.
+const STEPS = [
+  { key: "mode",      label: "Pick the mode",       lead: "Choose which failure mode this judge is for. One judge grades one mode, so this decides everything below." },
+  { key: "calibrate", label: "Calibrate it",        lead: "Go through the traces and say whether each one fails this mode. This becomes the answer key the judge is measured against." },
+  { key: "write",     label: "Write the judge",     lead: "Four boxes and two or three examples from your own labels. You are teaching a model your bar." },
+  { key: "run",       label: "Run it",              lead: "Hand the prompt to Claude Code. It grades one trace at a time and writes the results back into this page." },
+  { key: "read",      label: "Read the results",    lead: "Precision and recall against your own answer key, then every disagreement one at a time." },
+];
+
+function currentStep(s, m) {
+  if (!m) return "mode";
+  if (calibratedCount(s, m.id) < DATA.length) return "calibrate";
+  if (runsForMode(s, m.id).length) return "read";
+  const p = myJudge(s).prompt;
+  const written = FIELDS.every(f => (p[f[0]] || "").trim());
+  return written ? "run" : "write";
+}
+
+let stepOverride = null;   // set when the learner clicks back to a finished step
+
+function renderRail(s, m, step) {
+  const at = STEPS.findIndex(x => x.key === step);
+  AIPM.$("#rail").innerHTML = STEPS.map((x, n) => {
+    const state = n < at ? "done" : n === at ? "here" : "later";
+    return `<button class="railstep ${state}" data-step="${x.key}" ${n > at ? "disabled" : ""}>
+      <span class="num">${n + 1}</span>${x.label}${n < at ? " &#10003;" : ""}</button>`;
+  }).join('<span class="railsep">&rsaquo;</span>')
+    + `<div class="raillead">${AIPM.esc(STEPS[at].lead)}</div>`;
+  AIPM.$$("[data-step]").forEach(b => b.onclick = () => {
+    stepOverride = b.dataset.step === step ? null : b.dataset.step;
+    calReview = b.dataset.step === "calibrate" && b.dataset.step !== step;
+    renderAll();
+  });
+}
+
 function renderAll() {
   renderModes();   // picks the active mode on first load, so it has to run first
-  const s0 = AIPM.load(), m0 = activeMode();
-  const stillCalibrating = !!m0 && calibratedCount(s0, m0.id) < DATA.length && !calReview;
-  document.querySelector("main").classList.toggle("calibrating", stillCalibrating);
-  renderCalibrate();
-  renderPrompt();
-  renderBoundary();
-  renderScore();
+  const s = AIPM.load(), m = activeMode();
+  const natural = currentStep(s, m);
+  // An override only lets you look backwards, never skip ahead.
+  const order = STEPS.map(x => x.key);
+  const step = (stepOverride && order.indexOf(stepOverride) <= order.indexOf(natural)) ? stepOverride : natural;
+
+  renderRail(s, m, step);
+  show("modeBar", step === "mode");
+  show("calibrate", step === "calibrate");
+  const writing = step === "write" || step === "run";
+  show("promptEditor", writing);
+  show("hPrompt", writing);
+  show("boundary", writing);
+  show("hBoundary", writing);
+  show("scoreboard", step === "run" || step === "read");
+  show("hScore", step === "run" || step === "read");
+  show("triageWrap", step === "read");
+  document.querySelector("main").classList.toggle("calibrating", step === "calibrate");
+  document.querySelector("main").classList.toggle("single", step === "mode" || step === "calibrate" || step === "read");
+
+  if (step === "mode") renderModePicker(s);
+  if (step === "calibrate") renderCalibrate();
+  if (step === "write" || step === "run") { renderPrompt(); renderBoundary(); }
+  if (step === "run" || step === "read") renderScore();
+  renderNext(s, m, step);
   renderStatus();
+}
+
+function show(id, on) {
+  const el = AIPM.$("#" + id);
+  if (el) el.style.display = on ? "" : "none";
+}
+
+// Every step ends by saying what happens next, which is the thing the page
+// was missing entirely.
+function renderNext(s, m, step) {
+  const host = AIPM.$("#nextup");
+  if (!host) return;
+  let msg = "";
+  const anyModes = s.taxonomy.modes.filter(x => x.name.trim()).length;
+  if (step === "mode") msg = anyModes ? "Pick one above and you will calibrate it next." : "Name your failure modes on the clustering board first, then come back.";
+  else if (step === "calibrate") msg = `Judge all ${DATA.length} traces for this mode, then you write the judge.`;
+  else if (step === "write") msg = "Fill the four boxes and add two or three examples. Then you hand it to Claude Code.";
+  else if (step === "run") msg = "Click <b>Copy prompt for Claude Code</b> above and paste it into the chat. When it says it has written the results, reload this tab.";
+  else if (step === "read") msg = "Work through every disagreement, amend the prompt, and run it again. Two or three rounds is normal.";
+  host.innerHTML = msg ? `<div class="nextup"><b>Next</b> ${msg}</div>` : "";
 }
 
 if (location.hash === "#selftest") {
   AIPM.selftest(DATA);
 } else {
-  AIPM.chrome();
+  AIPM.chrome({ page: "judge" });
   const applied = AIPM.applyInjected(typeof INJECTED === "undefined" ? null : INJECTED);
   const prefs = AIPM.load().prefs;
   AIPM.$("#brief").open = !(prefs.briefOpen && prefs.briefOpen.judge === false);
