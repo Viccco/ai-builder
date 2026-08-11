@@ -12,3 +12,6 @@ workbook/*
 
 # drafts for a later rework, not part of the course
 _later/
+
+# working notes, local only
+_notes/
