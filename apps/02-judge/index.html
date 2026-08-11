@@ -16,6 +16,7 @@
   button:disabled { opacity: .4; cursor: not-allowed; }
   .wrap { max-width: min(var(--aipm-w, 1400px), 96vw); margin: 0 auto; padding: 0 1rem 5rem; }
   main { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; align-items: start; }
+  main.calibrating { grid-template-columns: 1fr; }
   @media (max-width: 1000px) { main { grid-template-columns: 1fr; } }
   h2 { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); margin: 0 0 .7rem; font-weight: 600; }
   .field { margin-bottom: 1rem; }
@@ -56,18 +57,31 @@
   .intro ol { margin: .3rem 0 .7rem; padding-left: 1.3rem; }
   .intro li { margin-bottom: .35rem; }
   .gate { opacity: .4; pointer-events: none; }
-  .cal { border: 1px solid var(--line); border-radius: 8px; margin-bottom: .4rem; padding: .5rem .6rem; display: grid; grid-template-columns: 1fr auto; gap: .7rem; align-items: start; }
-  .cal .txt { font-size: .85rem; }
-  .cal .txt .c { margin-bottom: .25rem; }
-  .cal .txt .b { color: var(--dim); }
-  .cal .mine { font-size: .78rem; color: var(--dim); margin-top: .3rem; font-style: italic; }
-  .cal .ctl { display: flex; gap: .3rem; align-items: center; white-space: nowrap; }
-  .cal .ctl button { font-size: .8rem; padding: .25rem .55rem; }
-  .cal button.on-fail { background: var(--fail); border-color: var(--fail); color: #fff; }
-  .cal button.on-pass { background: var(--pass); border-color: var(--pass); color: #fff; }
-  .cal.unconfirmed { border-style: dashed; }
-  .cal .star { cursor: pointer; opacity: .3; }
-  .cal .star.on { opacity: 1; color: var(--warn); }
+  .calmeta { color: var(--dim); font-size: .8rem; display: flex; justify-content: space-between; margin: 1rem 0 .5rem; }
+  .calmsg { white-space: pre-wrap; font-size: 1rem; margin-bottom: .8rem; }
+  .calmsg.bot { background: #8881; border-radius: 10px; padding: .7rem .8rem; }
+  .mineblock { border-left: 3px solid var(--line); padding: .5rem .7rem; margin-bottom: 1rem; font-size: .9rem; }
+  .mineblock b { display: block; color: var(--dim); font-size: .74rem; text-transform: uppercase; letter-spacing: .06em; margin-bottom: .2rem; }
+  .calbtns { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; margin-bottom: .7rem; }
+  .calbtns button { font-size: .95rem; padding: .45rem 1.1rem; }
+  .calbtns button.on { background: var(--warn); border-color: var(--warn); color: #fff; }
+  .calbtns .on-fail-outline { border-color: var(--fail); color: var(--fail); font-weight: 600; }
+  #calstrip { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 1rem; }
+  #calstrip span { width: 22px; height: 22px; border: 1px solid var(--line); border-radius: 5px; font-size: .68rem; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--dim); }
+  #calstrip span.gf { background: var(--fail); border-color: var(--fail); color: #fff; }
+  #calstrip span.gp { background: var(--pass); border-color: var(--pass); color: #fff; }
+  #calstrip span.here { outline: 2px solid CanvasText; outline-offset: 1px; }
+  .calrow { border: 1px solid var(--line); border-radius: 8px; margin-bottom: .35rem; padding: .4rem .55rem; display: grid; grid-template-columns: 1fr auto; gap: .7rem; align-items: center; }
+  .calrow .txt { font-size: .85rem; }
+  .calrow .ctl { display: flex; gap: .3rem; align-items: center; white-space: nowrap; }
+  .calrow .ctl button { font-size: .78rem; padding: .2rem .5rem; }
+  .calrow button.on-fail { background: var(--fail); border-color: var(--fail); color: #fff; }
+  .calrow button.on-pass { background: var(--pass); border-color: var(--pass); color: #fff; }
+  .calrow.unconfirmed { border-style: dashed; }
+  .calrow .star { cursor: pointer; opacity: .3; }
+  .calrow .star.on { opacity: 1; color: var(--warn); }
+  .keys { padding: .5rem .75rem; border: 1px solid var(--line); border-radius: 8px; font-size: .82rem; color: var(--dim); display: flex; gap: 1.1rem; flex-wrap: wrap; }
+  kbd { border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 .35rem; font-size: .9em; font-family: inherit; color: CanvasText; }
   #picker { position: fixed; inset: 0; background: #0009; display: none; align-items: flex-start; justify-content: center; z-index: 40; padding: 2rem 1rem; overflow: auto; }
   #picker.on { display: flex; }
   .picker-inner { background: Canvas; border-radius: 12px; padding: 1rem; max-width: 860px; width: 100%; }
@@ -100,20 +114,6 @@
 </header>
 
 <div class="wrap">
-  <details class="intro" id="brief" open>
-    <summary>What you are building here, and the steps</summary>
-    <p><b>The goal.</b> In module 1 you read 30 drafts and decided pass or fail yourself. That does not scale, because next week there are 3000. So you write a prompt that makes a model grade the way you graded, then you measure how often it agrees with you. A judge nobody has checked is just a second opinion with no track record.</p>
-    <p><b>One judge, one failure mode.</b> You are not building an "is this reply good" grader. You build one for a single mode from your own taxonomy. A reply can be perfectly grounded and tonally offensive, and a judge forced to hold both questions at once produces errors that look random.</p>
-    <p><b>The hard part is the boundary, not the obvious cases.</b> Anyone can see that inventing a delivery time is a failure. Your judge earns its keep on the near misses, so your definitions have to separate the failure you pinned from the pass that sits closest to it.</p>
-    <ol>
-      <li><b>Pick the mode</b> this judge is for.</li>
-      <li><b>Calibrate it.</b> Go through the traces and say, for each one, whether it fails <i>this mode</i>. Your module 1 verdict answered a different question, so it cannot be the answer key here.</li>
-      <li><b>Write the four boxes</b> and add two or three examples from your own labels.</li>
-      <li><b>Copy the prompt for Claude Code</b>, which runs it and writes the results back into this page. Reload and the scoreboard fills in.</li>
-      <li><b>Work the disagreements</b>, decide what each one means, then amend and rerun. Two or three rounds is normal.</li>
-    </ol>
-    <p class="note">Claude Code writes into this page. When it says it has written something, reload the tab.</p>
-  </details>
 
   <div id="modeBar"></div>
 
@@ -135,6 +135,21 @@
     <h2 style="margin-top:2rem">Disagreements</h2>
     <div id="triage"></div>
   </section>
+
+  <details class="intro" id="brief" open>
+    <summary>What you are building here, and the steps</summary>
+    <p><b>The goal.</b> In module 1 you read 30 drafts and decided pass or fail yourself. That does not scale, because next week there are 3000. So you write a prompt that makes a model grade the way you graded, then you measure how often it agrees with you. A judge nobody has checked is just a second opinion with no track record.</p>
+    <p><b>One judge, one failure mode.</b> You are not building an "is this reply good" grader. You build one for a single mode from your own taxonomy. A reply can be perfectly grounded and tonally offensive, and a judge forced to hold both questions at once produces errors that look random.</p>
+    <p><b>The hard part is the boundary, not the obvious cases.</b> Anyone can see that inventing a delivery time is a failure. Your judge earns its keep on the near misses, so your definitions have to separate the failure you pinned from the pass that sits closest to it.</p>
+    <ol>
+      <li><b>Pick the mode</b> this judge is for.</li>
+      <li><b>Calibrate it.</b> Go through the traces and say, for each one, whether it fails <i>this mode</i>. Your module 1 verdict answered a different question, so it cannot be the answer key here.</li>
+      <li><b>Write the four boxes</b> and add two or three examples from your own labels.</li>
+      <li><b>Copy the prompt for Claude Code</b>, which runs it and writes the results back into this page. Reload and the scoreboard fills in.</li>
+      <li><b>Work the disagreements</b>, decide what each one means, then amend and rerun. Two or three rounds is normal.</li>
+    </ol>
+    <p class="note">Claude Code writes into this page. When it says it has written something, reload the tab.</p>
+  </details>
 </div>
 
 <div id="picker"><div class="picker-inner" id="pickerInner"></div></div>
@@ -734,7 +749,8 @@ const APP = "02-judge";
 const trace = id => DATA.find(t => t.id === id) || {};
 
 let qi = 0;                 // which disagreement is on screen
-let calOpen = true;         // the calibration list starts open until it is done
+let ci = 0;                 // cursor into the uncalibrated queue
+let calReview = false;      // true when looking at the whole calibration list
 let pickerFilter = "all";
 
 function activeMode() {
@@ -778,7 +794,7 @@ function renderModes() {
     ).join("")}</div>`;
   AIPM.$$("[data-mode]").forEach(b => b.onclick = () => {
     AIPM.update(st => { st.judge.activeModeId = b.dataset.mode; });
-    qi = 0; calOpen = true; renderAll();
+    qi = 0; ci = 0; calReview = false; renderAll();
   });
 }
 
@@ -793,74 +809,130 @@ function renderCalibrate() {
   const done = calibratedCount(s, m.id);
   const total = DATA.length;
 
-  if (!calOpen && done === total) {
-    host.innerHTML = `<div class="panel"><div class="tag-line">Step 2, calibration</div>
-      <p class="small">All ${total} traces judged for <b>${AIPM.esc(m.name)}</b>.
-      <button id="calReopen">Review them</button></p></div>`;
-    AIPM.$("#calReopen").onclick = () => { calOpen = true; renderCalibrate(); };
-    return;
-  }
-
-  const rows = DATA.map(t => {
-    const g = AIPM.goldFor(s, t.id, m.id);
-    const l = s.labels[String(t.id)] || {};
-    const by = ((l.modes || {})[m.id] || {}).by;
-    const isExample = m.example === t.id;
-    const isClosest = m.closestPass === t.id;
-    return `<div class="cal ${g === null ? "unconfirmed" : ""}" data-cal="${t.id}">
-      <div class="txt">
-        <div class="c"><b>Customer:</b> ${AIPM.esc(t.customer)}</div>
-        <div class="b"><b>Bot:</b> ${AIPM.esc(t.bot_reply)}</div>
-        <div class="mine">trace ${t.id} &middot; you said ${l.verdict || "nothing"} overall${l.critique ? ": " + AIPM.esc(l.critique) : ""}${by === "cluster" ? " &middot; carried over from clustering, confirm it" : ""}</div>
-      </div>
-      <div class="ctl">
-        <button data-cf="${t.id}" class="${g === "fail" ? "on-fail" : ""}">fails</button>
-        <button data-cp="${t.id}" class="${g === "pass" ? "on-pass" : ""}">does not</button>
-        <span class="star${isExample ? " on" : ""}" data-ex="${t.id}" title="pin as the clearest example of this mode">&#9733;</span>
-        <span class="star${isClosest ? " on" : ""}" data-cp2="${t.id}" title="pin as the pass that sits closest to this line">&#9679;</span>
-      </div>
-    </div>`;
-  }).join("");
-
-  host.innerHTML = `<div class="panel">
+  const preamble = `
     <div class="tag-line">Step 2, calibration</div>
     <h3>Does each draft fail <i>${AIPM.esc(m.name)}</i>?</h3>
     <p class="small">Your module 1 verdict answered a different question, which was whether you would post the reply at all. A draft can be rude, useless and perfectly honest about what it knows. If you score this judge against that verdict, every trace that fails for another reason looks like the judge missed something when it did its job correctly.</p>
-    <p class="small">Traces you put in this category during clustering start as <b>fails</b> and are marked so you can see they are inherited. Confirm or change them.</p>
     <p class="small">${m.definition.trim()
       ? "Your definition of this mode: <i>" + AIPM.esc(m.definition.trim()) + "</i>"
-      : "<span class=\"dim\">This mode has no definition yet. Write one on the clustering board, because you cannot judge consistently against a rule you have not written down.</span>"}</p>
-    <p class="small"><b>${done} of ${total} judged.</b> Star the clearest failure with &#9733; and the pass that sits closest to the line with &#9679;. Both appear beside the prompt editor while you write.</p>
-    <div class="chips">
-      <button id="calRest">Judge the rest as "does not fail"</button>
-      ${done === total ? '<button id="calClose">Done, hide this</button>' : ""}
-    </div>
-    ${rows}
-  </div>`;
+      : "<span class=\"dim\">This mode has no definition yet. Write one on the clustering board, because you cannot judge consistently against a rule you have not written down.</span>"}</p>`;
 
-  AIPM.$$("[data-cf]").forEach(b => b.onclick = () => setCal(+b.dataset.cf, "fail"));
-  AIPM.$$("[data-cp]").forEach(b => b.onclick = () => setCal(+b.dataset.cp, "pass"));
-  AIPM.$$("[data-ex]").forEach(b => b.onclick = () => {
-    AIPM.update(st => { const mm = AIPM.modeById(st, m.id); mm.example = mm.example === +b.dataset.ex ? null : +b.dataset.ex; });
-    renderAll();
-  });
-  AIPM.$$("[data-cp2]").forEach(b => b.onclick = () => {
-    AIPM.update(st => { const mm = AIPM.modeById(st, m.id); mm.closestPass = mm.closestPass === +b.dataset.cp2 ? null : +b.dataset.cp2; });
-    renderAll();
-  });
-  AIPM.$("#calRest").onclick = () => {
-    if (!confirm("Judge every remaining trace as not failing this mode?\n\nThese become your calls, and the judge is scored against them.")) return;
+  // Everything still unjudged, one at a time. Same shape as the labeler, which
+  // is the page nobody complains about.
+  const queue = DATA.filter(t => AIPM.goldFor(s, t.id, m.id) === null).map(t => t.id);
+
+  if (queue.length && !calReview) {
+    ci = Math.min(ci, queue.length - 1);
+    const id = queue[ci];
+    const t = trace(id);
+    const l = s.labels[String(id)] || {};
+    const by = ((l.modes || {})[m.id] || {}).by;
+    host.innerHTML = `<div class="panel">
+      ${preamble}
+      <div class="calmeta"><span>trace ${id}</span><span>${done} of ${total} judged</span></div>
+      <div class="who">Customer</div><div class="calmsg">${AIPM.esc(t.customer)}</div>
+      <div class="who">Bot draft</div><div class="calmsg bot">${AIPM.esc(t.bot_reply)}</div>
+      <div class="mineblock"><b>Module 1, you said ${AIPM.esc(l.verdict || "nothing")}</b>${AIPM.esc(l.critique) || "<i>no critique</i>"}${by === "cluster" ? '<div class="dim" style="margin-top:.3rem">You put this trace in this category during clustering, so confirm or change it.</div>' : ""}</div>
+      <div class="calbtns">
+        <button id="cf" class="on-fail-outline">Fails this mode</button>
+        <button id="cp">Does not fail it</button>
+        <span class="grow" style="flex:1"></span>
+        <button id="ex" class="${m.example === id ? "on" : ""}" title="pin as the clearest example">&#9733; clearest failure</button>
+        <button id="cp2" class="${m.closestPass === id ? "on" : ""}" title="pin as the closest pass">&#9679; closest pass</button>
+      </div>
+      <div class="keys">
+        <span><kbd>F</kbd> or <kbd>1</kbd> fails</span>
+        <span><kbd>P</kbd> or <kbd>2</kbd> does not</span>
+        <span><kbd>&larr;</kbd> back</span>
+      </div>
+      <div id="calstrip"></div>
+      <div class="chips" style="margin-top:.9rem">
+        <button id="calReviewBtn">See all ${total}</button>
+        <button id="calRest">Judge the remaining ${queue.length} as "does not fail"</button>
+      </div>
+    </div>`;
+
+    AIPM.$("#cf").onclick = () => setCal(id, "fail");
+    AIPM.$("#cp").onclick = () => setCal(id, "pass");
+    AIPM.$("#ex").onclick = () => { pin("example", id); };
+    AIPM.$("#cp2").onclick = () => { pin("closestPass", id); };
+    AIPM.$("#calstrip").innerHTML = DATA.map(t2 => {
+      const g2 = AIPM.goldFor(s, t2.id, m.id);
+      return `<span class="${g2 === "fail" ? "gf" : g2 === "pass" ? "gp" : ""}${t2.id === id ? " here" : ""}" data-cgo="${t2.id}" title="trace ${t2.id}">${t2.id}</span>`;
+    }).join("");
+    AIPM.$$("[data-cgo]").forEach(el => el.onclick = () => {
+      const at = queue.indexOf(+el.dataset.cgo);
+      if (at > -1) { ci = at; renderCalibrate(); }
+      else { calReview = true; renderCalibrate(); }
+    });
+  } else {
+    // Review list, compact, for changing an earlier answer.
+    const rows = DATA.map(t => {
+      const g = AIPM.goldFor(s, t.id, m.id);
+      const l = s.labels[String(t.id)] || {};
+      return `<div class="calrow ${g === null ? "unconfirmed" : ""}">
+        <div class="txt"><b>trace ${t.id}</b> ${AIPM.esc(l.critique) || "<i>no critique</i>"}</div>
+        <div class="ctl">
+          <button data-cf="${t.id}" class="${g === "fail" ? "on-fail" : ""}">fails</button>
+          <button data-cp="${t.id}" class="${g === "pass" ? "on-pass" : ""}">does not</button>
+          <span class="star${m.example === t.id ? " on" : ""}" data-ex="${t.id}" title="clearest failure">&#9733;</span>
+          <span class="star${m.closestPass === t.id ? " on" : ""}" data-cp2="${t.id}" title="closest pass">&#9679;</span>
+        </div>
+      </div>`;
+    }).join("");
+    host.innerHTML = `<div class="panel">
+      ${preamble}
+      <p class="small"><b>${done} of ${total} judged.</b> Star the clearest failure and the closest pass. Both appear beside the prompt editor while you write.</p>
+      ${rows}
+      <div class="chips" style="margin-top:.8rem">
+        ${queue.length ? `<button id="calBack" class="primary">Judge the remaining ${queue.length}</button>` : ""}
+        <button id="calRest">${queue.length ? `Judge the remaining ${queue.length} as "does not fail"` : "All judged"}</button>
+      </div>
+    </div>`;
+    AIPM.$$("[data-cf]").forEach(b => b.onclick = () => setCal(+b.dataset.cf, "fail", true));
+    AIPM.$$("[data-cp]").forEach(b => b.onclick = () => setCal(+b.dataset.cp, "pass", true));
+    AIPM.$$("[data-ex]").forEach(b => b.onclick = () => pin("example", +b.dataset.ex));
+    AIPM.$$("[data-cp2]").forEach(b => b.onclick = () => pin("closestPass", +b.dataset.cp2));
+    if (AIPM.$("#calBack")) AIPM.$("#calBack").onclick = () => { calReview = false; ci = 0; renderCalibrate(); };
+  }
+
+  if (AIPM.$("#calReviewBtn")) AIPM.$("#calReviewBtn").onclick = () => { calReview = true; renderCalibrate(); };
+  if (AIPM.$("#calRest")) AIPM.$("#calRest").onclick = () => {
+    const left = DATA.filter(t => AIPM.goldFor(AIPM.load(), t.id, m.id) === null).length;
+    if (!left) return;
+    if (!confirm(`Judge the remaining ${left} traces as not failing this mode?\n\nThese become your calls, and the judge is scored against them.`)) return;
     AIPM.update(st => {
       DATA.forEach(t => { if (AIPM.goldFor(st, t.id, m.id) === null) AIPM.setGold(st, t.id, m.id, "pass", "me"); });
     });
     renderAll();
   };
-  if (AIPM.$("#calClose")) AIPM.$("#calClose").onclick = () => { calOpen = false; renderAll(); };
 }
 
-function setCal(id, v) {
+// Calibration keys, matching the labeler so the two pages do not disagree.
+document.addEventListener("keydown", e => {
+  if (calReview) return;
+  if (document.activeElement && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)) return;
+  if (!AIPM.$("#cf")) return;
+  const k = e.key.toLowerCase();
+  if (k === "f" || e.key === "1") { e.preventDefault(); AIPM.$("#cf").click(); }
+  else if (k === "p" || e.key === "2") { e.preventDefault(); AIPM.$("#cp").click(); }
+  else if (e.key === "ArrowLeft") { e.preventDefault(); ci = Math.max(0, ci - 1); renderCalibrate(); }
+  else if (e.key === "ArrowRight") { e.preventDefault(); ci = ci + 1; renderCalibrate(); }
+});
+
+function pin(which, id) {
+  const m = activeMode();
+  AIPM.update(st => {
+    const mm = AIPM.modeById(st, m.id);
+    mm[which] = mm[which] === id ? null : id;
+  });
+  renderAll();
+}
+
+function setCal(id, v, stay) {
   const m = activeMode();
   AIPM.update(st => { AIPM.setGold(st, id, m.id, v, "me"); });
+  if (!stay) ci = 0;   // the queue shrank under us, so restart at its head
   renderCalibrate();
   renderScore();
   renderStatus();
@@ -1072,8 +1144,19 @@ function renderScore() {
   if (c.precision !== null && c.precision < 0.6)
     warn.push("Precision under 60 percent means it flags things you passed. Usually the definition reaches into a neighbouring mode.");
 
+  // Precision and recall are ratios over the positives. With a handful of them
+  // every number is one trace wide, so say that before showing anything.
+  const positives = c.tp + c.fn;
+  const thin = positives < 5
+    ? `<div class="warnbox"><b>Only ${positives} trace${positives === 1 ? "" : "s"} in this scored set actually fail${positives === 1 ? "s" : ""} this mode.</b>
+       Recall is computed from ${positives === 0 ? "none of them" : "those " + positives}, so it can only take ${positives === 0 ? "no value at all" : (positives + 1) + " values"} and a single trace moves it by ${positives ? Math.round(100 / positives) : 0} points.
+       Precision and recall cannot tell you much at this size. Either calibrate more traces for this mode, or build the judge for a mode with more failures in it.
+       ${positives === 0 ? "With no failures at all, this judge has nothing to find and the numbers below are meaningless." : ""}</div>`
+    : "";
+
   host.innerHTML = `
     <div class="note">Round ${run.round || runs.length} &middot; set "${AIPM.esc(run.set || "dev")}" &middot; judging <b>${AIPM.esc(m.name)}</b></div>
+    ${thin}
     ${AIPM.metricRow([
       ["precision", AIPM.pct(c.precision)],
       ["recall", AIPM.pct(c.recall)],
@@ -1246,7 +1329,10 @@ function renderStatus() {
 }
 
 function renderAll() {
-  renderModes();
+  renderModes();   // picks the active mode on first load, so it has to run first
+  const s0 = AIPM.load(), m0 = activeMode();
+  const stillCalibrating = !!m0 && calibratedCount(s0, m0.id) < DATA.length && !calReview;
+  document.querySelector("main").classList.toggle("calibrating", stillCalibrating);
   renderCalibrate();
   renderPrompt();
   renderBoundary();
@@ -1259,6 +1345,12 @@ if (location.hash === "#selftest") {
 } else {
   AIPM.chrome();
   const applied = AIPM.applyInjected(typeof INJECTED === "undefined" ? null : INJECTED);
+  const prefs = AIPM.load().prefs;
+  AIPM.$("#brief").open = !(prefs.briefOpen && prefs.briefOpen.judge === false);
+  AIPM.$("#brief").ontoggle = () => AIPM.update(s => {
+    s.prefs.briefOpen = s.prefs.briefOpen || {};
+    s.prefs.briefOpen.judge = AIPM.$("#brief").open;
+  });
   renderAll();
   if (applied) AIPM.toast("Loaded " + applied + " from Claude Code.");
 }

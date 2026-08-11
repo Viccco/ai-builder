@@ -74,7 +74,7 @@ Continue as Northline's AI PM. Yesterday you found the dominant failure mode. To
 
 1. **Split first.** Tell Claude Code to split your 30 labeled traces into 20 development and 10 held-out. It writes the split into the app and never shows you which is which. (~2 min)
 
-2. **Calibrate the mode.** Open `apps/02-judge/index.html` and pick the failure mode this judge is for. Then go through all 30 traces and answer one question about each: does this fail *this mode*. (~8 min)
+2. **Calibrate the mode.** Open `apps/02-judge/index.html` and pick the failure mode this judge is for. Then go through all 30 traces, one per screen, answering one question about each: does this fail *this mode*. `F` fails it, `P` does not. (~8 min)
 
    This step feels redundant and is not. Your module 1 verdict answered "would I post this", and a draft can be rude, useless and perfectly honest about what it knows. If you score a grounding judge against a verdict that also punished tone, every trace that failed for another reason looks like a miss when the judge did its job correctly. Traces you put in this category during clustering start as fails so you are confirming rather than starting cold.
 

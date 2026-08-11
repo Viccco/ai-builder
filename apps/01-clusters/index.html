@@ -13,39 +13,68 @@
   button { font: inherit; font-size: .9rem; padding: .4rem .9rem; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: inherit; cursor: pointer; }
   button:hover { border-color: var(--dim); }
   button.primary { border-color: var(--accent); color: var(--accent); font-weight: 600; }
-  .wrap { max-width: min(var(--aipm-w, 1400px), 96vw); margin: 0 auto; }
-  main { display: grid; grid-template-columns: 340px 1fr; gap: 1.2rem; padding: 1.2rem 1rem; align-items: start; }
-  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .wrap { max-width: min(var(--aipm-w, 1400px), 96vw); margin: 0 auto; padding: 0 1rem 4rem; }
+
+  /* ---- sort mode ---- */
+  .sorter { max-width: 860px; margin: 1.2rem auto 0; }
+  .sorter .meta { color: var(--dim); font-size: .8rem; display: flex; justify-content: space-between; margin-bottom: .7rem; }
+  .who { font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); margin-bottom: .25rem; }
+  .msg { white-space: pre-wrap; font-size: 1rem; margin-bottom: .9rem; }
+  .msg.bot { background: #8881; border-radius: 10px; padding: .7rem .8rem; }
+  .mine { border-left: 3px solid var(--fail); padding: .5rem .7rem; margin-bottom: 1.1rem; font-size: .95rem; }
+  .mine b { color: var(--dim); font-weight: 600; font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; display: block; margin-bottom: .2rem; }
+  .targets { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .8rem; }
+  .targets button { text-align: left; padding: .5rem .8rem; }
+  .targets button .k { display: inline-block; min-width: 1.1em; color: var(--dim); font-size: .82em; margin-right: .45rem; }
+  .targets button:hover .k { color: inherit; }
+  .newcat { display: flex; gap: .5rem; align-items: center; margin-bottom: .9rem; }
+  .newcat input { flex: 1; font: inherit; font-size: .92rem; padding: .45rem .6rem; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: inherit; }
+  .newcat input:focus { border-color: var(--accent); outline: none; }
+  .keys { padding: .55rem .8rem; border: 1px solid var(--line); border-radius: 8px; font-size: .82rem; color: var(--dim); display: flex; gap: 1.1rem; flex-wrap: wrap; }
+  kbd { border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 .35rem; font-size: .9em; font-family: inherit; color: CanvasText; }
+  #strip { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 1.2rem; }
+  #strip span { width: 22px; height: 22px; border: 1px solid var(--line); border-radius: 5px; font-size: .68rem; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--dim); }
+  #strip span.done { background: var(--accent); border-color: var(--accent); color: #fff; }
+  #strip span.here { outline: 2px solid CanvasText; outline-offset: 1px; }
+
+  /* ---- board mode ---- */
+  main { padding: 1.2rem 0; }
+  main.has-pool { display: grid; grid-template-columns: 320px 1fr; gap: 1.2rem; align-items: start; }
+  @media (max-width: 900px) { main.has-pool { grid-template-columns: 1fr; } }
   .col > h2 { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); margin: 0 0 .6rem; font-weight: 600; }
-  .drop { border: 1px dashed var(--line); border-radius: 10px; padding: .6rem; min-height: 90px; }
+  .drop { border: 1px dashed var(--line); border-radius: 10px; padding: .6rem; min-height: 70px; }
   .drop.over { border-color: var(--accent); background: #4a7fd41a; }
-  .card { border: 1px solid var(--line); border-radius: 8px; padding: .55rem .65rem; margin-bottom: .5rem; cursor: grab; background: Canvas; }
-  .card.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
-  .card .id { font-size: .7rem; color: var(--dim); display: flex; justify-content: space-between; align-items: center; }
-  .card .crit { font-size: .89rem; margin-top: .2rem; }
-  .card .said { font-size: .8rem; color: var(--dim); margin-top: .4rem; white-space: pre-wrap; border-left: 2px solid var(--line); padding-left: .5rem; }
-  .card.compact .said { display: none; }
+  .card { border: 1px solid var(--line); border-radius: 8px; padding: .5rem .6rem; margin-bottom: .45rem; cursor: grab; background: Canvas; }
+  .card .id { font-size: .7rem; color: var(--dim); display: flex; justify-content: space-between; align-items: center; gap: .4rem; }
+  .card .crit { font-size: .88rem; margin-top: .15rem; }
+  .card .said { font-size: .8rem; color: var(--dim); margin-top: .4rem; white-space: pre-wrap; border-left: 2px solid var(--line); padding-left: .5rem; display: none; }
+  .card.open .said { display: block; }
   .card .star { cursor: pointer; opacity: .3; font-size: .95rem; }
   .card .star.on { opacity: 1; color: var(--warn); }
-  .buckets { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: .9rem; }
+  .card .peek { border: none; padding: 0 .2rem; font-size: .75rem; color: var(--dim); }
+  .buckets { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: .9rem; align-items: start; }
   .bucket { border: 1px solid var(--line); border-radius: 12px; padding: .7rem; }
+  .bucket .top { display: flex; align-items: center; gap: .5rem; }
+  .bucket .name { font-weight: 600; font-size: 1rem; flex: 1; cursor: text; }
+  .bucket .def { font-size: .84rem; color: var(--dim); margin: .2rem 0 .5rem; cursor: text; }
+  .bucket .def.missing { color: var(--warn); }
   .bucket input, .bucket textarea { width: 100%; font: inherit; background: transparent; color: inherit; border: none; border-bottom: 1px solid var(--line); padding: .2rem 0; margin-bottom: .4rem; }
   .bucket input { font-weight: 600; font-size: 1rem; }
   .bucket textarea { font-size: .85rem; resize: vertical; min-height: 2.4rem; }
-  .bucket .top { display: flex; align-items: center; gap: .5rem; }
   .bucket .n { font-size: .78rem; color: var(--dim); white-space: nowrap; }
   .bucket .kill { border: none; color: var(--dim); padding: 0 .3rem; }
   .empty { color: var(--dim); font-size: .85rem; padding: .4rem; }
-  .notes { padding: 0 1rem 1rem; color: var(--dim); font-size: .87rem; }
+  .notes { color: var(--dim); font-size: .87rem; margin-top: 1.2rem; }
   .notes li { margin-bottom: .3rem; }
-  #warnbar { display: none; margin: 1rem 1rem 0; padding: .7rem .9rem; border: 1px solid var(--warn); border-radius: 10px; color: var(--warn); font-size: .9rem; }
+  #warnbar { display: none; margin-top: 1rem; padding: .7rem .9rem; border: 1px solid var(--warn); border-radius: 10px; color: var(--warn); font-size: .9rem; }
   #warnbar button { color: var(--warn); border-color: var(--warn); font-size: .82rem; padding: .2rem .6rem; margin-left: .5rem; }
-  .intro { border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.1rem; margin: 1.2rem 1rem 0; font-size: .93rem; }
+  .intro { border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.1rem; margin-top: 1.2rem; font-size: .93rem; }
   .intro > summary { cursor: pointer; font-weight: 600; color: var(--dim); }
   .intro[open] > summary { margin-bottom: .8rem; }
   .intro p { margin: 0 0 .7rem; }
   .intro p:last-child { margin-bottom: 0; }
-  .finish { border: 1px solid var(--pass); border-radius: 12px; padding: 1rem 1.1rem; margin: 0 1rem 2rem; }
+  .finish { border: 1px solid var(--pass); border-radius: 12px; padding: 1rem 1.1rem; margin-top: 1.4rem; }
   .finish h2 { margin: 0 0 .5rem; font-size: 1.1rem; text-transform: none; letter-spacing: 0; color: inherit; }
   #load { display: none; }
 </style>
@@ -56,8 +85,7 @@
   <span id="status" style="font-size:.85rem;color:var(--dim)"></span>
   <span class="grow"></span>
   <span id="aipm-chrome"></span>
-  <button id="toggleText" title="show or hide the customer message and bot reply on every card">Compact cards</button>
-  <button id="add" class="primary">+ Category</button>
+  <button id="mode">Board</button>
   <button id="copy" class="primary">Copy for Claude Code</button>
   <button id="download">Download a copy</button>
   <input type="file" id="load" accept="application/json,text/plain">
@@ -66,28 +94,16 @@
 <div class="wrap">
   <div id="warnbar"></div>
 
-  <details class="intro" id="brief" open>
+  <div id="view"></div>
+
+  <details class="intro" id="brief">
     <summary>What this step is, and how to work it</summary>
     <p>You just labelled 30 bot drafts. This step turns that pile of individual complaints into a small number of named failure modes, which is the thing you can actually hand to an engineering team. The method has a name, axial coding. You read the critiques you wrote, notice the same underlying cause turning up in different words, and give that cause a name.</p>
     <p><b>Only your failures appear here.</b> The passes are left out on purpose, because you are mapping how the product breaks rather than summarising everything it did.</p>
     <p><b>What makes a good category.</b> Name the cause, not the remedy. "Invents facts it cannot know" is a cause. "Add a knowledge check" is a fix, and several different causes can share one fix, so naming by fix collapses things that should stay apart. Each category needs one sentence saying what has to be true for a trace to belong in it, and if you cannot write that sentence the category is not real yet. Aim for three to six.</p>
-    <p><b>How to move things.</b> Drag a card into a category, or click a card to select it and then click the category you want it in. Each card shows the customer message and the bot reply underneath your critique, so you never have to remember what a trace number means. Once a category holds traces, click the star on the one you would show someone as the clearest example.</p>
-    <p>When it holds together, click Copy for Claude Code and paste it into the chat. Claude Code counts, checks whether a category is doing two jobs, and argues with the definitions that are vague.</p>
+    <p><b>How it works.</b> You see one failure at a time with everything you need to judge it. Click the category it belongs to, or press its number. Name a new category right there when nothing fits. When everything is sorted you land on the board, where you write the definitions, move things around and star the clearest example of each mode.</p>
+    <p>Then click Copy for Claude Code and paste it into the chat. Claude Code counts, checks whether a category is doing two jobs, and argues with the definitions that are vague.</p>
   </details>
-
-  <main>
-    <div class="col">
-      <h2>Unsorted failures</h2>
-      <div id="pool" class="drop"></div>
-    </div>
-    <div class="col">
-      <h2>Categories</h2>
-      <div id="buckets" class="buckets"></div>
-    </div>
-  </main>
-
-  <div class="notes" id="notes"></div>
-  <div id="finish"></div>
 </div>
 
 <script>
@@ -684,90 +700,248 @@ const AIPM = (() => {
 const APP = "01-clusters";
 const trace = id => DATA.find(t => t.id === id) || {};
 
-let selected = null;
-let compact = false;
+let mode = null;      // "sort" or "board", decided on first render
+let si = 0;           // cursor into the unsorted queue
+let deferred = [];    // ids the learner skipped, they come back at the end
+let selected = null;  // board mode drag/click selection
+let compact = true;
 
-/* ---------- rendering ---------- */
+const unsorted = s => AIPM.failures(s).filter(id => !s.taxonomy.placed[String(id)]);
+
+/* ---------- shared bits ---------- */
+
+function renderStatus(s) {
+  const fails = AIPM.failures(s);
+  const labelled = AIPM.labelledCount(s);
+  const left = unsorted(s).length;
+  AIPM.$("#status").textContent = labelled
+    ? `${labelled} of ${DATA.length} labelled, ${fails.length} failures, ${left} left to sort`
+    : "no labels yet";
+  AIPM.$("#mode").textContent = mode === "sort" ? "Board" : "Sort what is left";
+  AIPM.$("#mode").disabled = mode === "board" && left === 0;
+}
+
+function renderWarn(s) {
+  const labelled = AIPM.labelledCount(s);
+  const wb = AIPM.$("#warnbar");
+  if (!labelled) {
+    wb.innerHTML = `No labels found in this browser. Finish the labeller first. If you labelled elsewhere, ask Claude Code to write your labels into this page, or <button id="pick">load a downloaded copy</button>.`;
+    wb.style.display = "block";
+  } else if (labelled < DATA.length) {
+    wb.innerHTML = `Only ${labelled} of ${DATA.length} traces carry a verdict, so only failures from those ${labelled} appear here. Finish the labeller for the full picture, or <button id="pick">load a downloaded copy</button>.`;
+    wb.style.display = "block";
+  } else {
+    wb.style.display = "none";
+  }
+  if (AIPM.$("#pick")) AIPM.$("#pick").onclick = () => AIPM.$("#load").click();
+}
+
+function render() {
+  const s = AIPM.load();
+  if (mode === null) mode = unsorted(s).length ? "sort" : "board";
+  if (mode === "sort" && !unsorted(s).length) mode = "board";
+  renderWarn(s);
+  if (mode === "sort") renderSort(s); else renderBoard(s);
+  renderStatus(s);
+}
+
+/* ---------- sort mode ---------- */
+
+// The queue is everything unsorted, with skipped cards pushed to the back so a
+// deferred decision comes round again instead of disappearing.
+function queue(s) {
+  const left = unsorted(s);
+  const fresh = left.filter(id => deferred.indexOf(id) === -1);
+  const back = deferred.filter(id => left.indexOf(id) > -1);
+  return fresh.concat(back);
+}
+
+function renderSort(s) {
+  const q = queue(s);
+  if (!q.length) { mode = "board"; renderBoard(s); return; }
+  si = Math.min(si, q.length - 1);
+  const id = q[si];
+  const t = trace(id);
+  const l = s.labels[String(id)] || {};
+  const modes = s.taxonomy.modes;
+  const total = AIPM.failures(s).length;
+  const done = total - q.length;
+
+  AIPM.$("#view").innerHTML = `
+    <div class="sorter">
+      <div class="meta"><span>trace ${id}</span><span>${done + 1} of ${total} failures</span></div>
+      <div class="who">Customer</div><div class="msg">${AIPM.esc(t.customer)}</div>
+      <div class="who">Bot draft</div><div class="msg bot">${AIPM.esc(t.bot_reply)}</div>
+      <div class="mine"><b>What you wrote</b>${AIPM.esc(l.critique) || "<i>no critique</i>"}</div>
+
+      <div class="who">Which cause is this?</div>
+      <div class="targets">
+        ${modes.map((m, n) => `<button data-put="${m.id}">${n < 9 ? `<span class="k">${n + 1}</span>` : ""}${AIPM.esc(m.name) || "<i>unnamed</i>"} <span class="k" style="margin:0 0 0 .4rem">${AIPM.tracesInMode(s, m.id).length}</span></button>`).join("")}
+      </div>
+      <div class="newcat">
+        <input id="newname" placeholder="${modes.length ? "None of these fit? Name a new cause" : "Name the first cause you see"}">
+        <button id="addput" class="primary">Add and put it here</button>
+        <button id="skip">Skip for now</button>
+      </div>
+      <div class="keys">
+        <span><kbd>1</kbd>&hellip;<kbd>9</kbd> put in that category</span>
+        <span><kbd>N</kbd> name a new one</span>
+        <span><kbd>S</kbd> skip</span>
+        <span><kbd>&larr;</kbd> back</span>
+      </div>
+      <div id="strip"></div>
+    </div>`;
+
+  AIPM.$$("[data-put]").forEach(b => b.onclick = () => put(id, b.dataset.put));
+  AIPM.$("#addput").onclick = () => addAndPut(id);
+  AIPM.$("#newname").onkeydown = e => {
+    if (e.key === "Enter") { e.preventDefault(); addAndPut(id); }
+    e.stopPropagation();
+  };
+  AIPM.$("#skip").onclick = () => skip(id);
+
+  AIPM.$("#strip").innerHTML = AIPM.failures(s).map(fid => {
+    const placed = !!s.taxonomy.placed[String(fid)];
+    return `<span class="${placed ? "done" : ""}${fid === id ? " here" : ""}" data-go="${fid}" title="trace ${fid}">${fid}</span>`;
+  }).join("");
+  AIPM.$$("[data-go]").forEach(el => el.onclick = () => {
+    const q2 = queue(AIPM.load());
+    const at = q2.indexOf(+el.dataset.go);
+    if (at > -1) { si = at; render(); }
+  });
+}
+
+function put(id, modeId) {
+  AIPM.update(s => {
+    s.taxonomy.placed[String(id)] = modeId;
+    // Clustering is an assumption about this mode, not a confirmed judgment.
+    // Module 2 makes the learner confirm it before anything is scored.
+    AIPM.setGold(s, id, modeId, "fail", "cluster");
+  });
+  deferred = deferred.filter(x => x !== id);
+  render();
+}
+
+function addAndPut(id) {
+  const name = (AIPM.$("#newname").value || "").trim();
+  if (!name) { AIPM.$("#newname").focus(); return; }
+  let newId = null;
+  AIPM.update(s => {
+    newId = AIPM.nextModeId(s);
+    s.taxonomy.modes.push({ id: newId, name: name, definition: "", example: null, closestPass: null });
+  });
+  put(id, newId);
+}
+
+function skip(id) {
+  if (deferred.indexOf(id) === -1) deferred.push(id);
+  si = si + 1;
+  render();
+}
+
+/* ---------- board mode ---------- */
 
 function cardHTML(s, id) {
   const l = s.labels[String(id)] || {};
   const t = trace(id);
   const modeId = s.taxonomy.placed[String(id)] || null;
-  const mode = modeId ? AIPM.modeById(s, modeId) : null;
-  const starred = mode && mode.example === id;
-  return `<div class="card${selected === id ? " sel" : ""}${compact ? " compact" : ""}" draggable="true" data-id="${id}">
+  const m = modeId ? AIPM.modeById(s, modeId) : null;
+  const starred = m && m.example === id;
+  return `<div class="card${compact ? "" : " open"}" draggable="true" data-id="${id}">
     <div class="id">
       <span>trace ${id}</span>
-      ${modeId ? `<span class="star${starred ? " on" : ""}" data-star="${id}" title="pin as the clearest example of this mode">&#9733;</span>` : ""}
+      <span>
+        <button class="peek" data-peek="${id}" title="show the customer message and bot reply">text</button>
+        ${modeId ? `<span class="star${starred ? " on" : ""}" data-star="${id}" title="pin as the clearest example">&#9733;</span>` : ""}
+      </span>
     </div>
     <div class="crit">${AIPM.esc(l.critique) || "<em>no critique written</em>"}</div>
     <div class="said"><b>Customer:</b> ${AIPM.esc(t.customer)}<br><b>Bot:</b> ${AIPM.esc(t.bot_reply)}</div>
   </div>`;
 }
 
-function render() {
-  const s = AIPM.load();
+function renderBoard(s) {
   const fails = AIPM.failures(s);
-  const labelled = AIPM.labelledCount(s);
-  const passCount = labelled - fails.length;
-  const unsorted = fails.filter(id => !s.taxonomy.placed[String(id)]);
+  const left = unsorted(s);
 
-  AIPM.$("#status").textContent = labelled
-    ? `${labelled} of ${DATA.length} labelled: ${fails.length} failures, ${passCount} passes, ${unsorted.length} unsorted`
-    : "no labels yet";
-
-  // Say plainly when the input is thin, instead of rendering one lonely card
-  // and letting it look like the page is broken.
-  const wb = AIPM.$("#warnbar");
-  if (!labelled) {
-    wb.innerHTML = `No labels found in this browser. Finish the labeller first. If you labelled in a different browser or window, ask Claude Code to write your labels into this page, or <button id="pick">load a downloaded copy</button>.`;
-    wb.style.display = "block";
-  } else if (labelled < DATA.length) {
-    wb.innerHTML = `Only ${labelled} of ${DATA.length} traces carry a verdict, so only failures from those ${labelled} can appear here. Finish the labeller for the full picture, or <button id="pick">load a downloaded copy</button>.`;
-    wb.style.display = "block";
-  } else {
-    wb.style.display = "none";
-  }
-  if (AIPM.$("#pick")) AIPM.$("#pick").onclick = () => AIPM.$("#load").click();
-
-  AIPM.$("#pool").innerHTML = unsorted.length
-    ? unsorted.map(id => cardHTML(s, id)).join("")
-    : (fails.length ? '<div class="empty">All sorted.</div>' : '<div class="empty">Failures you labelled will appear here.</div>');
-
-  AIPM.$("#buckets").innerHTML = s.taxonomy.modes.map(m => {
-    const ids = AIPM.tracesInMode(s, m.id);
-    return `<div class="bucket drop" data-mode="${m.id}">
-      <div class="top">
-        <input data-name="${m.id}" value="${AIPM.esc(m.name)}" placeholder="Name the cause">
-        <span class="n">${ids.length}</span>
-        <button class="kill" data-kill="${m.id}" title="delete this category">&times;</button>
+  AIPM.$("#view").innerHTML = `
+    <main class="${left.length ? "has-pool" : ""}">
+      ${left.length ? `<div class="col">
+        <h2>Still unsorted (${left.length})</h2>
+        <div id="pool" class="drop">${left.map(id => cardHTML(s, id)).join("")}</div>
+        <p class="empty">Or <a href="#" id="backToSort">sort them one at a time</a>, which is quicker.</p>
+      </div>` : ""}
+      <div class="col">
+        <h2>Categories</h2>
+        <div id="buckets" class="buckets">${s.taxonomy.modes.map(m => bucketHTML(s, m)).join("")
+          || '<div class="empty">No categories yet.</div>'}</div>
       </div>
-      <textarea data-def="${m.id}" placeholder="One sentence. What has to be true for a trace to belong here?">${AIPM.esc(m.definition)}</textarea>
-      ${ids.map(id => cardHTML(s, id)).join("") || '<div class="empty">Drop critiques here, or select one and click this box.</div>'}
-    </div>`;
-  }).join("") || '<div class="empty">No categories yet. Read a few critiques, then name the pattern you keep seeing.</div>';
+    </main>
+    <div class="notes" id="notes"></div>
+    <div id="finish"></div>`;
 
-  wire();
+  if (AIPM.$("#backToSort")) AIPM.$("#backToSort").onclick = e => { e.preventDefault(); mode = "sort"; si = 0; render(); };
+  wireBoard(s);
   renderNotes(s, fails);
-  renderFinish(s, fails, unsorted);
+  renderFinish(s, fails, left);
 }
 
-function wire() {
+function bucketHTML(s, m) {
+  const ids = AIPM.tracesInMode(s, m.id);
+  return `<div class="bucket drop" data-mode="${m.id}">
+    <div class="top">
+      <div class="name" data-edit="name" data-m="${m.id}">${AIPM.esc(m.name) || '<span style="color:var(--warn)">Name this cause</span>'}</div>
+      <span class="n">${ids.length}</span>
+      <button class="kill" data-kill="${m.id}" title="delete this category">&times;</button>
+    </div>
+    <div class="def${m.definition.trim() ? "" : " missing"}" data-edit="def" data-m="${m.id}">${AIPM.esc(m.definition) || "Write one sentence: what has to be true for a trace to belong here?"}</div>
+    ${ids.map(id => cardHTML(s, id)).join("") || '<div class="empty">Nothing here yet.</div>'}
+  </div>`;
+}
+
+// Name and definition sit as plain text until clicked, so a finished category
+// costs two lines instead of two form controls.
+function editField(kind, modeId) {
+  const s = AIPM.load();
+  const m = AIPM.modeById(s, modeId);
+  const host = AIPM.$(`[data-edit="${kind}"][data-m="${modeId}"]`);
+  const cur = kind === "name" ? m.name : m.definition;
+  host.innerHTML = kind === "name"
+    ? `<input value="${AIPM.esc(cur)}" placeholder="Name the cause">`
+    : `<textarea placeholder="One sentence. What has to be true for a trace to belong here?">${AIPM.esc(cur)}</textarea>`;
+  const el = host.querySelector("input,textarea");
+  el.focus();
+  el.onkeydown = e => {
+    e.stopPropagation();
+    if (e.key === "Enter" && kind === "name") el.blur();
+    if (e.key === "Escape") el.blur();
+  };
+  el.onblur = () => {
+    AIPM.update(st => {
+      const mm = AIPM.modeById(st, modeId);
+      if (kind === "name") mm.name = el.value; else mm.definition = el.value;
+    });
+    render();
+  };
+}
+
+function wireBoard(s) {
   AIPM.$$(".card").forEach(el => {
     const id = +el.dataset.id;
     el.ondragstart = e => { e.dataTransfer.setData("text/plain", id); selected = id; };
     el.onclick = e => {
+      if (e.target.dataset.peek !== undefined) { el.classList.toggle("open"); return; }
       if (e.target.dataset.star !== undefined) {
-        AIPM.update(s => {
-          const modeId = s.taxonomy.placed[String(id)];
-          const m = AIPM.modeById(s, modeId);
-          if (m) m.example = m.example === id ? null : id;
+        AIPM.update(st => {
+          const mm = AIPM.modeById(st, st.taxonomy.placed[String(id)]);
+          if (mm) mm.example = mm.example === id ? null : id;
         });
         render();
         return;
       }
       selected = selected === id ? null : id;
-      render();
+      AIPM.$$(".card").forEach(c => c.style.outline = "");
+      if (selected === id) el.style.outline = "2px solid var(--accent)";
     };
   });
 
@@ -777,40 +951,37 @@ function wire() {
     el.ondrop = e => {
       e.preventDefault();
       el.classList.remove("over");
-      place(+e.dataTransfer.getData("text/plain"), el.dataset.mode || null);
+      move(+e.dataTransfer.getData("text/plain"), el.dataset.mode || null);
     };
     el.onclick = e => {
       if (e.target.closest(".card") || /^(INPUT|TEXTAREA|BUTTON)$/.test(e.target.tagName)) return;
-      if (selected !== null) place(selected, el.dataset.mode || null);
+      if (e.target.closest("[data-edit]")) return;
+      if (selected !== null) move(selected, el.dataset.mode || null);
     };
   });
 
-  AIPM.$$("[data-name]").forEach(el => el.oninput = () => {
-    AIPM.update(s => { const m = AIPM.modeById(s, el.dataset.name); if (m) m.name = el.value; });
-    renderNotes(AIPM.load(), AIPM.failures(AIPM.load()));
+  AIPM.$$("[data-edit]").forEach(el => el.onclick = e => {
+    e.stopPropagation();
+    editField(el.dataset.edit, el.dataset.m);
   });
-  AIPM.$$("[data-def]").forEach(el => el.oninput = () => {
-    AIPM.update(s => { const m = AIPM.modeById(s, el.dataset.def); if (m) m.definition = el.value; });
-    renderNotes(AIPM.load(), AIPM.failures(AIPM.load()));
-  });
+
   AIPM.$$("[data-kill]").forEach(el => el.onclick = () => {
     const modeId = el.dataset.kill;
-    if (!confirm("Delete this category? Its traces go back to unsorted.")) return;
-    AIPM.update(s => {
-      // Modes carry stable ids, so removing one cannot shift the others and
-      // silently relabel traces into a neighbouring category.
-      Object.keys(s.taxonomy.placed).forEach(id => {
-        if (s.taxonomy.placed[id] === modeId) delete s.taxonomy.placed[id];
+    const n = AIPM.tracesInMode(AIPM.load(), modeId).length;
+    if (!confirm(`Delete this category?\n\n${n} trace(s) go back to unsorted, and your per-mode answers for it are removed.`)) return;
+    AIPM.update(st => {
+      Object.keys(st.taxonomy.placed).forEach(id => {
+        if (st.taxonomy.placed[id] === modeId) delete st.taxonomy.placed[id];
       });
-      Object.values(s.labels).forEach(l => { if (l.modes) delete l.modes[modeId]; });
-      s.taxonomy.modes = s.taxonomy.modes.filter(m => m.id !== modeId);
-      if (s.judge.activeModeId === modeId) s.judge.activeModeId = null;
+      Object.values(st.labels).forEach(l => { if (l.modes) delete l.modes[modeId]; });
+      st.taxonomy.modes = st.taxonomy.modes.filter(m => m.id !== modeId);
+      if (st.judge.activeModeId === modeId) st.judge.activeModeId = null;
     });
     render();
   });
 }
 
-function place(id, modeId) {
+function move(id, modeId) {
   AIPM.update(s => {
     const old = s.taxonomy.placed[String(id)];
     if (old) {
@@ -820,8 +991,6 @@ function place(id, modeId) {
     }
     if (modeId) {
       s.taxonomy.placed[String(id)] = modeId;
-      // Clustering is an assumption about this mode, not a confirmed label.
-      // Module 2 makes the learner confirm it before anything is scored.
       AIPM.setGold(s, id, modeId, "fail", "cluster");
     } else {
       delete s.taxonomy.placed[String(id)];
@@ -846,17 +1015,20 @@ function renderNotes(s, fails) {
     if (count === 1) notes.push(`"${label}" holds one trace. Keep it if it is genuinely its own mode, but at n equals 1 it is not a roadmap item.`);
     if (count && !m.example) notes.push(`"${label}" has no pinned example. Star the trace you would show someone.`);
   });
-  AIPM.$("#notes").innerHTML = notes.length
+  const host = AIPM.$("#notes");
+  if (host) host.innerHTML = notes.length
     ? "<b>Checks</b><ul>" + notes.map(n => `<li>${AIPM.esc(n)}</li>`).join("") + "</ul>"
     : "";
 }
 
-function renderFinish(s, fails, unsorted) {
+function renderFinish(s, fails, left) {
+  const host = AIPM.$("#finish");
+  if (!host) return;
   const named = s.taxonomy.modes.filter(m => m.name.trim());
-  if (!fails.length || unsorted.length || !named.length) { AIPM.$("#finish").innerHTML = ""; return; }
+  if (!fails.length || left.length || !named.length) { host.innerHTML = ""; return; }
   const counts = named.map(m => AIPM.tracesInMode(s, m.id).length).sort((a, b) => b - a);
   const top3 = counts.slice(0, 3).reduce((a, b) => a + b, 0);
-  AIPM.$("#finish").innerHTML = `
+  host.innerHTML = `
     <div class="finish">
       <h2>Everything is sorted.</h2>
       ${AIPM.metricRow([
@@ -864,10 +1036,32 @@ function renderFinish(s, fails, unsorted) {
         ["coverage", top3 + " of " + fails.length]
       ])}
       <p>A small number of modes usually explains most of the failures, and that concentration is what turns this list into a roadmap. Counts alone are not the whole story though, because a mode that happens twice and puts a password in a public reply outranks one that happens six times and reads a bit flat.</p>
-      <p>Click <b>Copy for Claude Code</b> above and paste it into the chat. Claude Code counts, challenges any definition that is vague, and pushes back when a category is named after a fix rather than a cause. Then it writes the taxonomy with you.</p>
+      <p>Click <b>Copy for Claude Code</b> above and paste it into the chat.</p>
     </div>`;
-  AIPM.wireMetrics(AIPM.$("#finish"));
+  AIPM.wireMetrics(host);
 }
+
+/* ---------- keyboard ---------- */
+
+document.addEventListener("keydown", e => {
+  if (mode !== "sort") return;
+  if (document.activeElement && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
+  const s = AIPM.load();
+  const q = queue(s);
+  if (!q.length) return;
+  const id = q[Math.min(si, q.length - 1)];
+
+  if (/^[1-9]$/.test(e.key)) {
+    const m = s.taxonomy.modes[+e.key - 1];
+    if (m) { e.preventDefault(); put(id, m.id); }
+    return;
+  }
+  const k = e.key.toLowerCase();
+  if (k === "n") { e.preventDefault(); AIPM.$("#newname").focus(); }
+  else if (k === "s") { e.preventDefault(); skip(id); }
+  else if (e.key === "ArrowLeft") { e.preventDefault(); si = Math.max(0, si - 1); render(); }
+  else if (e.key === "ArrowRight") { e.preventDefault(); si = Math.min(q.length - 1, si + 1); render(); }
+});
 
 /* ---------- handoff ---------- */
 
@@ -879,8 +1073,6 @@ function buildPayload() {
     return {
       id: m.id, name: m.name.trim(), definition: m.definition.trim(),
       example: m.example, count: ids.length, traces: ids,
-      // The wording of these critiques is what Claude Code argues about, so
-      // they travel. Everything else is an id the repo already resolves.
       critiques: ids.map(id => ({ id: id, critique: (s.labels[String(id)] || {}).critique || "" }))
     };
   });
@@ -888,32 +1080,23 @@ function buildPayload() {
     n: modes.length,
     counts: { total: DATA.length, labelled: AIPM.labelledCount(s), failures: fails.length },
     modes: modes,
-    unsorted: fails.filter(id => !s.taxonomy.placed[String(id)])
+    unsorted: unsorted(s)
   });
 }
 
 AIPM.$("#copy").onclick = () => {
-  const s = AIPM.load();
-  const unsorted = AIPM.failures(s).filter(id => !s.taxonomy.placed[String(id)]).length;
-  if (unsorted && !confirm(unsorted + " failures are still unsorted.\n\nCopy anyway?")) return;
+  const left = unsorted(AIPM.load()).length;
+  if (left && !confirm(left + " failures are still unsorted.\n\nCopy anyway?")) return;
   AIPM.copyText(buildPayload(), "Copied. Paste it into the chat with Claude Code.");
 };
 AIPM.$("#download").onclick = () => AIPM.download(buildPayload(), "01-clusters.txt", "text/plain");
 
-AIPM.$("#add").onclick = () => {
-  AIPM.update(s => {
-    s.taxonomy.modes.push({ id: AIPM.nextModeId(s), name: "", definition: "", example: null, closestPass: null });
-  });
+AIPM.$("#mode").onclick = () => {
+  mode = mode === "sort" ? "board" : "sort";
+  si = 0;
   render();
 };
 
-AIPM.$("#toggleText").onclick = () => {
-  compact = !compact;
-  AIPM.$("#toggleText").textContent = compact ? "Show full text" : "Compact cards";
-  render();
-};
-
-// Recovery only. Nothing in the course requires a downloaded file.
 AIPM.$("#load").onchange = e => {
   const f = e.target.files[0];
   if (!f) return;
@@ -931,6 +1114,7 @@ AIPM.$("#load").onchange = e => {
           if (x.critique) cur.critique = x.critique;
         });
       });
+      mode = null;
       render();
       AIPM.toast("Loaded " + rows.length + " labels.");
     } catch (err) {
@@ -947,6 +1131,14 @@ if (location.hash === "#selftest") {
 } else {
   AIPM.chrome();
   const applied = AIPM.applyInjected(typeof INJECTED === "undefined" ? null : INJECTED);
+  // The brief is worth a full screen the first time and never again.
+  const prefs = AIPM.load().prefs;
+  const briefKey = "clusters";
+  AIPM.$("#brief").open = !(prefs.briefOpen && prefs.briefOpen[briefKey] === false);
+  AIPM.$("#brief").ontoggle = () => AIPM.update(s => {
+    s.prefs.briefOpen = s.prefs.briefOpen || {};
+    s.prefs.briefOpen[briefKey] = AIPM.$("#brief").open;
+  });
   render();
   if (applied) AIPM.toast("Loaded " + applied + " from Claude Code.");
 }
