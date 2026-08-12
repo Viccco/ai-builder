@@ -423,6 +423,14 @@ const AIPM = (() => {
   function setGold(s, id, modeId, v, by) {
     rec(s, id).modes[modeId] = { v: v, by: by || "me" };
   }
+  // Where a gold label came from: "me" when the learner judged it, "cluster"
+  // when clustering placed it, "triage" when it was changed after seeing what
+  // the judge said. The last one is shown on screen wherever the label is,
+  // because a label moved to match the machine is not evidence about the machine.
+  function goldBy(s, id, modeId) {
+    const m = (s.labels[String(id)] || {}).modes || {};
+    return m[modeId] ? (m[modeId].by || "me") : null;
+  }
   const devIds = s => (s.split && s.split.dev) ? s.split.dev.slice() : null;
   const isHoldout = (s, id) => !!(s.split && s.split.holdout && s.split.holdout.indexOf(Number(id)) > -1);
 
@@ -757,6 +765,23 @@ const AIPM = (() => {
     ok("goldFor returns pass", goldFor(s, 19, "m1") === "pass");
     ok("goldFor returns null when unconfirmed", goldFor(s, 5, "m1") === null);
     ok("goldFor is per mode", goldFor(s, 2, "m2") === null);
+    ok("goldBy reports provenance", goldBy(s, 2, "m1") === "cluster" && goldBy(s, 19, "m1") === "me");
+    ok("goldBy is null when unconfirmed", goldBy(s, 5, "m1") === null);
+    // The judge page calls this on every render, so a missing export kills it
+    // outright. It shipped missing once.
+    ok("judgeFor makes a record", Array.isArray(judgeFor(blank(), "m1").shots));
+    ["judgeFor", "goldFor", "goldBy", "setGold", "update", "load", "confusion", "metricRow"]
+      .forEach(k => ok("AIPM." + k + " is exported", typeof AIPM !== "undefined" && typeof AIPM[k] === "function"));
+
+    // A round's score is frozen when it is scored. Changing a label afterwards
+    // must not move it, which is the whole defence against grading yourself.
+    const judged = [{ id: 2, verdict: "pass" }, { id: 19, verdict: "pass" }];
+    const scoreNow = st => confusion(judged.map(x => ({ gold: goldFor(st, x.id, "m1"), judge: x.verdict })));
+    const frozen = scoreNow(s);
+    setGold(s, 2, "m1", "pass", "triage");
+    ok("frozen score survives a label change", frozen.agreement === 0.5 && scoreNow(s).agreement === 1);
+    ok("a changed label is marked as triage", goldBy(s, 2, "m1") === "triage");
+    setGold(s, 2, "m1", "fail", "cluster");
 
     const c = confusion([
       { gold: "fail", judge: "fail" }, { gold: "fail", judge: "fail" },
@@ -835,9 +860,10 @@ const AIPM = (() => {
   return {
     $: $, $$: $$, esc: esc, toast: toast,
     KEY: KEY, blank: blank, migrate: migrate, load: load, update: update, reload: reload, rec: rec,
+    judgeFor: judgeFor,
     verdictOf: verdictOf, critiqueOf: critiqueOf, labelledCount: labelledCount, completeCount: completeCount,
     failures: failures, modeById: modeById, tracesInMode: tracesInMode,
-    goldFor: goldFor, setGold: setGold, devIds: devIds, isHoldout: isHoldout, nextModeId: nextModeId,
+    goldFor: goldFor, setGold: setGold, goldBy: goldBy, devIds: devIds, isHoldout: isHoldout, nextModeId: nextModeId,
     METRICS: METRICS, pct: pct, confusion: confusion, metricRow: metricRow, wireMetrics: wireMetrics,
     payload: payload, copyText: copyText, download: download, manual: manual,
     applyInjected: applyInjected, chrome: chrome, nav: nav, resetDialog: resetDialog, selftest: selftest
@@ -956,7 +982,7 @@ function renderCalibrate() {
       <div class="calmeta"><span>trace ${id}</span><span>${done} of ${total} judged</span></div>
       <div class="who">Customer</div><div class="calmsg">${AIPM.esc(t.customer)}</div>
       <div class="who">Bot draft</div><div class="calmsg bot">${AIPM.esc(t.bot_reply)}</div>
-      <div class="mineblock"><b>Module 1, you said ${AIPM.esc(l.verdict || "nothing")}</b>${AIPM.esc(l.critique) || "<i>no critique</i>"}${by === "cluster" ? '<div class="dim" style="margin-top:.3rem">You put this trace in this category during clustering, so confirm or change it.</div>' : ""}</div>
+      <div class="mineblock"><b>Module 1, you said ${AIPM.esc(l.verdict || "nothing")}</b>${AIPM.esc(l.critique) || "<i>no critique</i>"}${by === "cluster" ? '<div class="dim" style="margin-top:.3rem">You put this trace in this category during clustering, so confirm or change it.</div>' : ""}${by === "triage" ? '<div class="dim" style="margin-top:.3rem">This answer was changed after you saw what the judge said, so it is no longer an independent label.</div>' : ""}</div>
       <div class="calbtns">
         <button id="cf" class="${g === "fail" ? "on-fail" : "on-fail-outline"}">Fails this mode</button>
         <button id="cp" class="${g === "pass" ? "on-pass" : ""}">Does not fail it</button>
@@ -995,7 +1021,7 @@ function renderCalibrate() {
       const g = AIPM.goldFor(s, t.id, m.id);
       const l = s.labels[String(t.id)] || {};
       return `<div class="calrow ${g === null ? "unconfirmed" : ""}">
-        <div class="txt"><b>trace ${t.id}</b> ${AIPM.esc(l.critique) || "<i>no critique</i>"}</div>
+        <div class="txt"><b>trace ${t.id}</b> ${AIPM.esc(l.critique) || "<i>no critique</i>"}${AIPM.goldBy(s, t.id, m.id) === "triage" ? ' <span class="dim">(changed after seeing the judge)</span>' : ""}</div>
         <div class="ctl">
           <button data-cf="${t.id}" class="${g === "fail" ? "on-fail" : ""}">fails</button>
           <button data-cp="${t.id}" class="${g === "pass" ? "on-pass" : ""}">does not</button>
@@ -1243,6 +1269,46 @@ function renderBoundary() {
 
 function runsForMode(s, modeId) { return s.runs.filter(r => r.modeId === modeId || !r.modeId); }
 
+// A round is scored against the labels you held when you ran it, and that set
+// is written down the first time the round is displayed, before you can have
+// changed anything on the strength of what the judge said. Every number for
+// that round is computed from this snapshot from then on, so no earlier round
+// can improve later.
+function frozen(s, run, m) {
+  if (run.frozen && run.frozen.gold) return run.frozen;
+  const shots = myJudge(s).shots.map(x => x.id);
+  const dev = AIPM.devIds(s);
+  const f = { gold: {}, shot: [], uncal: [], outside: [] };
+  run.results.forEach(r => {
+    if (shots.indexOf(r.id) > -1) { f.shot.push(r.id); return; }
+    if (dev && run.set !== "holdout" && dev.indexOf(r.id) === -1) { f.outside.push(r.id); return; }
+    const g = AIPM.goldFor(s, r.id, m.id);
+    if (g === null) { f.uncal.push(r.id); return; }
+    f.gold[String(r.id)] = g;
+  });
+  const i = s.runs.indexOf(run);
+  AIPM.update(st => { if (st.runs[i]) st.runs[i].frozen = f; });
+  run.frozen = f;
+  return f;
+}
+
+// The scored traces of a round. With s and m given, the current labels are
+// used instead of the frozen ones, which is how the "with your corrections"
+// line is computed without touching the round's own numbers.
+function scoredRows(run, f, s, m) {
+  return run.results.filter(r => f.gold[String(r.id)] !== undefined).map(r => ({
+    id: r.id,
+    gold: s ? AIPM.goldFor(s, r.id, m.id) : f.gold[String(r.id)],
+    frozenGold: f.gold[String(r.id)],
+    judge: (r.verdict || "").toLowerCase(),
+    critique: r.critique || ""
+  }));
+}
+
+function movedSince(s, f, m) {
+  return Object.keys(f.gold).map(Number).filter(id => AIPM.goldFor(s, id, m.id) !== f.gold[String(id)]).sort((a, b) => a - b);
+}
+
 function renderScore() {
   const s = AIPM.load();
   const m = activeMode();
@@ -1256,23 +1322,22 @@ function renderScore() {
   }
 
   const run = runs[runs.length - 1];
-  const shots = myJudge(s).shots.map(x => x.id);
-  const dev = AIPM.devIds(s);
-  const rows = [], excludedShot = [], excludedUncal = [], outsideSet = [];
-  run.results.forEach(r => {
-    if (shots.indexOf(r.id) > -1) { excludedShot.push(r.id); return; }
-    if (dev && run.set !== "holdout" && dev.indexOf(r.id) === -1) { outsideSet.push(r.id); return; }
-    const gold = AIPM.goldFor(s, r.id, m.id);
-    if (gold === null) { excludedUncal.push(r.id); return; }
-    rows.push({ id: r.id, gold: gold, judge: (r.verdict || "").toLowerCase(), critique: r.critique || "" });
-  });
+  const f = frozen(s, run, m);
+  const rows = scoredRows(run, f);
+  const excludedShot = f.shot, excludedUncal = f.uncal, outsideSet = f.outside;
 
   const c = AIPM.confusion(rows);
-  const dis = rows.filter(r => r.gold !== r.judge);
+  // Labels the learner has changed since this round was scored. The headline
+  // numbers stay on the labels the judge actually faced, because a score that
+  // climbs while you edit your own answers is measuring you, not the judge.
+  const moved = movedSince(s, f, m);
+  const cNow = moved.length ? AIPM.confusion(scoredRows(run, f, s, m)) : null;
   const warn = [];
+  if (moved.length)
+    warn.push(`You changed ${moved.length} of your own labels after this round was scored (trace${moved.length === 1 ? " " : "s "}${moved.join(", ")}). The numbers above are the ones this judge earned, against the labels you held when you ran it, and they will not move. With your corrected labels the same judge output scores ${AIPM.pct(cNow.agreement)} agreement and ${AIPM.pct(cNow.precision)} precision, but nothing about the judge changed, so only the next run tells you anything.`);
   if (c.n && c.agreement !== null && c.baserate !== null && c.agreement <= c.baserate + 0.02)
     warn.push(`A judge answering "does not fail" every time would score ${AIPM.pct(c.baserate)} here. Yours is at ${AIPM.pct(c.agreement)}, so raw agreement is telling you almost nothing. Read precision and recall instead.`);
-  if (c.precision === 1 && c.recall === 1 && c.n)
+  if (c.precision === 1 && c.recall === 1 && c.n && !moved.length)
     warn.push("Perfect on both. Either this mode is genuinely easy or the eval has saturated and stopped teaching you anything. Harden it with cases you expect to break it.");
   if (c.recall !== null && c.recall < 0.6)
     warn.push("Recall under 60 percent means the judge misses most of the failures you found. Usually the fail definition is too narrow, or every example looks alike.");
@@ -1310,29 +1375,36 @@ function renderScore() {
       ${excludedUncal.length ? excludedUncal.length + " excluded because you have not judged them for this mode. " : ""}
       ${outsideSet.length ? outsideSet.length + " outside the development set. " : ""}
       The always-pass baseline for this mode is ${AIPM.pct(c.baserate)}.
+      Scored against the labels you held when you ran it, which is why these numbers stay put when you change a label below.
     </p>
     ${warn.map(w => `<div class="warnbox">${AIPM.esc(w)}</div>`).join("")}
-    ${runs.length > 1 ? history(s, runs) : ""}`;
+    ${runs.length > 1 ? history(s, runs, m) : ""}`;
   AIPM.wireMetrics(host);
-  renderTriage(rows.filter(r => r.gold !== r.judge));
+  renderTriage(rows.filter(r => r.frozenGold !== r.judge), run);
 }
 
-function history(s, runs) {
-  const shots = myJudge(s).shots.map(x => x.id);
-  const m = activeMode();
+function history(s, runs, m) {
   const body = runs.map((r, n) => {
-    const rows = r.results.filter(x => shots.indexOf(x.id) === -1 && AIPM.goldFor(s, x.id, m.id) !== null)
-      .map(x => ({ gold: AIPM.goldFor(s, x.id, m.id), judge: (x.verdict || "").toLowerCase() }));
-    const c = AIPM.confusion(rows);
-    return `<tr><td>${r.round || n + 1}</td><td>${AIPM.esc(r.set || "dev")}</td><td>${AIPM.pct(c.agreement)}</td><td>${AIPM.pct(c.precision)}</td><td>${AIPM.pct(c.recall)}</td><td>${c.n}</td></tr>`;
+    const f = frozen(s, r, m);
+    const c = AIPM.confusion(scoredRows(r, f));
+    const moved = movedSince(s, f, m).length;
+    return `<tr><td>${r.round || n + 1}</td><td>${AIPM.esc(r.set || "dev")}</td><td>${AIPM.pct(c.agreement)}</td><td>${AIPM.pct(c.precision)}</td><td>${AIPM.pct(c.recall)}</td><td>${c.n}</td><td>${moved || ""}</td></tr>`;
   }).join("");
-  return `<table class="hist"><tr><th>round</th><th>set</th><th>agreement</th><th>precision</th><th>recall</th><th>n</th></tr>${body}</table>
-    <p class="note">If the held-out row is much worse than the development rows, the judge learned your examples rather than your rule, and the gap is the size of the self-deception.</p>`;
+  return `<table class="hist"><tr><th>round</th><th>set</th><th>agreement</th><th>precision</th><th>recall</th><th>n</th><th>labels changed after</th></tr>${body}</table>
+    <p class="note">Every row is the score that round earned, against the labels in place when it ran. The last column counts the labels you changed afterwards, and those changes do not touch any row.
+    If the held-out row is much worse than the development rows, the judge learned your examples rather than your rule, and the gap is the size of the self-deception.</p>`;
 }
 
 /* ---------- triage ---------- */
 
-function renderTriage(rows) {
+// The trace whose label change is being confirmed. Clicking "my calibration
+// was wrong" opens this block and writes nothing. Changing your own answer key
+// after seeing the judge is the one move in this course that can quietly turn
+// a bad judge into a perfect score, so it costs a second click and an honest
+// answer to a question.
+let pendingLabel = null;
+
+function renderTriage(rows, run) {
   const host = AIPM.$("#triage");
   if (!rows || !rows.length) { host.innerHTML = '<p class="note">No disagreements in the last run.</p>'; return; }
   const s = AIPM.load();
@@ -1343,14 +1415,21 @@ function renderTriage(rows) {
   const l = s.labels[String(r.id)] || {};
   const d = myJudge(s).triage[String(r.id)] || { call: null, note: "", otherModeId: null };
   const others = s.taxonomy.modes.filter(x => x.id !== m.id && x.name.trim());
+  // The row carries the label this round was scored against. What matters here
+  // is whether the learner has moved it since, so read the live one.
+  const live = AIPM.goldFor(s, r.id, m.id);
+  const changed = live !== r.frozenGold;
+  const wording = v => v === "fail" ? "fails this mode" : "does not fail this mode";
+  const round = run ? (run.round || runsForMode(s, m.id).length) : 0;
 
   host.innerHTML = `
     <div class="case">
-      <div class="note">${qi + 1} of ${rows.length} &middot; trace ${r.id}</div>
+      <div class="note">${qi + 1} of ${rows.length} &middot; trace ${r.id}${d.call ? " &middot; decided" : ""}</div>
       <div class="who">Customer</div><div class="msg">${AIPM.esc(t.customer)}</div>
       <div class="who">Bot draft</div><div class="msg">${AIPM.esc(t.bot_reply)}</div>
       <div class="verdicts">
-        <div><span class="tag ${r.gold}">you: ${r.gold === "fail" ? "fails this mode" : "does not fail this mode"}</span><br>${AIPM.esc(l.critique) || "<em>no note</em>"}</div>
+        <div><span class="tag ${r.frozenGold}">you: ${wording(r.frozenGold)}</span><br>${AIPM.esc(l.critique) || "<em>no note</em>"}
+          ${changed ? `<div class="dim" style="margin-top:.3rem">You have since changed this to <b>${wording(live)}</b>, after seeing the judge.</div>` : ""}</div>
         <div><span class="tag ${r.judge}">judge: ${r.judge === "fail" ? "fails" : "does not"}</span><br>${AIPM.esc(r.critique)}</div>
       </div>
       <div class="choice">
@@ -1359,12 +1438,27 @@ function renderTriage(rows) {
         <button data-call="othermode" class="${d.call === "othermode" ? "on" : ""}">It fails a different mode</button>
         <button data-call="unclear" class="${d.call === "unclear" ? "on" : ""}">Genuinely ambiguous</button>
       </div>
+      ${pendingLabel === r.id && !changed ? `<div class="warnbox">
+        <b>This changes your own answer for trace ${r.id}, from "${wording(r.frozenGold)}" to "${wording(r.judge)}".</b>
+        Your answers are what the judge is scored against, so this moves the score without the judge changing at all.
+        Round ${round} keeps the numbers it earned either way.
+        <p style="margin:.6rem 0 .35rem"><b>Would you have changed this call if the judge had said the opposite?</b></p>
+        <div class="choice">
+          <button id="driftNo">No. I got it wrong, and I would have fixed it anyway</button>
+          <button id="driftYes">Yes. The judge saying so is why I am changing it</button>
+        </div>
+        <p class="small dim" style="margin:.5rem 0 0">Or <a href="#" id="driftPrompt">keep my label and fix the prompt instead</a>.</p>
+      </div>` : ""}
+      ${changed ? `<div class="small" style="margin-top:.6rem">
+        You changed this label after round ${d.round || round}${d.drift ? ", to match the judge" : ""}.
+        <button id="undoLabel">Undo, put my label back</button>
+      </div>` : ""}
       ${d.call === "othermode" ? `<div class="small">Which mode does it fail?
         <select id="otherMode">
           <option value="">choose one</option>
           ${others.map(x => `<option value="${x.id}"${d.otherModeId === x.id ? " selected" : ""}>${AIPM.esc(x.name)}</option>`).join("")}
         </select>
-        <span class="dim">This records a failure there and leaves this mode's answer alone, which is the point of one judge per mode.</span>
+        <span class="dim">This writes a failure for that mode on this trace and leaves this mode's answer alone, which is the point of one judge per mode. It shows up there marked as recorded during triage.</span>
       </div>` : ""}
       <textarea class="thin" id="tnote" placeholder="What exactly, in one line. This becomes the prompt edit or the calibration fix.">${AIPM.esc(d.note)}</textarea>
       <div class="choice" style="margin-top:.7rem">
@@ -1372,13 +1466,58 @@ function renderTriage(rows) {
       </div>
     </div>`;
 
-  AIPM.$$("[data-call]").forEach(b => b.onclick = () => {
+  const record = (call, extra) => {
     AIPM.update(st => {
-      AIPM.judgeFor(st, mid()).triage[String(r.id)] = { call: b.dataset.call, note: AIPM.$("#tnote").value, otherModeId: d.otherModeId || null };
-      if (b.dataset.call === "label") AIPM.setGold(st, r.id, m.id, r.judge, "triage");
+      const cur = AIPM.judgeFor(st, mid()).triage[String(r.id)] || {};
+      AIPM.judgeFor(st, mid()).triage[String(r.id)] = Object.assign(cur, {
+        call: call, note: AIPM.$("#tnote").value, otherModeId: d.otherModeId || null
+      }, extra || {});
     });
+  };
+
+  AIPM.$$("[data-call]").forEach(b => b.onclick = () => {
+    if (b.dataset.call === "label") {
+      // Nothing is written yet, not even the triage call. The confirmation
+      // block below does the writing, once the drift question is answered.
+      if (!changed) { pendingLabel = r.id; renderAll(); }
+      return;
+    }
+    pendingLabel = null;
+    record(b.dataset.call, {});
     renderAll();
   });
+
+  const commitLabel = drift => {
+    AIPM.update(st => {
+      AIPM.judgeFor(st, mid()).triage[String(r.id)] = Object.assign(
+        AIPM.judgeFor(st, mid()).triage[String(r.id)] || {},
+        { call: "label", note: AIPM.$("#tnote").value, prevGold: r.frozenGold, prevBy: AIPM.goldBy(st, r.id, m.id) || "me", drift: drift, round: round }
+      );
+      AIPM.setGold(st, r.id, m.id, r.judge, "triage");
+    });
+    pendingLabel = null;
+    AIPM.toast(drift
+      ? "Changed, and counted on the scoreboard as a label moved to match the judge."
+      : "Changed. Round " + round + " keeps the score it earned.");
+    renderAll();
+  };
+  if (AIPM.$("#driftNo")) AIPM.$("#driftNo").onclick = () => commitLabel(false);
+  if (AIPM.$("#driftYes")) AIPM.$("#driftYes").onclick = () => commitLabel(true);
+  if (AIPM.$("#driftPrompt")) AIPM.$("#driftPrompt").onclick = e => {
+    e.preventDefault(); pendingLabel = null; record("prompt", {}); renderAll();
+  };
+  if (AIPM.$("#undoLabel")) AIPM.$("#undoLabel").onclick = () => {
+    AIPM.update(st => {
+      AIPM.setGold(st, r.id, m.id, d.prevGold || r.frozenGold, d.prevBy || "me");
+      const cur = AIPM.judgeFor(st, mid()).triage[String(r.id)] || {};
+      delete cur.prevGold; delete cur.prevBy; delete cur.drift;
+      cur.call = null;
+      AIPM.judgeFor(st, mid()).triage[String(r.id)] = cur;
+    });
+    pendingLabel = null;
+    AIPM.toast("Your label is back where it was.");
+    renderAll();
+  };
   if (AIPM.$("#otherMode")) AIPM.$("#otherMode").onchange = e => {
     AIPM.update(st => {
       AIPM.judgeFor(st, mid()).triage[String(r.id)].otherModeId = e.target.value || null;
@@ -1386,7 +1525,10 @@ function renderTriage(rows) {
       // left exactly as the learner calibrated it.
       if (e.target.value) AIPM.setGold(st, r.id, e.target.value, "fail", "triage");
     });
-    AIPM.toast("Recorded as a failure of that mode. This judge's answer is unchanged.");
+    const target = others.find(x => x.id === e.target.value);
+    AIPM.toast(target
+      ? 'Trace ' + r.id + ' now counts as a failure of "' + target.name + '". This judge\'s answer is unchanged.'
+      : "Cleared.");
     renderAll();
   };
   AIPM.$("#tnote").oninput = e => {
@@ -1396,8 +1538,8 @@ function renderTriage(rows) {
       AIPM.judgeFor(st, mid()).triage[String(r.id)] = cur;
     });
   };
-  AIPM.$("#tprev").onclick = () => { qi = Math.max(0, qi - 1); renderTriage(rows); };
-  AIPM.$("#tnext").onclick = () => { qi = Math.min(rows.length - 1, qi + 1); renderTriage(rows); };
+  AIPM.$("#tprev").onclick = () => { qi = Math.max(0, qi - 1); pendingLabel = null; renderTriage(rows, run); };
+  AIPM.$("#tnext").onclick = () => { qi = Math.min(rows.length - 1, qi + 1); pendingLabel = null; renderTriage(rows, run); };
 }
 
 /* ---------- handoff ---------- */
@@ -1436,7 +1578,8 @@ AIPM.$("#copyPrompt").onclick = () => {
 AIPM.$("#copyTriage").onclick = () => {
   const s = AIPM.load(), m = activeMode();
   const decisions = Object.keys(myJudge(s).triage).map(id => ({
-    id: +id, call: myJudge(s).triage[id].call, otherModeId: myJudge(s).triage[id].otherModeId || null, note: myJudge(s).triage[id].note || ""
+    id: +id, call: myJudge(s).triage[id].call, otherModeId: myJudge(s).triage[id].otherModeId || null,
+    note: myJudge(s).triage[id].note || "", drift: !!myJudge(s).triage[id].drift
   })).filter(x => x.call);
   if (!decisions.length) { alert("No triage decisions yet. Work the disagreement queue first."); return; }
   AIPM.copyText(AIPM.payload(APP, "triage", {

@@ -12,7 +12,7 @@ A pass means the draft ships as written. Not "close enough after an agent tweaks
 
 **On confident diagnosis.** The bot may not name an account-specific cause, or state something as fact, when nothing shows it checked anything. A hedged, class-level hypothesis followed by a real request for data is fine. "Sounds like a line or modem issue, DM us your account number and we'll run a line test" is fine (trace 17). "Your router was installed with an outdated configuration profile" is not (trace 2). Neither is "we're not showing any outages in your area" during what looks like an incident (trace 20).
 
-The product fix behind this rule is a known-issues lookup: the bot answers confidently only when the issue matches a known pattern. That is not gradable from a trace, since the trace shows no retrieval. The gradable version is the rule above.
+The product fix behind this rule is a known-issues lookup: the bot answers confidently only when the issue matches a known pattern. That is not gradable here. This bot has no lookup at all, and even for a bot that had one, the trace would not show whether it ran. The gradable version is the rule above.
 
 **On "should have asked for a DM."** That is a remedy, not a failure mode. Traces that earned that note failed for different reasons (arguing, apologising in a loop, asking for a password in public, brushing the customer off). Categories are named after the cause, not the fix.
 

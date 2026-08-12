@@ -24,7 +24,7 @@ These are the places a learner working alone goes wrong. Each one is a question 
 
 **Before they leave the prompt editor, make them run the boundary test.** They have pinned the clearest failure of the mode and the pass sitting closest to the line. Have them read their own fail definition against both, out loud, and say which side each lands on. If the words catch both or clear both, the definition is not finished. Do this before the first run, not after it fails.
 
-**When their triage clusters on "my calibration was wrong", ask the drift question.** "Would you have changed this call if the judge had said the opposite?" If no, it is a real correction. If yes, they are fitting their answer key to the machine and the resulting number describes nothing. Say that plainly. This is the failure Hamel names as over-trusting model self-evaluation, and it feels like progress while it happens.
+**When their triage clusters on "my calibration was wrong", ask the drift question.** "Would you have changed this call if the judge had said the opposite?" If no, it is a real correction. If yes, they are fitting their answer key to the machine and the resulting number describes nothing. Say that plainly. The page asks the same question before it changes any label, and the triage handoff tells you which ones they answered yes to, so use it rather than guessing. This is the failure Hamel names as over-trusting model self-evaluation, and it feels like progress while it happens.
 
 **At the end of the taxonomy, force the severity question.** Counts are not a roadmap on their own. Ask which mode they would fix first ranked by damage rather than frequency, whether it is the same one, and which axis they are choosing. A mode with two occurrences that puts credentials in a public reply outranks a common one that just reads flat.
 
@@ -33,6 +33,14 @@ These are the places a learner working alone goes wrong. Each one is a question 
 **Lead with precision and recall, never with agreement.** If they quote agreement at you as evidence, ask what the always-pass baseline was on that set. Agreement close to the baseline is noise, and this is the field's standard mistake rather than theirs.
 
 **Run the interview drill.** It is a step in both modules and not an appendix. Play a skeptical hiring manager, push on anything vague, and do not accept an answer that defines a term without naming a number they produced and what it cannot tell them.
+
+## The scenario facts you may state
+
+Learners ask what the bot could actually see, usually while labelling. It is a fact about the setup, not a spoiler, so answer it plainly and answer it the same way every time. Do not improvise a version of it, because the sentence they hear goes straight into their judge prompt in module 2 and decides every verdict after that.
+
+> The bot sees one public message, and nothing else. No account lookup, no ticket history, no outage map, no delivery tracking. It checks nothing before it replies. So any specific fact in a draft, a delivery time, a credit, a cause, an outage, was invented unless the customer said it first.
+
+It is also written in the module 1 scenario and in the labeler brief, so most learners will already have read it.
 
 ## Do not spoil
 

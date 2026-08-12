@@ -348,6 +348,14 @@ const AIPM = (() => {
   function setGold(s, id, modeId, v, by) {
     rec(s, id).modes[modeId] = { v: v, by: by || "me" };
   }
+  // Where a gold label came from: "me" when the learner judged it, "cluster"
+  // when clustering placed it, "triage" when it was changed after seeing what
+  // the judge said. The last one is shown on screen wherever the label is,
+  // because a label moved to match the machine is not evidence about the machine.
+  function goldBy(s, id, modeId) {
+    const m = (s.labels[String(id)] || {}).modes || {};
+    return m[modeId] ? (m[modeId].by || "me") : null;
+  }
   const devIds = s => (s.split && s.split.dev) ? s.split.dev.slice() : null;
   const isHoldout = (s, id) => !!(s.split && s.split.holdout && s.split.holdout.indexOf(Number(id)) > -1);
 
@@ -682,6 +690,23 @@ const AIPM = (() => {
     ok("goldFor returns pass", goldFor(s, 19, "m1") === "pass");
     ok("goldFor returns null when unconfirmed", goldFor(s, 5, "m1") === null);
     ok("goldFor is per mode", goldFor(s, 2, "m2") === null);
+    ok("goldBy reports provenance", goldBy(s, 2, "m1") === "cluster" && goldBy(s, 19, "m1") === "me");
+    ok("goldBy is null when unconfirmed", goldBy(s, 5, "m1") === null);
+    // The judge page calls this on every render, so a missing export kills it
+    // outright. It shipped missing once.
+    ok("judgeFor makes a record", Array.isArray(judgeFor(blank(), "m1").shots));
+    ["judgeFor", "goldFor", "goldBy", "setGold", "update", "load", "confusion", "metricRow"]
+      .forEach(k => ok("AIPM." + k + " is exported", typeof AIPM !== "undefined" && typeof AIPM[k] === "function"));
+
+    // A round's score is frozen when it is scored. Changing a label afterwards
+    // must not move it, which is the whole defence against grading yourself.
+    const judged = [{ id: 2, verdict: "pass" }, { id: 19, verdict: "pass" }];
+    const scoreNow = st => confusion(judged.map(x => ({ gold: goldFor(st, x.id, "m1"), judge: x.verdict })));
+    const frozen = scoreNow(s);
+    setGold(s, 2, "m1", "pass", "triage");
+    ok("frozen score survives a label change", frozen.agreement === 0.5 && scoreNow(s).agreement === 1);
+    ok("a changed label is marked as triage", goldBy(s, 2, "m1") === "triage");
+    setGold(s, 2, "m1", "fail", "cluster");
 
     const c = confusion([
       { gold: "fail", judge: "fail" }, { gold: "fail", judge: "fail" },
@@ -760,9 +785,10 @@ const AIPM = (() => {
   return {
     $: $, $$: $$, esc: esc, toast: toast,
     KEY: KEY, blank: blank, migrate: migrate, load: load, update: update, reload: reload, rec: rec,
+    judgeFor: judgeFor,
     verdictOf: verdictOf, critiqueOf: critiqueOf, labelledCount: labelledCount, completeCount: completeCount,
     failures: failures, modeById: modeById, tracesInMode: tracesInMode,
-    goldFor: goldFor, setGold: setGold, devIds: devIds, isHoldout: isHoldout, nextModeId: nextModeId,
+    goldFor: goldFor, setGold: setGold, goldBy: goldBy, devIds: devIds, isHoldout: isHoldout, nextModeId: nextModeId,
     METRICS: METRICS, pct: pct, confusion: confusion, metricRow: metricRow, wireMetrics: wireMetrics,
     payload: payload, copyText: copyText, download: download, manual: manual,
     applyInjected: applyInjected, chrome: chrome, nav: nav, resetDialog: resetDialog, selftest: selftest

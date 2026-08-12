@@ -59,6 +59,6 @@ Two things about that, and the second one matters more.
 
 ## The limitation to carry into the ship memo
 
-This judge grades a blind trace. It cannot see what the bot verified, so it treats every confident claim as unbacked. That optimises for a bot that hedges, and it over-penalises a bot that is confident and right. Trace 29 would be the ideal reply if the bot had an outage dashboard behind it.
+This judge grades a blind trace. This bot verifies nothing, so treating every confident claim as unbacked is right here. Point the same judge at a bot that does have tools and it breaks: it optimises for hedging and it punishes a bot that is confident and right. Trace 29 would be the ideal reply if the bot had an outage dashboard behind it.
 
 With tool traces you would grade faithfulness to the retrieved context instead, which localises the failure properly: retrieval, generation, or stale data. Say this out loud when you present the number, before someone else finds it.

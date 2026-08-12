@@ -10,7 +10,7 @@ Would you let that go out?
 
 It reads well. It is warm, it is specific, and it answers the thing the customer is actually worried about. Most people pass it.
 
-The bot has no access to delivery tracking. It invented the time, and it invented the text message. Somebody is going to stand outside at 10:30 waiting for a phone that is not coming, and then miss a shift.
+The bot sees one public message and nothing else. No account lookup, no ticket history, no delivery tracking. It invented the time, and it invented the text message. Somebody is going to stand outside at 10:30 waiting for a phone that is not coming, and then miss a shift.
 
 That call, made thirty times in a row, is the whole first session of this course.
 

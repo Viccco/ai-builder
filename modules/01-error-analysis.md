@@ -70,6 +70,8 @@ If nothing exists, the first eval deliverable is a logging request, and it's a s
 
 Scenario. You're the AI PM at Northline, a fictional telecom. The team piloted an AI bot that drafts public replies to customer complaints on X. Human agents currently approve every draft. Leadership wants to know if the bot can run with less oversight. Before anyone argues about that, you do what an AI PM does first, which is error analysis on real traces.
 
+**What the bot can see.** One public message, and nothing else. No account lookup, no ticket history, no outage map, no delivery tracking. It checks nothing before it replies. So any specific fact in a draft, a delivery time, a credit, a cause, an outage, was invented unless the customer said it first.
+
 The customer messages are real. The bot replies were generated for this exercise with realistic failure modes seeded in. You don't know which or how many.
 
 Steps:

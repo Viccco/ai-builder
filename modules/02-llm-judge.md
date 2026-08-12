@@ -72,6 +72,8 @@ From Anthropic's operational guidance: evals saturate (100% pass means the eval 
 
 Continue as Northline's AI PM. Yesterday you found the dominant failure mode. Today you automate its detection and use the result to make a ship call.
 
+Same bot, same limits: it sees one public message and nothing else, with no account lookup, no ticket history, no outage map and no delivery tracking. Your judge has to be told that, because a model that does not know the bot was blind reads an invented delivery time as good service.
+
 1. **Split first.** Tell Claude Code to split your 30 labeled traces into 20 development and 10 held-out. It writes the split into the app and never shows you which is which. (~2 min)
 
 2. **Calibrate the mode.** Open `apps/02-judge/index.html` and pick the failure mode this judge is for. Then go through all 30 traces, one per screen, answering one question about each: does this fail *this mode*. `F` fails it, `P` does not. (~8 min)
@@ -84,7 +86,9 @@ Continue as Northline's AI PM. Yesterday you found the dominant failure mode. To
 
 4. **Score and read.** Claude Code grades the development traces one at a time, so the judge never sees your labels or the other traces, then writes the results into the page. Reload the tab and the scoreboard fills in: confusion matrix, agreement, precision and recall on the failure class, with every exclusion named. Work the disagreement queue and decide each one. The prompt is missing a rule, your calibration was wrong, it fails a different mode entirely, or it is genuinely ambiguous. Copy the triage when you are through. (~15 min)
 
-   Before you mark anything "my calibration was wrong", ask yourself one question: **would I have changed this call if the judge had said the opposite?** If no, it is a real correction and you learned something. If yes, you are quietly moving your answer key to match the machine, and the number that comes back will be a number about nothing. Claude Code will ask you this when your corrections start clustering.
+   Before you mark anything "my calibration was wrong", ask yourself one question: **would I have changed this call if the judge had said the opposite?** If no, it is a real correction and you learned something. If yes, you are quietly moving your answer key to match the machine, and the number that comes back will be a number about nothing. The page asks you this before it changes anything, and Claude Code will ask you too when your corrections start clustering.
+
+   Changing a label never improves a round you already ran. Each round keeps the score it earned against the labels you held at the time, and the page shows separately what the same judge output would score with your corrections. Only the next run tells you whether the judge got better.
 
 5. **Iterate.** Amend the prompt, paste it again, watch the run history. Two or three rounds. Stop when precision and recall stop moving, not when agreement crosses a threshold. (~15 min)
 
